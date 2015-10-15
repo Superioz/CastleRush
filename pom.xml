@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.superioz</groupId>
+    <artifactId>CastleRush</artifactId>
+    <version>1.0</version>
+
+    <properties>
+        <outputDirectory>C:\Users\Tobias\Documents\4. Minecraft Server\Spigot-Server\Spigot Server 1.8.8\plugins</outputDirectory>
+        <finalName>${artifactId}</finalName>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>superiozde-repo</id>
+            <url>ftp://ni288740_2.vweb10.nitrado.net/private/repository/private/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.superioz</groupId>
+            <artifactId>SuperLibrary</artifactId>
+            <version>1.8</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <target>1.8</target>
+                    <source>1.8</source>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <!-- Run shade goal on package phase -->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${outputDirectory}</outputDirectory>
+                            <finalName>${finalName}</finalName>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.spigotmc:*</exclude>
+                                    <exclude>com.comphenix.protocol:*</exclude>
+                                    <exclude>com.mojang:*</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
