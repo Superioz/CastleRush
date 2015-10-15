@@ -9,7 +9,6 @@
     <version>1.0</version>
 
     <properties>
-        <outputDirectory>C:\Users\Tobias\Documents\4. Minecraft Server\Spigot-Server\Spigot Server 1.8.8\plugins</outputDirectory>
         <finalName>${artifactId}</finalName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -61,7 +60,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${outputDirectory}</outputDirectory>
                             <finalName>${finalName}</finalName>
                             <artifactSet>
                                 <excludes>
