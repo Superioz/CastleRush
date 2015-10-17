@@ -1,9 +1,12 @@
 package de.superioz.cr.common.listener;
 
 import de.superioz.cr.common.WrappedGamePlayer;
+import de.superioz.cr.common.events.GameFinishEvent;
 import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameLeaveEvent;
+import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
+import de.superioz.library.minecraft.server.util.task.Countdown;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -45,6 +48,7 @@ public class GameListener implements Listener {
         }
 
         // If count is correct, then wait for game start
+        game.getArena().setGameState(GameManager.State.FULL);
         game.broadcast("&7There are enough player(s) to start. You can now use &b/cr startgame");
     }
 
@@ -75,6 +79,58 @@ public class GameListener implements Listener {
             game.broadcast("&c" + (game.getArena().getMaxPlayers()-currentPlayersSize) + " player(s) left to start!");
             return;
         }
+    }
+
+    @EventHandler
+    public void onGameStart(GameStartEvent event){
+        GameManager.Game game = event.getGame();
+        game.getArena().setGameState(GameManager.State.INGAME);
+        game.prepareGame();
+
+        // Now the gamemode is set and the players can start build their castles
+        for(WrappedGamePlayer gamePlayer : game.getArena().getPlayers())
+            gamePlayer.getPlayer().teleport(gamePlayer.getPlot().getTeleportPoint());
+
+        // Start the timer
+        Countdown countdown = new Countdown(20 * 60 * 60);
+        countdown.run(startRunnable -> {
+            // What happens between this 1 second thingy
+            int counter = countdown.getCounter();
+
+            if(counter % 1800 == 0){
+                game.broadcast("&7There are &b"+(counter/60)+" &7minute(s) left!");
+            }
+        }, endRunnable -> {
+            // What happens at the end
+            // Timer runs out - gamestate dont change
+            // now the players plays another castle and they have to try to capture the wool
+            game.prepareNextState();
+            game.broadcast("&7The next state began! Try to &bcapture your enemy's castle&7!");
+        });
+    }
+
+    @EventHandler
+    public void onGameFinish(GameFinishEvent event){
+        Player winner = event.getWinner();
+        GameManager.Game game = event.getGame();
+
+        // Announcement
+        game.broadcast("&7The player &b"+winner.getDisplayName().toUpperCase()+ " &7won the game!");
+
+        // Set gamestate
+        game.getArena().setGameState(GameManager.State.WAITING);
+
+        // Teleport to spawn
+        for(WrappedGamePlayer gp : game.getArena().getPlayers()){
+            int index = gp.getGameIndex();
+            Location spawn = game.getArena().getArena().getSpawnPoints().get(index);
+
+            game.clear(gp.getPlayer());
+            gp.getPlayer().teleport(spawn);
+        }
+
+        // End of the game
+        game.broadcast("&7The game ended. You can now use &b/cr finishgame");
     }
 
 }

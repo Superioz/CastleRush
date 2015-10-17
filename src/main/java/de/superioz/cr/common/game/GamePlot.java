@@ -22,6 +22,24 @@ public class GamePlot {
         this.teleportPoint = teleportPoint;
     }
 
+    public List<Location> getLocations(){
+        return locations;
+    }
+
+    public boolean isPart(Location foreignLoc){
+        for(Location loc : locations){
+            foreignLoc = new Location(foreignLoc.getWorld(), foreignLoc.getX(), 0, foreignLoc.getZ());
+
+            if(foreignLoc.equals(loc))
+                return true;
+        }
+        return false;
+    }
+
+    public Location getTeleportPoint(){
+        return teleportPoint;
+    }
+
     public static GamePlot fromString(String s){
         s = s.replace("[", "").replace("]", "");
         String[] array = s.split("&");

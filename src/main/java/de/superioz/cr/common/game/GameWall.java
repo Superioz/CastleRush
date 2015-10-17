@@ -17,6 +17,10 @@ public class GameWall {
         this.boundaries = boundaries;
     }
 
+    public SimplePair<Location, Location> getBoundaries(){
+        return boundaries;
+    }
+
     @Override
     public String toString(){
         return new LocationSerializer(boundaries.getType1()).serialize() + "&"

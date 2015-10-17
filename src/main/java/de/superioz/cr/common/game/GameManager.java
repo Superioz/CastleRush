@@ -1,7 +1,9 @@
 package de.superioz.cr.common.game;
 
+import de.superioz.cr.common.ItemKit;
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
+import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.main.CastleRush;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -91,6 +93,9 @@ public class GameManager {
 
             if(!arena.players.contains(wrappedGamePlayer))
                 arena.players.add(wrappedGamePlayer);
+
+            CastleRush.getPluginManager()
+                    .callEvent(new GamePlayersAmountChangeEvent(this));
         }
 
         public void leave(Player player){
@@ -98,6 +103,9 @@ public class GameManager {
 
             if(arena.players.contains(wrappedGamePlayer))
                 arena.players.remove(wrappedGamePlayer);
+
+            CastleRush.getPluginManager()
+                    .callEvent(new GamePlayersAmountChangeEvent(this));
         }
 
         public void broadcast(String message){
@@ -111,11 +119,40 @@ public class GameManager {
             player.setFoodLevel(20);
             player.setGameMode(GameMode.SURVIVAL);
 
+            clearInv(player);
+        }
+
+        public void clearInv(Player player){
             player.getInventory().setContents(null);
             player.getInventory().setHelmet(null);
             player.getInventory().setChestplate(null);
             player.getInventory().setLeggings(null);
             player.getInventory().setBoots(null);
+        }
+
+        public void prepareGame(){
+            for(WrappedGamePlayer gamePlayer : getArena().getPlayers()){
+                Player p = gamePlayer.getPlayer();
+
+                clearInv(p);
+                p.setGameMode(GameMode.CREATIVE);
+            }
+        }
+
+        public void prepareNextState(){
+            ItemKit itemKit = getArena().getArena().getItemKit();
+
+            // Players teleport to his spawnpoint
+            for(WrappedGamePlayer gamePlayer : getArena().getPlayers()){
+                Player p = gamePlayer.getPlayer();
+
+                clearInv(p);
+                itemKit.setFor(p);
+                p.setGameMode(GameMode.SURVIVAL);
+
+                p.teleport(new WrappedGamePlayer(this, p).getPlot().getTeleportPoint());
+            }
+
         }
 
     }

@@ -2,7 +2,9 @@ package de.superioz.cr.common;
 
 
 import de.superioz.library.minecraft.server.util.serialize.ItemStackSerializer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -30,6 +32,16 @@ public class ItemKit {
 
         return new ItemKit(new ItemStackSerializer(null).deserialize(arr[0]), new ItemStackSerializer(null)
                 .deserialize(arr[1]));
+    }
+
+    public void setFor(Player player){
+        PlayerInventory inv = player.getInventory();
+
+        inv.setContents(content);
+        inv.setHelmet(armor[0]);
+        inv.setChestplate(armor[1]);
+        inv.setLeggings(armor[2]);
+        inv.setBoots(armor[3]);
     }
 
 }

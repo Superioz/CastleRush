@@ -3,6 +3,8 @@ package de.superioz.cr.common.listener;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.events.GameJoinEvent;
+import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
+import de.superioz.cr.common.events.GameStateChangeEvent;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.game.PlayableArena;
 import de.superioz.cr.main.CastleRush;
@@ -92,6 +94,16 @@ public class SignListener implements Listener {
             // Call event for further things
             CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player));
         }
+    }
+
+    @EventHandler
+    public void onGamePlayersAmount(GamePlayersAmountChangeEvent event){
+        // Change sign not really important
+    }
+
+    @EventHandler
+    public void onGameStateChange(GameStateChangeEvent event){
+        // Change sign not really important
     }
 
 }
