@@ -23,12 +23,6 @@ public class ArenaMultiToolInventory extends VirtualInventory {
             player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
         });
 
-        ItemInteractable axeItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_AXE,
-                super.getRaw(), event -> {
-            Player player = event.getPlayer();
-            player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_AXE);
-        });
-
         ItemInteractable shovelItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL,
                 super.getRaw(), event -> {
             Player player = event.getPlayer();
@@ -48,7 +42,6 @@ public class ArenaMultiToolInventory extends VirtualInventory {
         });
 
         super.setItem(11, defaultItem);
-        super.setItem(12, axeItem);
         super.setItem(13, shovelItem);
         super.setItem(14, pickaxeItem);
         super.setItem(15, hoeItem);

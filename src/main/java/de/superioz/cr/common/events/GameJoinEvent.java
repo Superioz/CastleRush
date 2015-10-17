@@ -12,7 +12,7 @@ import org.bukkit.event.HandlerList;
  */
 public class GameJoinEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
+    public static final HandlerList handlers = new HandlerList();
     private GameManager.Game game;
     private Player player;
 

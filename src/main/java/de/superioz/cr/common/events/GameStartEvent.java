@@ -11,7 +11,7 @@ import org.bukkit.event.HandlerList;
  */
 public class GameStartEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
+    public static final HandlerList handlers = new HandlerList();
     private GameManager.Game game;
 
     public GameStartEvent(GameManager.Game game){
