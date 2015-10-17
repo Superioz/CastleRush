@@ -1,5 +1,6 @@
 package de.superioz.cr.command;
 
+import de.superioz.cr.common.ItemKit;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.arena.RawUnpreparedArena;
@@ -14,6 +15,8 @@ import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
 import de.superioz.library.minecraft.server.util.LocationUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 
@@ -79,6 +82,30 @@ public class ArenaCommand {
         CastleRush.getChatMessager().send("&7Added a &bnew gameplot &7to the cache!", player);
 
         rawUnpreparedArena.setRawGamePlots(new ArrayList<>());
+    }
+
+    @SubCommand(name = "setkit", permission = "castlerush.setkit")
+    public void setItemKit(SubCommandContext commandContext){
+        Player player = (Player) commandContext.getSender();
+
+        if(!ArenaManager.EditorCache.contains(player)){
+            CastleRush.getChatMessager().send("&cYou aren't in the EditorCache!", player);
+            return;
+        }
+
+        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
+        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
+        assert rawUnpreparedArena != null; assert unpreparedArena != null;
+
+        PlayerInventory inv = player.getInventory();
+        ItemKit kit = new ItemKit(inv.getContents(),
+                new ItemStack[]{
+                        inv.getHelmet(), inv.getChestplate(),
+                        inv.getLeggings(), inv.getBoots()
+                });
+
+        rawUnpreparedArena.setItemKit(kit);
+        CastleRush.getChatMessager().send("&7Set the &bgamekit &7for your cache!", player);
     }
 
     @SubCommand(name = "addwall", permission = "castlerush.addwall")

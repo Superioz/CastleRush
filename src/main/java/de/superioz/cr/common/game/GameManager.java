@@ -1,6 +1,10 @@
 package de.superioz.cr.common.game;
 
+import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
+import de.superioz.cr.main.CastleRush;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +28,8 @@ public class GameManager {
             runningGames.remove(game);
     }
 
-    public static void joinGame(Arena arena){
-        Game game = getGame(arena);
+    public static boolean containsGameInQueue(Arena arena){
+        return getGame(arena) != null;
     }
 
     public static Game getGame(Arena arena){
@@ -34,6 +38,20 @@ public class GameManager {
                 return g;
         }
         return null;
+    }
+
+    public static Game getGame(Player player){
+        if(isIngame(player)){
+            for(Game g : runningGames){
+                if(g.getArena().getPlayers().contains(new WrappedGamePlayer(g, player)))
+                    return g;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isIngame(Player player){
+        return getGame(player) != null;
     }
 
     public enum State {
@@ -56,7 +74,7 @@ public class GameManager {
 
     }
 
-    public class Game {
+    public static class Game {
 
         protected PlayableArena arena;
 
@@ -66,6 +84,38 @@ public class GameManager {
 
         public PlayableArena getArena(){
             return arena;
+        }
+
+        public void join(Player player){
+            WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player);
+
+            if(!arena.players.contains(wrappedGamePlayer))
+                arena.players.add(wrappedGamePlayer);
+        }
+
+        public void leave(Player player){
+            WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player);
+
+            if(arena.players.contains(wrappedGamePlayer))
+                arena.players.remove(wrappedGamePlayer);
+        }
+
+        public void broadcast(String message){
+            for(WrappedGamePlayer gp : getArena().getPlayers()){
+                CastleRush.getChatMessager().send(message, gp.getPlayer());
+            }
+        }
+
+        public void clear(Player player){
+            player.setHealth(20D);
+            player.setFoodLevel(20);
+            player.setGameMode(GameMode.SURVIVAL);
+
+            player.getInventory().setContents(null);
+            player.getInventory().setHelmet(null);
+            player.getInventory().setChestplate(null);
+            player.getInventory().setLeggings(null);
+            player.getInventory().setBoots(null);
         }
 
     }

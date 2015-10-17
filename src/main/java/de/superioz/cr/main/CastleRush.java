@@ -1,8 +1,12 @@
 package de.superioz.cr.main;
 
 import de.superioz.cr.command.ArenaCommand;
+import de.superioz.cr.command.GameCommand;
 import de.superioz.cr.command.MainCommand;
 import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.listener.GameListener;
+import de.superioz.cr.common.listener.GameProtectListener;
+import de.superioz.cr.common.listener.SignListener;
 import de.superioz.library.java.file.properties.SuperProperties;
 import de.superioz.library.java.file.type.YamlFile;
 import de.superioz.library.java.logging.SuperLogger;
@@ -51,8 +55,13 @@ public class CastleRush extends JavaPlugin {
         superLogger.consoleLog("ChatMessager loaded!");
 
         // Commands
-        CommandHandler.registerWith(MainCommand.class, ArenaCommand.class);
+        CommandHandler.registerWith(MainCommand.class, ArenaCommand.class, GameCommand.class);
         superLogger.consoleLog("Commands registered!");
+
+        // Listener
+        getPluginManager().registerEvents(new GameListener(), this);
+        getPluginManager().registerEvents(new GameProtectListener(), this);
+        getPluginManager().registerEvents(new SignListener(), this);
 
         // ArenaManager
         ArenaManager.load();
