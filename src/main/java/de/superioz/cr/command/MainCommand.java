@@ -37,9 +37,6 @@ public class MainCommand implements CommandWrapper {
     public void help(SubCommandContext commandContext){
         int page = 1;
         Player player = (Player) commandContext.getSender();
-        String nextPageCommand = commandContext.getParent().getLabel() + " " + commandContext.getLabel()
-                + " " + (page+1);
-        Utilities.initCommandHelp(nextPageCommand);
 
         if(commandContext.argumentsLength() >= 1){
             String arg = commandContext.argument(0);
@@ -47,6 +44,10 @@ public class MainCommand implements CommandWrapper {
             if(SimpleStringUtils.isInteger(arg))
                 page = Integer.parseInt(arg);
         }
+
+        String nextPageCommand = commandContext.getParent().getLabel() + " " + commandContext.getLabel()
+                + " " + (page+1);
+        Utilities.initCommandHelp(nextPageCommand);
 
         List<TextComponent> textComponents = Utilities.getCommandHelp(nextPageCommand, page);
         if(textComponents == null){

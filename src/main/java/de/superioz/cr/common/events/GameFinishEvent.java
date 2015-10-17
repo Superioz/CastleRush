@@ -29,6 +29,10 @@ public class GameFinishEvent extends Event {
         return game;
     }
 
+    public static HandlerList getHandlerList(){
+        return handlers;
+    }
+
     @Override
     public HandlerList getHandlers(){
         return handlers;

@@ -29,6 +29,10 @@ public class GameLeaveEvent extends Event {
         return player;
     }
 
+    public static HandlerList getHandlerList(){
+        return handlers;
+    }
+
     @Override
     public HandlerList getHandlers(){
         return handlers;

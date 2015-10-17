@@ -52,8 +52,7 @@ public class Utilities {
             commandHelpPage = new CommandHelpPage(new CommandHelpPattern(
                     8, CastleRush.getProperties().get("helpCommandHover"),
                     getListItem(CastleRush.getProperties().get("helpCommandListItem")),
-                    getListItem(CastleRush.getProperties().get("helpCommandNextPage").replace("%label",
-                            nextPageCommand)),
+                    getListItem(CastleRush.getProperties().get("helpCommandNextPage")),
                     CastleRush.getProperties().get("helpCommandHover"),
                     CastleRush.getProperties().get("helpCommandNextPageHover"),
                     getListItem(CastleRush.getProperties().get("helpCommandListItem"))
