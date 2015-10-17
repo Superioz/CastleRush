@@ -1,12 +1,19 @@
 package de.superioz.cr.common.tool;
 
+import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.arena.RawUnpreparedArena;
 import de.superioz.cr.common.inventory.ArenaMultiToolInventory;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
 import de.superioz.library.minecraft.server.items.ItemTool;
+import de.superioz.library.minecraft.server.util.LocationUtils;
+import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+
+import java.util.List;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -55,6 +62,58 @@ public class ArenaMultiTool extends ItemTool {
 
                 if(checkAction(action, player))
                     return;
+
+                if(!ArenaManager.EditorCache.contains(player)){
+                    return;
+                }
+
+                RawUnpreparedArena arena = ArenaManager.EditorCache.get(player);
+                assert arena != null;
+
+                switch(action){
+                    case LEFT_CLICK_BLOCK:
+                        if(player.isSneaking()){
+                            Location l = LocationUtils.fix(block.getLocation());
+                            arena.addGamePlotLocation(new Location(l.getWorld(), l.getX(), 0, l.getZ()));
+                            CastleRush.getChatMessager().send("&7Added &e"+LocationUtils.toString(l)+" &7to plot.",
+                                    player);
+                            break;
+                        }
+
+                        // Set Position 2
+                        if(arena.getRawGamePlotMarker().getType1() == null){
+                            // Location 1 is not set
+                            CastleRush.getChatMessager().send("&cSet 1st Location first!", player);
+                            break;
+                        }
+
+                        Location pos1 = arena.getRawGamePlotMarker().getType1();
+                        Location pos2 = LocationUtils.fix(block.getLocation());
+
+                        List<Location> locs = GeometryUtils.cuboid(pos1, pos2);
+                        for(Location lo : locs){
+                            Location location = LocationUtils.fix(lo.getBlock().getLocation());
+                            Location fixedLocation = new Location(
+                                    location.getWorld(), location.getX(), 0, location.getZ());
+
+                            arena.addGamePlotLocation(fixedLocation);
+                        }
+
+                        CastleRush.getChatMessager().send("&7Position &e#2 set &7and added marked locations to plot",
+                                player);
+                        CastleRush.getChatMessager().send("&e"
+                                + LocationUtils.toString(pos1) + "&7 - &e"
+                                + LocationUtils.toString(pos2), player);
+                        break;
+                    case RIGHT_CLICK_BLOCK:
+                        //Set position 2
+                        Location pos = LocationUtils.fix(block.getLocation());
+
+                        arena.getRawGamePlotMarker().setType1(pos);
+                        CastleRush.getChatMessager().send("&7Position &e#1 set &7@&9"+LocationUtils.toString(pos),
+                                player);
+                        break;
+                }
             });
         }
     }
@@ -68,6 +127,32 @@ public class ArenaMultiTool extends ItemTool {
 
                 if(checkAction(action, player))
                     return;
+
+                if(!ArenaManager.EditorCache.contains(player)){
+                    return;
+                }
+
+                RawUnpreparedArena arena = ArenaManager.EditorCache.get(player);
+                assert arena != null;
+
+                switch(action){
+                    case RIGHT_CLICK_BLOCK:
+                        // Position 1
+                        Location pos1 = LocationUtils.fix(block.getLocation());
+
+                        arena.getRawGameWalls().setType1(pos1);
+                        CastleRush.getChatMessager().send("&7Position &e#1 set &7@&9"+LocationUtils.toString(pos1),
+                                player);
+                        break;
+                    case LEFT_CLICK_BLOCK:
+                        // Position 2
+                        Location pos2 = LocationUtils.fix(block.getLocation());
+
+                        arena.getRawGameWalls().setType2(pos2);
+                        CastleRush.getChatMessager().send("&7Position &e#2 set &7@&9"+LocationUtils.toString(pos2),
+                                player);
+                        break;
+                }
             });
         }
     }
@@ -81,6 +166,32 @@ public class ArenaMultiTool extends ItemTool {
 
                 if(checkAction(action, player))
                     return;
+
+                if(!ArenaManager.EditorCache.contains(player)){
+                    return;
+                }
+
+                RawUnpreparedArena arena = ArenaManager.EditorCache.get(player);
+                assert arena != null;
+
+                Location pos = LocationUtils.fix(block.getLocation());
+
+                switch(action){
+                    case RIGHT_CLICK_BLOCK:
+                        boolean b = arena.addSpawnpoint(pos);
+                        String text = b ? "&7Spawnpoint &aadded &7@&9"+LocationUtils.toString(pos) : "&cThis " +
+                                "spawnpoint already exists!";
+
+                        CastleRush.getChatMessager().send(text, player);
+                        break;
+                    case LEFT_CLICK_BLOCK:
+                        boolean b1 = arena.removeSpawnpoint(pos);
+                        String text1 = b1 ? "&7Spawnpoint &cremoved &7@&9"+LocationUtils.toString(pos) : "&cThis " +
+                                "spawnpoint doesn't exist!";
+
+                        CastleRush.getChatMessager().send(text1, player);
+                        break;
+                }
             });
         }
     }

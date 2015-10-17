@@ -1,8 +1,10 @@
 package de.superioz.cr.common.arena;
 
 import de.superioz.cr.common.ItemKit;
+import de.superioz.library.java.util.classes.SimplePair;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,24 +16,39 @@ public class RawUnpreparedArena {
 
     protected String name;
     protected List<Location> spawnPoints;
+
     protected List<Location> rawGamePlots;
-    protected List<Location> rawGameWalls;
+    protected SimplePair<Location, Location> rawGamePlotMarker;
+
+    protected SimplePair<Location, Location> rawGameWalls;
     protected ItemKit itemKit;
 
     public RawUnpreparedArena(String name){
         this.name = name;
+        this.spawnPoints = new ArrayList<>();
+        this.rawGamePlots = new ArrayList<>();
+        this.rawGameWalls = null;
+        this.itemKit = null;
     }
 
-    public void addSpawnpoint(Location loc){
+    public boolean addSpawnpoint(Location loc){
+        if(spawnPoints.contains(loc)){
+            return false;
+        }
         spawnPoints.add(loc);
+        return true;
+    }
+
+    public boolean removeSpawnpoint(Location loc){
+        if(spawnPoints.contains(loc)){
+            spawnPoints.remove(loc);
+            return true;
+        }
+        return false;
     }
 
     public void addGamePlotLocation(Location loc){
         rawGamePlots.add(loc);
-    }
-
-    public void addGameWallsLocation(Location loc){
-        rawGameWalls.add(loc);
     }
 
     public ItemKit getItemKit(){
@@ -62,15 +79,23 @@ public class RawUnpreparedArena {
         this.spawnPoints = spawnPoints;
     }
 
-    public List<Location> getRawGameWalls(){
+    public SimplePair<Location, Location> getRawGameWalls(){
         return rawGameWalls;
-    }
-
-    public void setRawGameWalls(List<Location> rawGameWalls){
-        this.rawGameWalls = rawGameWalls;
     }
 
     public String getName(){
         return name;
     }
+
+    public SimplePair<Location, Location> getRawGamePlotMarker(){
+        return rawGamePlotMarker;
+    }
+
+    public boolean isFinished(){
+        return (getItemKit() != null)
+                && (getName() != null)
+                && !getName().isEmpty()
+                && (getSpawnPoints().size() >= 2);
+    }
+
 }

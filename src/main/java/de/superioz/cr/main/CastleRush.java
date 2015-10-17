@@ -2,6 +2,7 @@ package de.superioz.cr.main;
 
 import de.superioz.cr.command.ArenaCommand;
 import de.superioz.cr.command.MainCommand;
+import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.library.java.file.properties.SuperProperties;
 import de.superioz.library.java.file.type.YamlFile;
 import de.superioz.library.java.logging.SuperLogger;
@@ -52,11 +53,17 @@ public class CastleRush extends JavaPlugin {
         // Commands
         CommandHandler.registerWith(MainCommand.class, ArenaCommand.class);
         superLogger.consoleLog("Commands registered!");
+
+        // ArenaManager
+        ArenaManager.load();
+        superLogger.consoleLog("ArenaManager loaded!");
     }
 
     @Override
     public void onDisable(){
-
+        superLogger.consoleLog("Backup Arenas ..");
+        ArenaManager.backup();
+        superLogger.consoleLog("Arenas saved.");
     }
 
     public static ChatMessager getChatMessager(){
