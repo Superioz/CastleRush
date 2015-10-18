@@ -99,7 +99,7 @@ public class RawUnpreparedArena {
     public boolean isFinished(){
         return (getItemKit() != null)
                 && (getName() != null)
-                && !getName().isEmpty()
+                && (!getName().isEmpty())
                 && (getSpawnPoints().size() >= 2);
     }
 

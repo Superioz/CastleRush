@@ -28,9 +28,15 @@ import java.util.ArrayList;
 public class ArenaCommand {
 
     @SubCommand(name = "edit", aliases = "create", permission = "castlerush.editAndCreate"
-        , min = 1, usage = "[arenaName]")
+        , min = 1, usage = "[arenaName]", desc = "Start editing/creating an arena")
     public void editAndCreate(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
+
+        // Check if player already started to edit/create an arena
+        if(ArenaManager.EditorCache.contains(player)){
+            CastleRush.getChatMessager().send("&cYou are already in the EditorCache!", player);
+            return;
+        }
 
         String arenaName = "";
         for(int i = 0; i < commandContext.argumentsLength(); i++){
@@ -48,18 +54,12 @@ public class ArenaCommand {
             return;
         }
 
-        // Check if player already started to edit/create an arena
-        if(ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send("&cYou are already in the EditorCache!", player);
-            return;
-        }
-
         ArenaManager.EditorCache.addPlayer(player, arenaName);
         player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
         CastleRush.getChatMessager().send("&7You can now edit/create the arena &b" + arenaName + "&7!", player);
     }
 
-    @SubCommand(name = "addplot", permission = "castlerush.addplot")
+    @SubCommand(name = "addplot", permission = "castlerush.addplot", desc = "Adds selected plot to cache")
     public void addPlot(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
@@ -84,7 +84,7 @@ public class ArenaCommand {
         rawUnpreparedArena.setRawGamePlots(new ArrayList<>());
     }
 
-    @SubCommand(name = "setkit", permission = "castlerush.setkit")
+    @SubCommand(name = "setkit", permission = "castlerush.setkit", desc = "Sets your inventory as itemkit")
     public void setItemKit(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
@@ -108,7 +108,7 @@ public class ArenaCommand {
         CastleRush.getChatMessager().send("&7Set the &bgamekit &7for your cache!", player);
     }
 
-    @SubCommand(name = "addwall", permission = "castlerush.addwall")
+    @SubCommand(name = "addwall", permission = "castlerush.addwall", desc = "Adds selected wall to cache")
     public void addWall(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
@@ -135,7 +135,8 @@ public class ArenaCommand {
         CastleRush.getChatMessager().send("&7Added a &bnew gamewall &7to the cache", player);
     }
 
-    @SubCommand(name = "finishedit", aliases = "finishcreate", permission = "castlerush.finishEditCreate")
+    @SubCommand(name = "finishedit", aliases = "finishcreate", permission = "castlerush.finishEditCreate"
+        , desc = "Finished the cache and creates the arena finally")
     public void finishEdit(SubCommandContext context){
         Player player = (Player) context.getSender();
 
@@ -166,6 +167,20 @@ public class ArenaCommand {
             ,unpreparedArena.getGamePlots(), unpreparedArena.getGameWalls(), unpreparedArena.getItemKit());
         ArenaManager.add(arena);
         CastleRush.getChatMessager().send("&7Arena &b"+unpreparedArena.getName()+" &7added to arena list!", player);
+    }
+
+    @SubCommand(name = "getmultitool", aliases = "multitool", permission = "castlerush.multitool"
+        , desc = "Gives you the multitool")
+    public void getTool(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!ArenaManager.EditorCache.contains(player)){
+            CastleRush.getChatMessager().send("&cYou aren't in the EditorCache!", player);
+            return;
+        }
+
+        player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
+        CastleRush.getChatMessager().send("&7Here is your wanted &eMultitool&7!", player);
     }
 
 }

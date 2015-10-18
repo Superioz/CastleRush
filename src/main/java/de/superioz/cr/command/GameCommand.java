@@ -16,7 +16,8 @@ import org.bukkit.entity.Player;
  */
 public class GameCommand {
 
-    @SubCommand(name = "startgame", aliases = "start", permission = "castlerush.startgame")
+    @SubCommand(name = "startgame", aliases = "start", permission = "castlerush.startgame"
+        , desc = "Starts the current game")
     public void startGame(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
@@ -36,7 +37,8 @@ public class GameCommand {
         CastleRush.getPluginManager().callEvent(new GameStartEvent(game));
     }
 
-    @SubCommand(name = "finishgame", aliases = "finish", permission = "castlerush.finishgame")
+    @SubCommand(name = "finishgame", aliases = "finish", permission = "castlerush.finishgame"
+        , desc = "Finished the current game")
     public void finishGame(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
