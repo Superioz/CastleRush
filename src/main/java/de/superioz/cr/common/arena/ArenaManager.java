@@ -1,5 +1,6 @@
 package de.superioz.cr.common.arena;
 
+import de.superioz.cr.common.tool.ArenaMultiTool;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.file.type.JsonFile;
 import org.bukkit.entity.Player;
@@ -15,20 +16,25 @@ public class ArenaManager {
 
     protected static JsonFile backup;
     protected static ArenaCache cache;
+    protected static ArenaMultiTool arenaMultiTool;
 
     public static void load(){
         cache = new ArenaCache();
         backup = new JsonFile("arenas", "data", CastleRush.getInstance().getDataFolder());
+        arenaMultiTool = new ArenaMultiTool();
 
         if(backup.exists())
             cache.from(backup);
-        else
-            backup.load(false, true);
     }
 
     public static void backup(){
-        if(backup.exists())
+        if(cache.list().size() > 0){
+            backup.load(false, true);
+        }
+
+        if(backup.exists()){
             cache.write(backup);
+        }
     }
 
     public static void add(Arena arena){
@@ -77,8 +83,8 @@ public class ArenaManager {
 
     public static class EditorCache {
 
-        protected static HashMap<Player, UnpreparedArena> editorLast;
-        protected static HashMap<Player, RawUnpreparedArena> editorCache;
+        protected static HashMap<Player, UnpreparedArena> editorLast = new HashMap<>();
+        protected static HashMap<Player, RawUnpreparedArena> editorCache = new HashMap<>();
 
         public static void addPlayer(Player player, String name){
             if(!editorCache.containsKey(player)){

@@ -21,24 +21,36 @@ public class ArenaMultiToolInventory extends VirtualInventory {
                 super.getRaw(), event -> {
             Player player = event.getPlayer();
             player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
+
+            event.cancel();
+            event.close();
         });
 
         ItemInteractable shovelItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL,
                 super.getRaw(), event -> {
             Player player = event.getPlayer();
             player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL);
+
+            event.cancel();
+            event.close();
         });
 
         ItemInteractable pickaxeItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_PICKAXE,
                 super.getRaw(), event -> {
             Player player = event.getPlayer();
             player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_PICKAXE);
+
+            event.cancel();
+            event.close();
         });
 
         ItemInteractable hoeItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_HOE,
                 super.getRaw(), event -> {
             Player player = event.getPlayer();
             player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_HOE);
+
+            event.cancel();
+            event.close();
         });
 
         super.setItem(11, defaultItem);

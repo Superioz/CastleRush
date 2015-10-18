@@ -50,9 +50,9 @@ public class Utilities {
     public static void initCommandHelp(String nextPageCommand){
         if(commandHelpPage == null){
             commandHelpPage = new CommandHelpPage(new CommandHelpPattern(
-                    8, CastleRush.getProperties().get("helpCommandHover"),
+                    12, CastleRush.getProperties().get("helpCommandHover"),
                     getListItem(CastleRush.getProperties().get("helpCommandListItem")),
-                    getListItem(CastleRush.getProperties().get("helpCommandNextPage")),
+                    getListItem(CastleRush.getProperties().get("helpCommandNextPage").replace("%label", nextPageCommand)),
                     CastleRush.getProperties().get("helpCommandHover"),
                     CastleRush.getProperties().get("helpCommandNextPageHover"),
                     getListItem(CastleRush.getProperties().get("helpCommandListItem"))
@@ -73,7 +73,7 @@ public class Utilities {
 
         if(page < commandHelpPage.getPageList().getTotalPages()){
             l.add(null);
-            l.add(commandHelpPage.getNextPageComponent(command, commandHelpPage.getPattern().getNextPagePattern()));
+            l.add(commandHelpPage.getNextPageComponent("/"+command, commandHelpPage.getPattern().getNextPagePattern()));
         }
 
         l.add(new TextComponent(getSpacer("CastleRush Help &7(&b"+page+"&7/"
@@ -92,17 +92,19 @@ public class Utilities {
         public static final ItemStack MULTITOOL_STACK_SHOVEL = new ItemBuilder(Material.DIAMOND_SPADE)
                 .amount(1).unbreakable(true)
                 .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                .name("&6Multitool - 3 in 1").lore("&7Sneak-Rightclick to change tool").build();
+                .name("&6Multitool - 3 in 1").lore("&7Rightclick: Area pos1; Leftclick: Area pos2;").lore
+                        ("&7Sneak+Leftclick: Single point")
+                .build();
 
         public static final ItemStack MULTITOOL_STACK_PICKAXE = new ItemBuilder(Material.DIAMOND_PICKAXE)
                 .amount(1).unbreakable(true)
                 .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                .name("&6Multitool - 3 in 1").lore("&7Sneak-Rightclick to change tool").build();
+                .name("&6Multitool - 3 in 1").lore("&7Rightclick: Set pos1; Leftclick: Set pos2").build();
 
         public static final ItemStack MULTITOOL_STACK_HOE = new ItemBuilder(Material.DIAMOND_HOE)
                 .amount(1).unbreakable(true)
                 .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                .name("&6Multitool - 3 in 1").lore("&7Sneak-Rightclick to change tool").build();
+                .name("&6Multitool - 3 in 1").lore("&7Rightclick: Add spawnpoint; Leftclick: Remove one").build();
     }
 
 }

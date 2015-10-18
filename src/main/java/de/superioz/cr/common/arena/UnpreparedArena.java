@@ -5,6 +5,7 @@ import de.superioz.cr.common.game.GamePlot;
 import de.superioz.cr.common.game.GameWall;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
 public class UnpreparedArena extends Arena {
 
     public UnpreparedArena(String name){
-        super(name, null, null, null, null);
+        super(name, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null);
     }
 
     public boolean isFinished(){

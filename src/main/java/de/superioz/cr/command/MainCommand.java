@@ -24,6 +24,7 @@ import java.util.List;
 @Command(name = "castlerush",
     desc = "Main command for CastleRush",
     aliases = "cr",
+        permission = "castlerush.main",
     commandTarget = AllowedCommandSender.PLAYER)
 public class MainCommand implements CommandWrapper {
 
@@ -32,8 +33,8 @@ public class MainCommand implements CommandWrapper {
         Utilities.getPluginInformationPage((Player) commandContext.getSender());
     }
 
-    @SubCommand(name = "help", aliases = "?", desc = "Shows the help page", permission = "castlerush.help", usage =
-            "<page>")
+    @SubCommand(name = "help", aliases = "?", desc = "Shows the help page",
+            permission = "castlerush.help", usage = "<page>")
     public void help(SubCommandContext commandContext){
         int page = 1;
         Player player = (Player) commandContext.getSender();
@@ -45,8 +46,8 @@ public class MainCommand implements CommandWrapper {
                 page = Integer.parseInt(arg);
         }
 
-        String nextPageCommand = commandContext.getParent().getLabel() + " " + commandContext.getLabel()
-                + " " + (page+1);
+        String nextPageCommand = commandContext.getParent().getLabel()
+                + " " + commandContext.getLabel() + " " + (page+1);
         Utilities.initCommandHelp(nextPageCommand);
 
         List<TextComponent> textComponents = Utilities.getCommandHelp(nextPageCommand, page);

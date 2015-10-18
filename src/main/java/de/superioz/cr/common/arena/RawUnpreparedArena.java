@@ -27,7 +27,8 @@ public class RawUnpreparedArena {
         this.name = name;
         this.spawnPoints = new ArrayList<>();
         this.rawGamePlots = new ArrayList<>();
-        this.rawGameWalls = null;
+        this.rawGamePlotMarker = new SimplePair<>(null, null);
+        this.rawGameWalls = new SimplePair<>(null, null);
         this.itemKit = null;
     }
 
@@ -47,8 +48,12 @@ public class RawUnpreparedArena {
         return false;
     }
 
-    public void addGamePlotLocation(Location loc){
+    public boolean addGamePlotLocation(Location loc){
+        if(rawGamePlots.contains(loc)){
+            return false;
+        }
         rawGamePlots.add(loc);
+        return true;
     }
 
     public ItemKit getItemKit(){

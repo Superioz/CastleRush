@@ -43,7 +43,7 @@ public class CastleRush extends JavaPlugin {
 
         // Properties
         stringProperties = new SuperProperties<>("strings", "", getDataFolder());
-        stringProperties.load(true, true);
+        stringProperties.load(true);
         superLogger.consoleLog("Properties loaded!");
 
         // Config
@@ -51,7 +51,7 @@ public class CastleRush extends JavaPlugin {
         configFile.load(true, true);
 
         // ChatMessager
-        chatMessager = new ChatMessager(stringProperties.get("chatPrefix") + "┃ &r");
+        chatMessager = new ChatMessager(stringProperties.get("chatPrefix") + "&8┃ &r");
         superLogger.consoleLog("ChatMessager loaded!");
 
         // Commands

@@ -53,7 +53,11 @@ public class GameManager {
     }
 
     public static boolean isIngame(Player player){
-        return getGame(player) != null;
+        for(Game g : runningGames){
+            if(g.getArena().getPlayers().contains(new WrappedGamePlayer(g, player)))
+                return true;
+        }
+        return false;
     }
 
     public enum State {

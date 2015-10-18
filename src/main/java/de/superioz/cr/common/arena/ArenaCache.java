@@ -20,11 +20,18 @@ public class ArenaCache extends SimpleCache<String> {
     @Override
     public void write(JsonFile file){
         this.list = this.toStringList();
-        file.write(this.list);
+
+        if(this.list.size() > 0){
+            System.out.println("Wird reingeschrieben!");
+            file.write(this.list);
+        }
     }
 
     @Override
     public void from(JsonFile file){
+        if(file == null)
+            return;
+
         List<String> stringList = file.read(new TypeToken<ArrayList<String>>(){}.getType());
 
         if(this.list == null)
