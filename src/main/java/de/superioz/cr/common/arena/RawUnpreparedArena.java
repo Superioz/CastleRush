@@ -103,4 +103,18 @@ public class RawUnpreparedArena {
                 && (getSpawnPoints().size() >= 2);
     }
 
+    public String getNotFinishedReason(){
+        if(isFinished())
+            return "";
+
+        if(getItemKit() == null)
+            return "itemkit equals null";
+        else if(getName() == null || getName().isEmpty())
+            return "arenaname isn't valid";
+        else if(getSpawnPoints().size() < 2)
+            return "spawnpoints size lower than two";
+        else
+            return "unknown";
+    }
+
 }

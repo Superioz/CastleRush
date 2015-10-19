@@ -73,13 +73,14 @@ public class ArenaCommand {
         assert rawUnpreparedArena != null; assert unpreparedArena != null;
 
         if(!(rawUnpreparedArena.getRawGamePlots().size() >= 1)){
-            CastleRush.getChatMessager().send("&cYou are not finished! Add more locations.", player);
+            CastleRush.getChatMessager().send("&cA plot needs one location!", player);
             return;
         }
 
         unpreparedArena.addGamePlot(new GamePlot(rawUnpreparedArena.getRawGamePlots(), LocationUtils.fix(player
                 .getLocation().getBlock().getLocation())));
-        CastleRush.getChatMessager().send("&7Added a &bnew gameplot &7to the cache!", player);
+        CastleRush.getChatMessager().send("&7Added a &bnew gameplot &7to the cache! " +
+                "&7[&b"+unpreparedArena.getGamePlots().size()+"&7/2]", player);
 
         rawUnpreparedArena.setRawGamePlots(new ArrayList<>());
     }
@@ -132,7 +133,8 @@ public class ArenaCommand {
         Location pos2 = rawUnpreparedArena.getRawGameWalls().getType2();
 
         unpreparedArena.addGameWall(new GameWall(new SimplePair<>(pos1, pos2)));
-        CastleRush.getChatMessager().send("&7Added a &bnew gamewall &7to the cache", player);
+        CastleRush.getChatMessager().send("&7Added a &bnew gamewall &7to the cache " +
+                "&7[&b"+unpreparedArena.getGameWalls().size()+ "&7/1]", player);
     }
 
     @SubCommand(name = "finishedit", aliases = "finishcreate", permission = "castlerush.finishEditCreate"
@@ -154,19 +156,22 @@ public class ArenaCommand {
             unpreparedArena.setItemKit(rawUnpreparedArena.getItemKit());
         }
         else{
-            CastleRush.getChatMessager().send("&cYou are not finished!", player);
+            CastleRush.getChatMessager().send("&cYou aren't finished! &7["
+                    + rawUnpreparedArena.getNotFinishedReason().toUpperCase()+"&7]", player);
             return;
         }
 
         if(!unpreparedArena.isFinished()){
-            CastleRush.getChatMessager().send("&cYou are not finished!", player);
+            CastleRush.getChatMessager().send("&cYou aren't finished! &7["
+                    + unpreparedArena.getNotFinishedReason().toUpperCase()+"&7]", player);
             return;
         }
 
         Arena arena = new Arena(unpreparedArena.getName(), unpreparedArena.getSpawnPoints()
             ,unpreparedArena.getGamePlots(), unpreparedArena.getGameWalls(), unpreparedArena.getItemKit());
         ArenaManager.add(arena);
-        CastleRush.getChatMessager().send("&7Arena &b"+unpreparedArena.getName()+" &7added to arena list!", player);
+        CastleRush.getChatMessager().send("&7Arena &b"+unpreparedArena.getName()+" &7added to arena list! " +
+                "[&b"+ArenaManager.size()+"&7]", player);
     }
 
     @SubCommand(name = "getmultitool", aliases = "multitool", permission = "castlerush.multitool"

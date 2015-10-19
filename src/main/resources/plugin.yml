@@ -1,4 +1,4 @@
-name: CastleRush
+name: ${project.artifactId}
 main: de.superioz.cr.main.CastleRush
-version: 1.0
+version: ${project.version}
 author: Superioz

@@ -62,6 +62,7 @@ public class CastleRush extends JavaPlugin {
         getPluginManager().registerEvents(new GameListener(), this);
         getPluginManager().registerEvents(new GameProtectListener(), this);
         getPluginManager().registerEvents(new SignListener(), this);
+        superLogger.consoleLog("Listener registered!");
 
         // ArenaManager
         ArenaManager.load();

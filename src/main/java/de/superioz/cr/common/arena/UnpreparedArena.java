@@ -20,12 +20,24 @@ public class UnpreparedArena extends Arena {
     }
 
     public boolean isFinished(){
-        return !(!(spawnPoints.size() >= 2)
-                || !(gamePlots.size() >= 2)
-                || !(gameWalls.size() >= 2)
-                || (itemKit == null)
-                || !(gamePlots.size() >= spawnPoints.size())
-                || !ArenaManager.checkArenaName(name));
+        return getNotFinishedReason().equalsIgnoreCase("unknown");
+    }
+
+    public String getNotFinishedReason(){
+        if((spawnPoints.size() < 2))
+            return "too few spawnpoints";
+        else if((gamePlots.size() < 2))
+            return "too few gameplots";
+        else if((gameWalls.size() < 1))
+            return "too few gamewalls";
+        else if(itemKit == null)
+            return "itemkit equals null";
+        else if(gamePlots.size() < spawnPoints.size())
+            return "too few gameplots";
+        else if(!ArenaManager.checkArenaName(name))
+            return "invalid arenaname";
+        else
+            return "unknown";
     }
 
 
