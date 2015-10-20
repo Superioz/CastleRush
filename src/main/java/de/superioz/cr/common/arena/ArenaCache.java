@@ -22,7 +22,6 @@ public class ArenaCache extends SimpleCache<String> {
         this.list = this.toStringList();
 
         if(this.list.size() > 0){
-            System.out.println("Wird reingeschrieben!");
             file.write(this.list);
         }
     }

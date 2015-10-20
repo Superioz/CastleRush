@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -186,6 +187,22 @@ public class ArenaCommand {
 
         player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
         CastleRush.getChatMessager().send("&7Here is your wanted &eMultitool&7!", player);
+    }
+
+    @SubCommand(name = "listarenas", aliases = "larenas", permission = "castlerush.listarena"
+        , desc = "List all arenas")
+    public void listArenas(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        List<Arena> arenas = ArenaManager.getCache().arenaList;
+        String msg = "";
+
+        for(Arena arena : arenas){
+            msg += "&b" + arena.getName() + "&8;";
+        }
+
+        CastleRush.getChatMessager().send("&7Arenas: " + msg + " &7[&b"+ArenaManager.size() + "&7]",
+                player);
     }
 
 }

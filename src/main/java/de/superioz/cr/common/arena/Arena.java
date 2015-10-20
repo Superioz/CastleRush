@@ -75,8 +75,8 @@ public class Arena {
 
         return name + "&"
                 + "[" + ListUtils.insert(spawnpoints, ",") + "]" + "&"
-                + "[" + ListUtils.insert(gamePlots, ",") + "]" + "&"
-                + "[" + ListUtils.insert(gameWalls, ",") + "]" + "&"
+                + "[" + ListUtils.insert(gamePlots, "%") + "]" + "&"
+                + "[" + ListUtils.insert(gameWalls, "%") + "]" + "&"
                 + gameKit;
     }
 
@@ -96,7 +96,8 @@ public class Arena {
 
         String gamePlotsString = array[2];
         gamePlotsString = gamePlotsString.replace("[", "").replace("]", "");
-        String[] gamePlotsArray = gamePlotsString.split(",");
+
+        String[] gamePlotsArray = gamePlotsString.split("%");
         List<GamePlot> gamePlots = new ArrayList<>();
 
         for(String sp : gamePlotsArray){
@@ -105,7 +106,7 @@ public class Arena {
 
         String gameWallsString = array[3];
         gameWallsString = gameWallsString.replace("[", "").replace("]", "");
-        String[] gameWallsArray = gameWallsString.split(",");
+        String[] gameWallsArray = gameWallsString.split("%");
         List<GameWall> gameWalls = new ArrayList<>();
 
         for(String sp : gameWallsArray){

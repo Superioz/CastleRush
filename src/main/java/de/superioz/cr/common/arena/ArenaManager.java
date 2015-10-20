@@ -28,7 +28,7 @@ public class ArenaManager {
     }
 
     public static void backup(){
-        if(cache.list().size() > 0){
+        if(size() > 0){
             backup.load(false, true);
         }
 
