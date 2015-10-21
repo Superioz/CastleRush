@@ -5,6 +5,7 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.main.CastleRush;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -62,10 +63,10 @@ public class GameManager {
 
     public enum State {
 
-        LOBBY("lobby"),
-        FULL("full"),
-        INGAME("ingame"),
-        WAITING("waiting");
+        LOBBY(ChatColor.GREEN + "lobby"),
+        FULL(ChatColor.RED + "full"),
+        INGAME(ChatColor.DARK_RED + "ingame"),
+        WAITING(ChatColor.GOLD + "waiting");
 
 
         String n;

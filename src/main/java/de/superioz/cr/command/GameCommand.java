@@ -30,6 +30,7 @@ public class GameCommand {
         // Is the lobby full?
         assert game != null;
         if(!(game.getArena().getGameState() == GameManager.State.FULL)){
+            CastleRush.getChatMessager().send("&cThe lobby is not full!", player);
             return;
         }
 

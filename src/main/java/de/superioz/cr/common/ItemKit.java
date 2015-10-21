@@ -24,11 +24,11 @@ public class ItemKit {
     @Override
     public String toString(){
         return new ItemStackSerializer(content).serialize()
-                + "&" + new ItemStackSerializer(armor).serialize();
+                + "%" + new ItemStackSerializer(armor).serialize();
     }
 
     public static ItemKit fromString(String s){
-        String[] arr = s.split("&");
+        String[] arr = s.split("%");
 
         return new ItemKit(new ItemStackSerializer(null).deserialize(arr[0]), new ItemStackSerializer(null)
                 .deserialize(arr[1]));

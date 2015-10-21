@@ -190,20 +190,23 @@ public class ArenaMultiTool extends ItemTool {
                 RawUnpreparedArena arena = ArenaManager.EditorCache.get(player);
                 assert arena != null;
 
-                Location pos = LocationUtils.fix(block.getLocation());
                 event.cancel();
                 switch(action){
                     case RIGHT_CLICK_BLOCK:
+                        Location pos = LocationUtils.fix(block.getLocation());
                         boolean b = arena.addSpawnpoint(pos);
-                        String text = b ? "&7Spawnpoint &aadded &7@&9"+LocationUtils.toString(pos) : "&cThis " +
-                                "spawnpoint already exists!";
+                        String text = b ? "&7Spawnpoint &aadded &7@&9"+LocationUtils.toString(pos)
+                                + " &7[&b" + arena.getSpawnPoints().size() + "&7]"
+                                : "&cThis spawnpoint already exists!";
 
                         CastleRush.getChatMessager().send(text, player);
                         break;
                     case LEFT_CLICK_BLOCK:
-                        boolean b1 = arena.removeSpawnpoint(pos);
-                        String text1 = b1 ? "&7Spawnpoint &cremoved &7@&9"+LocationUtils.toString(pos) : "&cThis " +
-                                "spawnpoint doesn't exist!";
+                        Location pos1 = LocationUtils.fix(block.getLocation());
+                        boolean b1 = arena.removeSpawnpoint(pos1);
+                        String text1 = b1 ? "&7Spawnpoint &cremoved &7@&9"+LocationUtils.toString(pos1)
+                                + " &7[&b" + arena.getSpawnPoints().size() + "&7]"
+                                : "&cThis spawnpoint doesn't exist!";
 
                         CastleRush.getChatMessager().send(text1, player);
                         break;

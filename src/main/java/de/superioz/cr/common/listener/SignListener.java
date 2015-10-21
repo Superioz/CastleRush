@@ -9,8 +9,8 @@ import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.game.PlayableArena;
 import de.superioz.cr.main.CastleRush;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,6 +42,7 @@ public class SignListener implements Listener {
         }
 
         Arena arena = ArenaManager.get(l1);
+
         if(arena == null){
             event.getBlock().breakNaturally();
             CastleRush.getChatMessager().send("&cThat arena doesn't exist!", player);
@@ -53,25 +54,31 @@ public class SignListener implements Listener {
         String name = arena.getName();
         String header = ChatColor.AQUA + "CastleRush";
 
+        if(name.length() > 16)
+            name = name.substring(0, 16);
+
         event.setLine(0, header);
-        event.setLine(1, name.substring(0, 16));
+        event.setLine(1, name);
         event.setLine(2, minPlayers + "/" + maxPlayers);
         event.setLine(3, GameManager.State.LOBBY.getSpecifier());
-        ((Sign) event.getBlock()).update(true);
+        event.getBlock().getState().update(true);
+
+        CastleRush.getChatMessager().send("&7Arena sign for Arena &b" +l1+ " &7created.", player);
     }
 
     @EventHandler
     public void onSignRightclick(PlayerInteractEvent event){
-
         if(event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
-        Block block = event.getClickedBlock();
 
-        if(block == null || block.getType() == Material.AIR)
+        Block block = event.getClickedBlock();
+        BlockState state = block.getState();
+
+        if(state == null)
             return;
 
-        if(block instanceof Sign){
-            Sign sign = (Sign) block;
+        if(state instanceof Sign){
+            Sign sign = (Sign) state;
             Player player = event.getPlayer();
             Action action = event.getAction();
 
@@ -90,6 +97,8 @@ public class SignListener implements Listener {
                         .Game(new PlayableArena(arena, GameManager.State.LOBBY)));
             }
             GameManager.Game game = GameManager.getGame(arena);
+            assert game != null;
+            game.join(player);
 
             // Call event for further things
             CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player));

@@ -48,9 +48,8 @@ public class ArenaManager {
     }
 
     public static Arena get(String name){
-        for(Arena ar : cache.list()){
-            if(ar.getName() != null && !ar.getName().isEmpty()
-                    && ar.getName().equals(name)){
+        for(Arena ar : cache.arenaList){
+            if((ar.getName() != null) && (name.equalsIgnoreCase(ar.getName()))){
                 return ar;
             }
         }

@@ -28,7 +28,6 @@ public class GameWall {
     }
 
     public static GameWall fromString(String s){
-        System.out.println(s);
         String[] arr = s.split("-");
 
         return new GameWall(new SimplePair<>(new LocationSerializer(null).deserialize(arr[0])
