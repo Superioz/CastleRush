@@ -27,9 +27,7 @@ public class WrappedGamePlayer {
     }
 
     public GamePlot getPlot(){
-        List<WrappedGamePlayer> players = getGame().getArena().getPlayers();
         int index = getGameIndex();
-
         Location spawnLocation = getGame().getArena().getArena().getSpawnPoints().get(index);
 
         double distance = -1;
@@ -38,12 +36,16 @@ public class WrappedGamePlayer {
         for(GamePlot gamePlot : getGame().getArena().getArena().getGamePlots()){
             Location l = gamePlot.getTeleportPoint();
 
-            double d = l.distanceSquared(spawnLocation);
-            if(distance > d){
+            double d = spawnLocation.distanceSquared(l);
+
+            if(distance == -1)
+                distance = d;
+            else if(d < distance){
                 distance = d;
                 plot = gamePlot;
             }
         }
+
         return plot;
     }
 
@@ -51,7 +53,7 @@ public class WrappedGamePlayer {
         List<WrappedGamePlayer> players = getGame().getArena().getPlayers();
 
         for(int i = 0; i < players.size(); i++){
-            if(players.get(i).equals(this))
+            if(players.get(i).getPlayer().getUniqueId().equals(player.getUniqueId()))
                 return i;
         }
         return -1;

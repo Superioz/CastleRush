@@ -46,7 +46,7 @@ public class GameManager {
     public static Game getGame(Player player){
         if(isIngame(player)){
             for(Game g : runningGames){
-                if(g.getArena().getPlayers().contains(new WrappedGamePlayer(g, player)))
+                if(isIngame(player, g))
                     return g;
             }
         }
@@ -55,8 +55,19 @@ public class GameManager {
 
     public static boolean isIngame(Player player){
         for(Game g : runningGames){
-            if(g.getArena().getPlayers().contains(new WrappedGamePlayer(g, player)))
+            if(isIngame(player, g))
                 return true;
+        }
+        return false;
+    }
+
+    public static boolean isIngame(Player player, Game game){
+        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
+            Player p = pl.getPlayer();
+
+            if(p.getUniqueId().equals(player.getUniqueId())){
+                return true;
+            }
         }
         return false;
     }
@@ -96,7 +107,7 @@ public class GameManager {
         public void join(Player player){
             WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player);
 
-            if(!arena.players.contains(wrappedGamePlayer))
+            if(!isIngame(player))
                 arena.players.add(wrappedGamePlayer);
 
             CastleRush.getPluginManager()
@@ -106,7 +117,7 @@ public class GameManager {
         public void leave(Player player){
             WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player);
 
-            if(arena.players.contains(wrappedGamePlayer))
+            if(isIngame(player))
                 arena.players.remove(wrappedGamePlayer);
 
             CastleRush.getPluginManager()
@@ -128,11 +139,8 @@ public class GameManager {
         }
 
         public void clearInv(Player player){
-            player.getInventory().setContents(null);
-            player.getInventory().setHelmet(null);
-            player.getInventory().setChestplate(null);
-            player.getInventory().setLeggings(null);
-            player.getInventory().setBoots(null);
+            player.getInventory().clear();
+            player.getEquipment().clear();
         }
 
         public void prepareGame(){

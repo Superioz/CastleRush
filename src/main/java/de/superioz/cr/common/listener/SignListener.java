@@ -86,19 +86,22 @@ public class SignListener implements Listener {
                 return;
             }
 
-            String arenaName = sign.getLine(1);
-            Arena arena = ArenaManager.get(arenaName);
-
             if(GameManager.isIngame(player))
                 return;
 
+            String arenaName = sign.getLine(1);
+            Arena arena = ArenaManager.get(arenaName);
+
             if(!GameManager.containsGameInQueue(arena)){
-                GameManager.addGameInQueue(new GameManager
-                        .Game(new PlayableArena(arena, GameManager.State.LOBBY)));
+                GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY)));
             }
             GameManager.Game game = GameManager.getGame(arena);
             assert game != null;
-            game.join(player);
+
+            if(game.getArena().getGameState() != GameManager.State.LOBBY){
+                CastleRush.getChatMessager().send("&cYou cannot join this arena!", player);
+                return;
+            }
 
             // Call event for further things
             CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player));

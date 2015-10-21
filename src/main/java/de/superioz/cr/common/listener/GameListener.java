@@ -34,7 +34,7 @@ public class GameListener implements Listener {
         // Teleport player to one spawnPoint
         int currentPlayersSize = currentPlayers.size();
         Location spawnPoint = spawnPoints.get(currentPlayersSize-1);
-        player.teleport(spawnPoint.add(0, 0.25D, 0));
+        player.teleport(spawnPoint.clone().add(0, 1, 0));
 
         // Send message
         game.broadcast("&b" + player.getDisplayName() + " &7joined the game. " +
@@ -77,7 +77,6 @@ public class GameListener implements Listener {
         if(currentPlayersSize != game.getArena().getMaxPlayers()){
             // There must be more players
             game.broadcast("&c" + (game.getArena().getMaxPlayers()-currentPlayersSize) + " player(s) left to start!");
-            return;
         }
     }
 
