@@ -1,6 +1,7 @@
 package de.superioz.cr.main;
 
 import de.superioz.cr.command.ArenaCommand;
+import de.superioz.cr.command.CacheCommand;
 import de.superioz.cr.command.GameCommand;
 import de.superioz.cr.command.MainCommand;
 import de.superioz.cr.common.arena.ArenaManager;
@@ -55,7 +56,7 @@ public class CastleRush extends JavaPlugin {
         superLogger.consoleLog("ChatMessager loaded!");
 
         // Commands
-        CommandHandler.registerWith(MainCommand.class, ArenaCommand.class, GameCommand.class);
+        CommandHandler.registerWith(MainCommand.class, ArenaCommand.class, GameCommand.class, CacheCommand.class);
         superLogger.consoleLog("Commands registered!");
 
         // Listener
