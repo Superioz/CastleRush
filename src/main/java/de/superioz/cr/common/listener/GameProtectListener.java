@@ -33,7 +33,7 @@ public class GameProtectListener implements Listener {
         GameManager.Game game = GameManager.getGame(player);
         Block block = event.getBlock();
         Location loc = LocationUtils.fix(block.getLocation());
-        WrappedGamePlayer gamePlayer = new WrappedGamePlayer(game, player);
+        WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
 
         assert game != null;
         if(game.getArena().getGameState() != GameManager.State.INGAME){
@@ -41,11 +41,21 @@ public class GameProtectListener implements Listener {
         }
 
         // Check if block is from his plot
+        assert gamePlayer != null;
         GamePlot plot = gamePlayer.getPlot();
         boolean flag = plot.isPart(loc);
 
-        if(!flag)
-            event.setCancelled(true);
+        if(!flag && player.getGameMode() == GameMode.SURVIVAL
+                && block.getType() == Material.WOOL){
+            // Player wons the game
+            CastleRush.getPluginManager().callEvent(new GameFinishEvent(game, player));
+            return;
+        }
+
+        if(flag){
+            return;
+        }
+        event.setCancelled(true);
     }
 
     @EventHandler
@@ -59,7 +69,7 @@ public class GameProtectListener implements Listener {
         GameManager.Game game = GameManager.getGame(player);
         Block block = event.getBlock();
         Location loc = LocationUtils.fix(block.getLocation());
-        WrappedGamePlayer gamePlayer = new WrappedGamePlayer(game, player);
+        WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
 
         assert game != null;
         if(game.getArena().getGameState() != GameManager.State.INGAME){
@@ -67,14 +77,11 @@ public class GameProtectListener implements Listener {
         }
 
         // Check if block is from his plot
+        assert gamePlayer != null;
         GamePlot plot = gamePlayer.getPlot();
         boolean flag = plot.isPart(loc);
 
-        // Check if block is white wool
-        if(!flag && player.getGameMode() == GameMode.SURVIVAL
-                && block.getType() == Material.WOOL){
-            // Player wons the game
-            CastleRush.getPluginManager().callEvent(new GameFinishEvent(game, player));
+        if(flag){
             return;
         }
         event.setCancelled(true);

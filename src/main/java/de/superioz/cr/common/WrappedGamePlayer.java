@@ -38,8 +38,10 @@ public class WrappedGamePlayer {
 
             double d = spawnLocation.distanceSquared(l);
 
-            if(distance == -1)
+            if(distance == -1){
                 distance = d;
+                plot = gamePlot;
+            }
             else if(d < distance){
                 distance = d;
                 plot = gamePlot;

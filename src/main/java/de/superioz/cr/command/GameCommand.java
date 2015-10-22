@@ -3,6 +3,7 @@ package de.superioz.cr.command;
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.listener.GameListener;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.command.annts.SubCommand;
 import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
@@ -55,15 +56,41 @@ public class GameCommand {
             return;
         }
 
-        // teleport all playyers back
+        // teleport all players back
         for(WrappedGamePlayer p : game.getArena().getPlayers()){
             p.getPlayer().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             game.leave(p.getPlayer());
         }
 
-
         // set gamestate
         game.getArena().setGameState(GameManager.State.LOBBY);
+    }
+
+    @SubCommand(name = "timeleft", aliases = "tl", permission = "castlerush.timeleft"
+            , desc = "Shows the counter from current timer")
+    public void timeLeft(SubCommandContext commandContext){
+        Player player = (Player) commandContext.getSender();
+
+        if(!GameManager.isIngame(player)){
+            CastleRush.getChatMessager().send("&cYou are not ingame!", player);
+            return;
+        }
+        GameManager.Game game = GameManager.getGame(player);
+        assert game != null;
+
+        if((game.getArena().getGameState() != GameManager.State.INGAME)
+                || GameListener.countdown == null){
+            CastleRush.getChatMessager().send("&cThere is no timer at the moment!", player);
+            return;
+        }
+
+        int counter = GameListener.countdown.getCounter();
+        int seconds = counter % 60;
+        int minutes = counter / 60;
+        int hours = minutes / 60;
+
+        CastleRush.getChatMessager().send("&7Time left: &a"
+                + hours + "&7h &a" + minutes + "&7m &a" + seconds + "&7s", player);
     }
 
 }

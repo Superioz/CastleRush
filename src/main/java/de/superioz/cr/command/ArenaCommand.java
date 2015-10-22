@@ -15,7 +15,6 @@ import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
 import de.superioz.library.minecraft.server.util.LocationUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
@@ -100,11 +99,7 @@ public class ArenaCommand {
         assert rawUnpreparedArena != null; assert unpreparedArena != null;
 
         PlayerInventory inv = player.getInventory();
-        ItemKit kit = new ItemKit(inv.getContents(),
-                new ItemStack[]{
-                        inv.getHelmet(), inv.getChestplate(),
-                        inv.getLeggings(), inv.getBoots()
-                });
+        ItemKit kit = new ItemKit(inv.getContents(), inv.getArmorContents());
 
         rawUnpreparedArena.setItemKit(kit);
         CastleRush.getChatMessager().send("&7Set the &bgamekit &7for your cache!", player);

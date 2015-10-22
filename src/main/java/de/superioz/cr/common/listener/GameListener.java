@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class GameListener implements Listener {
 
+    public static Countdown countdown;
+
     @EventHandler
     public void onGameJoin(GameJoinEvent event){
         Player player = event.getPlayer();
@@ -64,7 +66,6 @@ public class GameListener implements Listener {
 
         // Variables
         List<WrappedGamePlayer> currentPlayers = game.getArena().getPlayers();
-        List<Location> spawnPoints = game.getArena().getArena().getSpawnPoints();
 
         // Teleport player to one spawnPoint
         int currentPlayersSize = currentPlayers.size();
@@ -89,22 +90,22 @@ public class GameListener implements Listener {
         // Now the gamemode is set and the players can start build their castles
         for(WrappedGamePlayer gamePlayer : game.getArena().getPlayers())
             gamePlayer.getPlayer().teleport(gamePlayer.getPlot().getTeleportPoint());
+        game.broadcast("&7You can now start to build your &bcastle&7!");
 
         // Start the timer
-        Countdown countdown = new Countdown(20 * 60 * 60);
-        countdown.run(startRunnable -> {
-            // What happens between this 1 second thingy
-            int counter = countdown.getCounter();
-
-            if(counter % 1800 == 0){
-                game.broadcast("&7There are &b"+(counter/60)+" &7minute(s) left!");
-            }
-        }, endRunnable -> {
+        countdown = new Countdown(3 * 60);
+        countdown.run(endRunnable -> {
             // What happens at the end
             // Timer runs out - gamestate dont change
             // now the players plays another castle and they have to try to capture the wool
             game.prepareNextState();
             game.broadcast("&7The next state began! Try to &bcapture your enemy's castle&7!");
+        }, startRunnable -> {
+            int counter = countdown.getCounter();
+
+            if(counter % 1800 == 0){
+                game.broadcast("&7There are &b"+(counter/60)+" &7minute(s) left!");
+            }
         });
     }
 
@@ -125,7 +126,7 @@ public class GameListener implements Listener {
             Location spawn = game.getArena().getArena().getSpawnPoints().get(index);
 
             game.clear(gp.getPlayer());
-            gp.getPlayer().teleport(spawn);
+            gp.getPlayer().teleport(spawn.clone().add(0, 1, 0));
         }
 
         // End of the game

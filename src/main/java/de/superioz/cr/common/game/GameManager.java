@@ -72,6 +72,23 @@ public class GameManager {
         return false;
     }
 
+    public static WrappedGamePlayer getWrappedGamePlayer(Player player){
+        if(!isIngame(player))
+            return null;
+
+        Game game = getGame(player);
+        assert game != null;
+
+        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
+            Player p = pl.getPlayer();
+
+            if(p.getUniqueId().equals(player.getUniqueId())){
+                return pl;
+            }
+        }
+        return null;
+    }
+
     public enum State {
 
         LOBBY(ChatColor.GREEN + "lobby"),
@@ -115,13 +132,14 @@ public class GameManager {
         }
 
         public void leave(Player player){
-            WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player);
+            WrappedGamePlayer wrappedGamePlayer = getWrappedGamePlayer(player);
 
-            if(isIngame(player))
+            if(isIngame(player)){
                 arena.players.remove(wrappedGamePlayer);
 
-            CastleRush.getPluginManager()
-                    .callEvent(new GamePlayersAmountChangeEvent(this));
+                CastleRush.getPluginManager()
+                        .callEvent(new GamePlayersAmountChangeEvent(this));
+            }
         }
 
         public void broadcast(String message){
@@ -159,11 +177,11 @@ public class GameManager {
             for(WrappedGamePlayer gamePlayer : getArena().getPlayers()){
                 Player p = gamePlayer.getPlayer();
 
+                p.setGameMode(GameMode.SURVIVAL);
                 clearInv(p);
                 itemKit.setFor(p);
-                p.setGameMode(GameMode.SURVIVAL);
 
-                p.teleport(new WrappedGamePlayer(this, p).getPlot().getTeleportPoint());
+                p.teleport(gamePlayer.getPlot().getTeleportPoint());
             }
 
         }
