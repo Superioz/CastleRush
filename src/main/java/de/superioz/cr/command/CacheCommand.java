@@ -10,6 +10,7 @@ import de.superioz.cr.common.game.GameWall;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
 import de.superioz.library.java.util.classes.SimplePair;
+import de.superioz.library.minecraft.server.command.annts.RawSubCommand;
 import de.superioz.library.minecraft.server.command.annts.SubCommand;
 import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
 import de.superioz.library.minecraft.server.util.LocationUtils;
@@ -26,8 +27,17 @@ import java.util.ArrayList;
  */
 public class CacheCommand {
 
-    @SubCommand(name = "addplot", permission = "castlerush.addplot", desc = "Adds selected plot to cache")
-    public void addPlot(SubCommandContext commandContext){
+    @SubCommand(name = "cache", aliases = {"c"}, permission = "castlerush.cache"
+            , min = 1, usage = "[addplot:addwall:setkit:finish:tool:edit]"
+            , desc = "Commands for handling editor's cache")
+    public void cache(SubCommandContext context){
+        context.forward(this.getClass(), "addplot", "addwall", "setkit", "finish", "tool", "edit");
+    }
+
+    @RawSubCommand(name = "addplot", aliases = {"addp", "ap"}, permission = "castlerush.cache.addplot"
+            , usage = ""
+            , desc = "Adds selected plot to editor cache")
+    public void addplot(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
@@ -52,8 +62,10 @@ public class CacheCommand {
         rawUnpreparedArena.setRawGamePlots(new ArrayList<>());
     }
 
-    @SubCommand(name = "setkit", permission = "castlerush.setkit", desc = "Sets your inventory as itemkit")
-    public void setItemKit(SubCommandContext commandContext){
+    @RawSubCommand(name = "setkit", aliases = {"setk", "sk"}, permission = "castlerush.cache.setkit"
+            , usage = ""
+            , desc = "Sets the kit for unprepared arena")
+    public void setkit(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
@@ -72,8 +84,10 @@ public class CacheCommand {
         CastleRush.getChatMessager().send("&7Set the &bgamekit &7for your cache!", player);
     }
 
-    @SubCommand(name = "addwall", permission = "castlerush.addwall", desc = "Adds selected wall to cache")
-    public void addWall(SubCommandContext commandContext){
+    @RawSubCommand(name = "addwall", aliases = {"addw", "aw"}, permission = "castlerush.cache.addwall"
+            , usage = ""
+            , desc = "Adds selected wall to editor cache")
+    public void addwall(SubCommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
@@ -100,9 +114,10 @@ public class CacheCommand {
                 "&7[&b"+unpreparedArena.getGameWalls().size()+ "&7/1]", player);
     }
 
-    @SubCommand(name = "finishedit", aliases = "finishcreate", permission = "castlerush.finishEditCreate"
-            , desc = "Finished the cache and creates the arena finally")
-    public void finishEdit(SubCommandContext context){
+    @RawSubCommand(name = "finish", aliases = {"fin", "f"}, permission = "castlerush.cache.finish"
+            , usage = ""
+            , desc = "Finished the editor cache and saves it")
+    public void finish(SubCommandContext context){
         Player player = (Player) context.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
@@ -137,9 +152,10 @@ public class CacheCommand {
                 "[&b"+ArenaManager.size()+"&7]", player);
     }
 
-    @SubCommand(name = "getmultitool", aliases = "multitool", permission = "castlerush.multitool"
-            , desc = "Gives you the multitool")
-    public void getTool(SubCommandContext context){
+    @RawSubCommand(name = "tool", aliases = {"t"}, permission = "castlerush.cache.tool"
+            , usage = ""
+            , desc = "Gives you the editor cache multi-tool")
+    public void tool(SubCommandContext context){
         Player player = (Player) context.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
