@@ -16,7 +16,7 @@
     <repositories>
         <repository>
             <id>superiozde-repo</id>
-            <url>ftp://ni288740_2.vweb10.nitrado.net/private/repository/private/</url>
+            <url>http://www.superioz.de/private/repository/private/</url>
         </repository>
     </repositories>
 
