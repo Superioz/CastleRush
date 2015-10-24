@@ -31,7 +31,7 @@ public class CacheCommand {
             , min = 1, usage = "[addplot:addwall:setkit:finish:tool:edit]"
             , desc = "Commands for handling editor's cache")
     public void cache(SubCommandContext context){
-        context.forward(this.getClass(), "addplot", "addwall", "setkit", "finish", "tool", "edit");
+        context.forward(this.getClass(), "addplot", "addwall", "setkit", "finish", "tool");
     }
 
     @RawSubCommand(name = "addplot", aliases = {"addp", "ap"}, permission = "castlerush.cache.addplot"

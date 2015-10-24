@@ -1,8 +1,12 @@
 package de.superioz.cr.command;
 
 import de.superioz.cr.common.WrappedGamePlayer;
+import de.superioz.cr.common.arena.Arena;
+import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.game.PlayableArena;
 import de.superioz.cr.common.listener.GameListener;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.command.annts.SubCommand;
@@ -91,6 +95,46 @@ public class GameCommand {
 
         CastleRush.getChatMessager().send("&7Time left: &a"
                 + hours + "&7h &a" + minutes + "&7m &a" + seconds + "&7s", player);
+    }
+
+    @SubCommand(name = "join", aliases = "j", permission = "castlerush.join"
+            , desc = "Joins given arena", min = 1)
+    public void join(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(GameManager.isIngame(player))
+            return;
+
+        String arenaName = "";
+        for(int i = 0; i < context.argumentsLength(); i++){
+            String add = "";
+            if(i == context.argumentsLength())
+                add = " ";
+
+            arenaName += context.argument(i) + add;
+        }
+
+        if(!ArenaManager.checkArenaName(arenaName)
+                || ArenaManager.EditorCache.contains(arenaName)){
+            CastleRush.getChatMessager().send("&cThat name isn't valid!", player);
+            return;
+        }
+
+        Arena arena = ArenaManager.get(arenaName);
+
+        if(!GameManager.containsGameInQueue(arena)){
+            GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY)));
+        }
+        GameManager.Game game = GameManager.getGame(arena);
+        assert game != null;
+
+        if(game.getArena().getGameState() != GameManager.State.LOBBY){
+            CastleRush.getChatMessager().send("&cYou cannot join this arena!", player);
+            return;
+        }
+
+        // Call event for further things
+        CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player));
     }
 
 }
