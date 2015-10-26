@@ -53,21 +53,34 @@ public class GameCommand {
             return;
         }
         GameManager.Game game = GameManager.getGame(player);
+        assert game != null;
 
         // Is the game really finished?
-        assert game != null;
-        if(!(game.getArena().getGameState() == GameManager.State.WAITING)){
+        if(game.getArena().getGameState() != GameManager.State.WAITING){
+            CastleRush.getChatMessager().send("&cThe game isn't finish!", player);
             return;
         }
 
+        System.out.println("Players ingame: " + game.getArena().getPlayers().size());
+        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
+            System.out.println("- " + pl.getPlayer().getDisplayName());
+        }
+
         // teleport all players back
-        for(WrappedGamePlayer p : game.getArena().getPlayers()){
-            p.getPlayer().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-            game.leave(p.getPlayer());
+        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
+            System.out.println(pl.getPlayer().getDisplayName());
+            pl.getPlayer().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+            game.leave(pl.getPlayer());
         }
 
         // set gamestate
         game.getArena().setGameState(GameManager.State.LOBBY);
+        GameManager.removeGameFromQueue(game);
+
+        System.out.println("Players ingame: " + game.getArena().getPlayers().size());
+        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
+            System.out.println("- " + pl.getPlayer().getDisplayName());
+        }
     }
 
     @SubCommand(name = "timeleft", aliases = "tl", permission = "castlerush.timeleft"
@@ -135,6 +148,28 @@ public class GameCommand {
 
         // Call event for further things
         CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player));
+    }
+
+    @SubCommand(name = "isingame", aliases = "ii", permission = "castlerush.isingame"
+            , desc = "Joins given arena", min = 1, usage = "[player]")
+    public void isIngame(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        String name = context.argument(0);
+        if(Bukkit.getPlayer(name) == null){
+            CastleRush.getChatMessager().send("&cThis player isn't online!", player);
+            return;
+        }
+
+        Player target = Bukkit.getPlayer(name);
+        boolean b = GameManager.isIngame(target);
+
+        GameManager.Game game = GameManager.getGame(target);
+
+        assert game != null;
+        CastleRush.getChatMessager().send("&b"+target.getDisplayName()
+                + "&8 > " + (b ? "&aIs ingame &7(&5"+game.getArena().getArena().getName()+"&7)"
+                : "&cIs not ingame"), player);
     }
 
 }

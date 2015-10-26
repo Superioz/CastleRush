@@ -51,6 +51,10 @@ public class ArenaCache extends SimpleCache<String> {
     public void remove(Arena object){
         if(this.contains(object))
             this.arenaList.remove(object);
+
+        if(this.arenaList.size() == 0){
+            ArenaManager.getBackup().write(this.arenaList);
+        }
     }
 
     public void remove(int index){
@@ -71,7 +75,7 @@ public class ArenaCache extends SimpleCache<String> {
 
     public boolean contains(Arena arena){
         for(Arena ar : this.arenaList){
-            if(ar.equals(arena))
+            if(ar.getName().equals(arena.getName()))
                 return true;
         }
         return false;

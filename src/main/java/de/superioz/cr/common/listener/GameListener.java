@@ -6,6 +6,7 @@ import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameLeaveEvent;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.util.task.Countdown;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -98,12 +99,19 @@ public class GameListener implements Listener {
             // What happens at the end
             // Timer runs out - gamestate dont change
             // now the players plays another castle and they have to try to capture the wool
+
+            if(game.getArena().getPlayers().size() < 2){
+                CastleRush.getPluginManager().callEvent(new GameFinishEvent(game,
+                        game.getArena().getPlayers().get(0).getPlayer()));
+                return;
+            }
+
             game.prepareNextState();
             game.broadcast("&7The next state began! Try to &bcapture your enemy's castle&7!");
         }, startRunnable -> {
             int counter = countdown.getCounter();
 
-            if(counter % 1800 == 0){
+            if(counter % (60*5) == 0){
                 game.broadcast("&7There are &b"+(counter/60)+" &7minute(s) left!");
             }
         });
