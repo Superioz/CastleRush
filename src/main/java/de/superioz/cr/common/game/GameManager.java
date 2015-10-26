@@ -142,6 +142,13 @@ public class GameManager {
             }
         }
 
+        public void leaveAll(){
+            this.getArena().players = new ArrayList<>();
+
+            CastleRush.getPluginManager()
+                    .callEvent(new GamePlayersAmountChangeEvent(this));
+        }
+
         public void broadcast(String message){
             for(WrappedGamePlayer gp : getArena().getPlayers()){
                 CastleRush.getChatMessager().send(message, gp.getPlayer());

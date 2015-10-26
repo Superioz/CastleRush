@@ -68,10 +68,9 @@ public class GameCommand {
 
         // teleport all players back
         for(WrappedGamePlayer pl : game.getArena().getPlayers()){
-            System.out.println(pl.getPlayer().getDisplayName());
             pl.getPlayer().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-            game.leave(pl.getPlayer());
         }
+        game.leaveAll();
 
         // set gamestate
         game.getArena().setGameState(GameManager.State.LOBBY);

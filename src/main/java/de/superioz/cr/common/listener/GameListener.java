@@ -94,7 +94,7 @@ public class GameListener implements Listener {
         game.broadcast("&7You can now start to build your &bcastle&7!");
 
         // Start the timer
-        countdown = new Countdown(3 * 60);
+        countdown = new Countdown(10);
         countdown.run(endRunnable -> {
             // What happens at the end
             // Timer runs out - gamestate dont change
