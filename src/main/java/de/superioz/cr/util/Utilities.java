@@ -8,7 +8,7 @@ import de.superioz.library.minecraft.server.items.ItemBuilder;
 import de.superioz.library.minecraft.server.util.chat.BukkitChat;
 import de.superioz.library.minecraft.server.util.chat.ChatUtils;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -67,17 +67,17 @@ public class Utilities {
             return null;
         }
 
-        l.add(new TextComponent(getSpacer("CastleRush Help &7(&b"+page+"&7/"
-            +commandHelpPage.getPageList().getTotalPages()+"&7)")));
+        l.add(new TextComponent(getSpacer("CastleRush Help &7(&b" + page + "&7/"
+                + commandHelpPage.getPageList().getTotalPages() + "&7)")));
         l.addAll(commandHelpPage.get(page));
 
         if(page < commandHelpPage.getPageList().getTotalPages()){
             l.add(null);
-            l.add(commandHelpPage.getNextPageComponent("/"+command, commandHelpPage.getPattern().getNextPagePattern()));
+            l.add(commandHelpPage.getNextPageComponent("/" + command, commandHelpPage.getPattern().getNextPagePattern()));
         }
 
-        l.add(new TextComponent(getSpacer("CastleRush Help &7(&b"+page+"&7/"
-                +commandHelpPage.getPageList().getTotalPages()+"&7)")));
+        l.add(new TextComponent(getSpacer("CastleRush Help &7(&b" + page + "&7/"
+                + commandHelpPage.getPageList().getTotalPages() + "&7)")));
         return l;
     }
 
@@ -109,6 +109,41 @@ public class Utilities {
                 .amount(1).unbreakable(true)
                 .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
                 .name("&6Multitool - 3 in 1").lore("&7Rightclick: Add spawnpoint; Leftclick: Remove one").build();
+    }
+
+    public static World loadWorld(String world){
+        if(!isLoaded(world)){
+            return Bukkit.getServer().createWorld(new WorldCreator(world));
+        }else{
+            return Bukkit.getWorld(world);
+        }
+    }
+
+    public static boolean isLoaded(String world){
+        for(World w : Bukkit.getServer().getWorlds()){
+            if(w.getName().equals(world)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean unloadWorld(String world){
+        if(isLoaded(world)){
+            World w = Bukkit.getWorld(world);
+            for(Player p : w.getPlayers()){
+                p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+            }
+
+            for(Chunk c : w.getLoadedChunks()){
+                c.unload();
+            }
+
+            return Bukkit.unloadWorld(w, true);
+        }
+
+        return false;
     }
 
 }

@@ -42,7 +42,8 @@ public class GamePlot {
 
     public static GamePlot fromString(String s){
         s = s.replace("[", "").replace("]", "");
-        String[] array = s.split("-");
+
+        String[] array = s.split("#");
         String[] spawnPointArray = array[0].split(",");
         List<Location> spawnPoints = new ArrayList<>();
 
@@ -61,7 +62,7 @@ public class GamePlot {
             spawnpoints[i] = new LocationSerializer(this.locations.get(i)).serialize();
         }
 
-        return "[" + ListUtils.insert(spawnpoints, ",") + "-" + new LocationSerializer(this.teleportPoint).serialize
+        return "[" + ListUtils.insert(spawnpoints, ",") + "#" + new LocationSerializer(this.teleportPoint).serialize
                 () + "]";
     }
 }

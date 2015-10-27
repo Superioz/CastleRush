@@ -52,7 +52,7 @@ public class MainCommand implements CommandWrapper {
 
         List<TextComponent> textComponents = Utilities.getCommandHelp(nextPageCommand, page);
         if(textComponents == null){
-            CastleRush.getChatMessager().send("&cThis page doesn't exist!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("helpCommandPageDoesntExist"), player);
             return;
         }
 

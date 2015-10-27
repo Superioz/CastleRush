@@ -38,6 +38,7 @@ public class GameProtectListener implements Listener {
         assert game != null;
         if(game.getArena().getGameState() != GameManager.State.INGAME){
             event.setCancelled(true);
+            return;
         }
 
         // Check if block is from his plot

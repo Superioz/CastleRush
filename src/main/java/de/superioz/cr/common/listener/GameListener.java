@@ -5,7 +5,6 @@ import de.superioz.cr.common.events.*;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.util.task.Countdown;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +26,12 @@ public class GameListener implements Listener {
         Player player = event.getPlayer();
         GameManager.Game game = event.getGame();
 
-        game.join(player);
+        if(!game.inAnotherWorld(player.getWorld())){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaMustntInYourWorld"), player);
+            return;
+        }
+
+        game.join(player, event.getLoc());
         List<WrappedGamePlayer> currentPlayers = game.getArena().getPlayers();
         List<Location> spawnPoints = game.getArena().getArena().getSpawnPoints();
 
@@ -37,20 +41,22 @@ public class GameListener implements Listener {
         player.teleport(spawnPoint.clone().add(0, 1, 0));
 
         // Send message
-        game.broadcast("&b" + player.getDisplayName() + " &7joined the game. " +
-                "[&b" + currentPlayersSize + "&7/" + game.getArena().getMaxPlayers() + "]");
+        game.broadcast(CastleRush.getProperties().get("playerJoinedTheGame")
+            .replace("%player", player.getDisplayName()).replace("%current", currentPlayersSize+"")
+            .replace("%max", game.getArena().getMaxPlayers()+""));
 
         // Check players count
         if(currentPlayersSize < 2){
             // There must be more players
-            game.broadcast("&c" + (game.getArena().getMaxPlayers()-currentPlayersSize) + " player(s) left to start!");
+            game.broadcast(CastleRush.getProperties().get("playersLeftToStart")
+                    .replace("%size", currentPlayersSize + ""));
             return;
         }
 
         // If count is correct, then wait for game start
         game.getArena().setGameState(GameManager.State.FULL);
-        game.broadcast("&7There are enough players to start. Use &b/cr startgame &7to start");
-        game.broadcast("&7With &b/cr setwalls [mat] &7you can set the walls");
+        game.broadcast(CastleRush.getProperties().get("useCommandForStartGame"));
+        game.broadcast(CastleRush.getProperties().get("useCommandForWalls"));
     }
 
     @EventHandler
@@ -63,7 +69,7 @@ public class GameListener implements Listener {
         gp.clear();
 
         game.leave(player);
-        player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation().add(0, 1, 0));
+        gp.teleport(gp.getJoinLocation());
 
         // Variables
         List<WrappedGamePlayer> currentPlayers = game.getArena().getPlayers();
@@ -72,8 +78,9 @@ public class GameListener implements Listener {
         int currentPlayersSize = currentPlayers.size();
 
         // Send message
-        game.broadcast("&c" + player.getDisplayName() + " &7left the game. " +
-                "[&c" + currentPlayersSize + "&7/" + game.getArena().getMaxPlayers() + "]");
+        game.broadcast(CastleRush.getProperties().get("playerLeftTheGame")
+            .replace("%player", player.getDisplayName()).replace("%current", currentPlayersSize+"")
+            .replace("%max", game.getArena().getMaxPlayers()+""));
 
         if(currentPlayersSize == 0){
             game.getArena().setGameState(GameManager.State.LOBBY);
@@ -95,10 +102,10 @@ public class GameListener implements Listener {
         // Now the gamemode is set and the players can start build their castles
         for(WrappedGamePlayer gamePlayer : game.getArena().getPlayers())
             gamePlayer.getPlayer().teleport(gamePlayer.getPlot().getTeleportPoint());
-        game.broadcast("&7You can now start to build your &bcastle&7!");
+        game.broadcast(CastleRush.getProperties().get("startBuildingCastle"));
 
         // Start the timer
-        countdown = new Countdown(10);
+        countdown = new Countdown(2*60);
         countdown.run(endRunnable -> {
             // What happens at the end
             // Timer runs out - gamestate dont change
@@ -111,12 +118,17 @@ public class GameListener implements Listener {
             }
 
             game.prepareNextState();
-            game.broadcast("&7The next state began! Try to &bcapture your enemy's castle&7!");
+            game.broadcast(CastleRush.getProperties().get("startCaptureCastle"));
         }, startRunnable -> {
             int counter = countdown.getCounter();
 
             if(counter % (60*5) == 0){
-                game.broadcast("&7There are &b"+(counter/60)+" &7minute(s) left!");
+                game.broadcast(CastleRush.getProperties().get("thereAreMinutesLeft")
+                        .replace("%time", (counter / 60) + ""));
+            }
+            else if(counter <= 10){
+                game.broadcast(CastleRush.getProperties().get("thereAreSecondsLeft")
+                        .replace("%seconds", counter + ""));
             }
         });
     }
@@ -127,7 +139,8 @@ public class GameListener implements Listener {
         GameManager.Game game = event.getGame();
 
         // Announcement
-        game.broadcast("&7The player &b"+winner.getDisplayName().toUpperCase()+ " &7won the game!");
+        game.broadcast(CastleRush.getProperties().get("playerWonTheGame")
+                .replace("%player", winner.getDisplayName()));
 
         // Set gamestate
         game.getArena().setGameState(GameManager.State.WAITING);
@@ -142,14 +155,7 @@ public class GameListener implements Listener {
         }
 
         // End of the game
-        game.broadcast("&7The game ended. You can now use &b/cr finishgame");
-    }
-
-    @EventHandler
-    public void onReset(GameResetEvent event){
-        GameManager.Game game = event.getGame();
-
-
+        game.broadcast(CastleRush.getProperties().get("gameEnded"));
     }
 
 }

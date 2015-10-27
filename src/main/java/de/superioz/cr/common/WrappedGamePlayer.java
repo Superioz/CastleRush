@@ -4,6 +4,7 @@ import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.game.GamePlot;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -17,14 +18,20 @@ public class WrappedGamePlayer {
 
     protected Player player;
     protected GameManager.Game game;
+    protected Location joinLocation;
 
-    public WrappedGamePlayer(GameManager.Game game, Player player){
+    public WrappedGamePlayer(GameManager.Game game, Player player, Location joinLocation){
         this.game = game;
         this.player = player;
+        this.joinLocation = joinLocation;
     }
 
     public GameManager.Game getGame(){
         return game;
+    }
+
+    public Location getJoinLocation(){
+        return joinLocation;
     }
 
     public GamePlot getPlot(){
@@ -75,6 +82,14 @@ public class WrappedGamePlayer {
         player.setHealth(20D);
         player.setFoodLevel(20);
         player.setGameMode(GameMode.SURVIVAL);
+    }
+
+    public World getWorld(){
+        return getPlayer().getWorld();
+    }
+
+    public void teleport(Location location){
+        getPlayer().teleport(location);
     }
 
 }

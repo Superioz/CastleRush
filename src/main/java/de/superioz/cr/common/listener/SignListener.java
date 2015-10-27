@@ -45,7 +45,12 @@ public class SignListener implements Listener {
 
         if(arena == null){
             event.getBlock().breakNaturally();
-            CastleRush.getChatMessager().send("&cThat arena doesn't exist!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaDoesntExist"), player);
+            return;
+        }
+
+        if(arena.getSpawnPoints().get(0).getWorld() == player.getWorld()){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("mustBeSameWorld"), player);
             return;
         }
 
@@ -63,7 +68,8 @@ public class SignListener implements Listener {
         event.setLine(3, GameManager.State.LOBBY.getSpecifier());
         event.getBlock().getState().update(true);
 
-        CastleRush.getChatMessager().send("&7Arena sign for Arena &b" +l1+ " &7created.", player);
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaSignMessage")
+                .replace("%arena", name), player);
     }
 
     @EventHandler
@@ -99,12 +105,12 @@ public class SignListener implements Listener {
             assert game != null;
 
             if(game.getArena().getGameState() != GameManager.State.LOBBY){
-                CastleRush.getChatMessager().send("&cYou cannot join this arena!", player);
+                CastleRush.getChatMessager().send(CastleRush.getProperties().get("youCannotJoinThisArena"), player);
                 return;
             }
 
             // Call event for further things
-            CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player));
+            CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player, player.getLocation()));
         }
     }
 

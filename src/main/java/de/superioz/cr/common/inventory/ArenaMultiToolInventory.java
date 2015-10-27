@@ -1,5 +1,6 @@
 package de.superioz.cr.common.inventory;
 
+import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
 import de.superioz.library.minecraft.server.common.inventory.VirtualInventory;
 import de.superioz.library.minecraft.server.items.interact.ItemInteractable;
@@ -13,7 +14,7 @@ import org.bukkit.entity.Player;
 public class ArenaMultiToolInventory extends VirtualInventory {
 
     public ArenaMultiToolInventory(){
-        super("MultiTool - Choice", Size.THREE_ROWS);
+        super(CastleRush.getProperties().get("multitoolHeader"), Size.THREE_ROWS);
     }
 
     public void load(){

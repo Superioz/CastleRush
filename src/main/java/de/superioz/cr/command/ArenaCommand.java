@@ -31,7 +31,7 @@ public class ArenaCommand {
 
         // Check if player already started to edit/create an arena
         if(ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send("&cYou are already in the EditorCache!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("alreadyInEditorCache"), player);
             return;
         }
 
@@ -40,13 +40,14 @@ public class ArenaCommand {
         // Check if name of arena typed in is valid
         if(!ArenaManager.checkArenaName(arenaName)
                 || ArenaManager.EditorCache.contains(arenaName)){
-            CastleRush.getChatMessager().send("&cThat name isn't valid!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("nameNotValid"), player);
             return;
         }
 
         ArenaManager.EditorCache.addPlayer(player, arenaName);
         player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
-        CastleRush.getChatMessager().send("&7You can now create the arena &b" + arenaName + "&7!", player);
+        CastleRush.getChatMessager().send(
+                CastleRush.getProperties().get("startCreatingArena").replace("%arena", arenaName), player);
     }
 
     @RawSubCommand(name = "delete", aliases = {"del", "d"}, permission = "castlerush.arena.delete"
@@ -58,12 +59,13 @@ public class ArenaCommand {
 
         Arena ar  = ArenaManager.get(arenaName);
         if(ar == null){
-            CastleRush.getChatMessager().send("&cThis arena doesn't exist!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaDoesntExist"), player);
             return;
         }
 
         ArenaManager.getCache().remove(ar);
-        CastleRush.getChatMessager().send("&7Removed arena &c" + arenaName + "&7!", player);
+        CastleRush.getChatMessager().send(
+                CastleRush.getProperties().get("arenaRemoved").replace("%arena", arenaName), player);
     }
 
     @RawSubCommand(name = "edit", aliases = {"e"}, permission = "castlerush.arena.edit"
@@ -81,11 +83,12 @@ public class ArenaCommand {
         String msg = "";
 
         for(Arena arena : arenas){
-            msg += "&b" + arena.getName() + "&8;";
+            msg += CastleRush.getProperties().get("arenaInList").replace("%arena", arena.getName());
         }
 
-        CastleRush.getChatMessager().send("&7Arenas: " + msg + " &7[&b"+ArenaManager.size() + "&7]",
-                player);
+        CastleRush.getChatMessager().send(
+                CastleRush.getProperties().get("arenaList").replace("%arenas", msg)
+                        .replace("%size", arenas.size() + ""), player);
     }
 
 }

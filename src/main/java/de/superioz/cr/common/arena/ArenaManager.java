@@ -61,7 +61,7 @@ public class ArenaManager {
         String arenaName = "";
         for(int i = arg; i < context.argumentsLength(); i++){
             String add = " ";
-            if(i == context.argumentsLength())
+            if(i == (context.argumentsLength()-1))
                 add = "";
 
             arenaName += context.argument(i) + add;
@@ -110,6 +110,16 @@ public class ArenaManager {
                 return false;
 
             return editorLast.get(player).isFinished();
+        }
+
+        public static void remove(Player player){
+            if(contains(player)){
+                if(!isFinished(player))
+                    return;
+
+                editorLast.remove(player);
+                editorCache.remove(player);
+            }
         }
 
         public static boolean contains(Player player){

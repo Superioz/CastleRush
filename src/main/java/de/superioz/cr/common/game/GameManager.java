@@ -5,11 +5,10 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.main.CastleRush;
+import de.superioz.cr.util.Utilities;
 import de.superioz.library.java.util.classes.SimplePair;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -25,13 +24,17 @@ public class GameManager {
     private static List<Game> runningGames = new ArrayList<>();
 
     public static void addGameInQueue(Game game){
-        if(!runningGames.contains(game))
+        if(!runningGames.contains(game)){
             runningGames.add(game);
+            game.loadWorld();
+        }
     }
 
     public static void removeGameFromQueue(Game game){
-        if(runningGames.contains(game))
+        if(runningGames.contains(game)){
+            game.unloadWorld();
             runningGames.remove(game);
+        }
     }
 
     public static boolean containsGameInQueue(Arena arena){
@@ -124,8 +127,8 @@ public class GameManager {
             return arena;
         }
 
-        public void join(Player player){
-            WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player);
+        public void join(Player player, Location loc){
+            WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player, loc);
 
             if(!isIngame(player))
                 arena.players.add(wrappedGamePlayer);
@@ -150,6 +153,28 @@ public class GameManager {
 
             CastleRush.getPluginManager()
                     .callEvent(new GamePlayersAmountChangeEvent(this));
+        }
+
+        public void unloadWorld(){
+            Arena arena = getArena().getArena();
+            World world = arena.getSpawnPoints().get(0).getWorld();
+
+            getArena().getPlayers().stream().filter(pl -> pl.getWorld() == world)
+                    .forEach(pl -> pl.teleport(pl.getJoinLocation()));
+
+            for(Player player : world.getPlayers())
+                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+
+            if(Utilities.isLoaded(world.getName()))
+                Utilities.unloadWorld(world.getName());
+        }
+
+        public void loadWorld(){
+            Arena arena = getArena().getArena();
+            World world = arena.getSpawnPoints().get(0).getWorld();
+
+            if(!Utilities.isLoaded(world.getName()))
+                Utilities.loadWorld(world.getName());
         }
 
         public void broadcast(String message){
@@ -186,6 +211,11 @@ public class GameManager {
             }
         }
 
+        public boolean inAnotherWorld(World world){
+            return this.getArena().getArena().getSpawnPoints().get(0).getWorld()
+                    != world;
+        }
+
         public void setWalls(String name){
             Material mat = Material.getMaterial(name);
 
@@ -198,12 +228,6 @@ public class GameManager {
 
             }
 
-        }
-
-        public void resetPlots(){
-            for(GamePlot plot : getArena().getArena().getGamePlots()){
-
-            }
         }
 
     }

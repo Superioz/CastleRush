@@ -38,10 +38,10 @@ public class ItemKit {
         PlayerInventory inv = player.getInventory();
 
         inv.setContents(content);
-        inv.setHelmet(armor[0]);
-        inv.setChestplate(armor[1]);
-        inv.setLeggings(armor[2]);
-        inv.setBoots(armor[3]);
+        inv.setHelmet(armor[3]);
+        inv.setChestplate(armor[2]);
+        inv.setLeggings(armor[1]);
+        inv.setBoots(armor[0]);
     }
 
 }

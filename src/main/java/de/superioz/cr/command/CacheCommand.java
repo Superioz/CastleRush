@@ -41,7 +41,8 @@ public class CacheCommand {
         Player player = (Player) commandContext.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send("&cYou aren't in the EditorCache!", player);
+            CastleRush.getChatMessager().send(
+                    CastleRush.getProperties().get("notInEditorCache"), player);
             return;
         }
 
@@ -50,14 +51,14 @@ public class CacheCommand {
         assert rawUnpreparedArena != null; assert unpreparedArena != null;
 
         if(!(rawUnpreparedArena.getRawGamePlots().size() >= 1)){
-            CastleRush.getChatMessager().send("&cA plot needs one location!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("plotNeedsOneLocation"), player);
             return;
         }
 
         unpreparedArena.addGamePlot(new GamePlot(rawUnpreparedArena.getRawGamePlots(), LocationUtils.fix(player
                 .getLocation().getBlock().getLocation())));
-        CastleRush.getChatMessager().send("&7Added a &bnew gameplot &7to the cache! " +
-                "&7[&b"+unpreparedArena.getGamePlots().size()+"&7/2]", player);
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("addedANewGameplot")
+                .replace("%size", unpreparedArena.getGamePlots().size()+""), player);
 
         rawUnpreparedArena.setRawGamePlots(new ArrayList<>());
     }
@@ -69,7 +70,7 @@ public class CacheCommand {
         Player player = (Player) commandContext.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send("&cYou aren't in the EditorCache!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("notInEditorCache"), player);
             return;
         }
 
@@ -81,7 +82,7 @@ public class CacheCommand {
         ItemKit kit = new ItemKit(inv.getContents(), inv.getArmorContents());
 
         rawUnpreparedArena.setItemKit(kit);
-        CastleRush.getChatMessager().send("&7Set the &bgamekit &7for your cache!", player);
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("setGamekitForCache"), player);
     }
 
     @RawSubCommand(name = "addwall", aliases = {"addw", "aw"}, permission = "castlerush.cache.addwall"
@@ -91,7 +92,7 @@ public class CacheCommand {
         Player player = (Player) commandContext.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send("&cYou aren't in the EditorCache!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("notInEditorCache"), player);
             return;
         }
 
@@ -102,7 +103,7 @@ public class CacheCommand {
         if(rawUnpreparedArena.getRawGameWalls() == null
                 || rawUnpreparedArena.getRawGameWalls().getType1() == null
                 || rawUnpreparedArena.getRawGameWalls().getType2() == null){
-            CastleRush.getChatMessager().send("&cYou must mark two locations!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youMustMarkTwoLocations"), player);
             return;
         }
 
@@ -110,8 +111,8 @@ public class CacheCommand {
         Location pos2 = rawUnpreparedArena.getRawGameWalls().getType2();
 
         unpreparedArena.addGameWall(new GameWall(new SimplePair<>(pos1, pos2)));
-        CastleRush.getChatMessager().send("&7Added a &bnew gamewall &7to the cache " +
-                "&7[&b"+unpreparedArena.getGameWalls().size()+ "&7/1]", player);
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("addedANewWall").replace("%size",
+                        unpreparedArena.getGameWalls().size()+""), player);
     }
 
     @RawSubCommand(name = "finish", aliases = {"fin", "f"}, permission = "castlerush.cache.finish"
@@ -121,7 +122,7 @@ public class CacheCommand {
         Player player = (Player) context.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send("&cYou aren't in the EditorCache!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("notInEditorCache"), player);
             return;
         }
 
@@ -134,22 +135,22 @@ public class CacheCommand {
             unpreparedArena.setItemKit(rawUnpreparedArena.getItemKit());
         }
         else{
-            CastleRush.getChatMessager().send("&cYou aren't finished! &7["
-                    + rawUnpreparedArena.getNotFinishedReason().toUpperCase()+"&7]", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentFinished")
+                    .replace("%reason", rawUnpreparedArena.getNotFinishedReason()), player);
             return;
         }
 
         if(!unpreparedArena.isFinished()){
-            CastleRush.getChatMessager().send("&cYou aren't finished! &7["
-                    + unpreparedArena.getNotFinishedReason().toUpperCase()+"&7]", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentFinished")
+                    .replace("%reason", rawUnpreparedArena.getNotFinishedReason()), player);
             return;
         }
 
         Arena arena = new Arena(unpreparedArena.getName(), unpreparedArena.getSpawnPoints()
                 ,unpreparedArena.getGamePlots(), unpreparedArena.getGameWalls(), unpreparedArena.getItemKit());
         ArenaManager.add(arena);
-        CastleRush.getChatMessager().send("&7Arena &b"+unpreparedArena.getName()+" &7added to arena list! " +
-                "[&b"+ArenaManager.size()+"&7]", player);
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaAddedToList")
+                .replace("%arena", arena.getName()).replace("%size", ArenaManager.size()+""), player);
     }
 
     @RawSubCommand(name = "tool", aliases = {"t"}, permission = "castlerush.cache.tool"
@@ -159,12 +160,12 @@ public class CacheCommand {
         Player player = (Player) context.getSender();
 
         if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send("&cYou aren't in the EditorCache!", player);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("notInEditorCache"), player);
             return;
         }
 
         player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
-        CastleRush.getChatMessager().send("&7Here is your wanted &eMultitool&7!", player);
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("heresYourMultiTool"), player);
     }
 
 }
