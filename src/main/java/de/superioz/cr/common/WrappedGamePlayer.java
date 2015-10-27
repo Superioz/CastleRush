@@ -2,6 +2,7 @@ package de.superioz.cr.common;
 
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.game.GamePlot;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -64,4 +65,16 @@ public class WrappedGamePlayer {
     public Player getPlayer(){
         return player;
     }
+
+    public void clearInventory(){
+        player.getInventory().clear();
+        player.getEquipment().clear();
+    }
+
+    public void clear(){
+        player.setHealth(20D);
+        player.setFoodLevel(20);
+        player.setGameMode(GameMode.SURVIVAL);
+    }
+
 }

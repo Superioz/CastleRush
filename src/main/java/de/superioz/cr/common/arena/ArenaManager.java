@@ -3,6 +3,7 @@ package de.superioz.cr.common.arena;
 import de.superioz.cr.common.tool.ArenaMultiTool;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.file.type.JsonFile;
+import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -54,6 +55,18 @@ public class ArenaManager {
             }
         }
         return null;
+    }
+
+    public static String getName(SubCommandContext context, int arg){
+        String arenaName = "";
+        for(int i = arg; i < context.argumentsLength(); i++){
+            String add = " ";
+            if(i == context.argumentsLength())
+                add = "";
+
+            arenaName += context.argument(i) + add;
+        }
+        return arenaName;
     }
 
     public static Arena get(int index){

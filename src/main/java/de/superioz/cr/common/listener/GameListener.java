@@ -1,10 +1,7 @@
 package de.superioz.cr.common.listener;
 
 import de.superioz.cr.common.WrappedGamePlayer;
-import de.superioz.cr.common.events.GameFinishEvent;
-import de.superioz.cr.common.events.GameJoinEvent;
-import de.superioz.cr.common.events.GameLeaveEvent;
-import de.superioz.cr.common.events.GameStartEvent;
+import de.superioz.cr.common.events.*;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.util.task.Countdown;
@@ -44,7 +41,7 @@ public class GameListener implements Listener {
                 "[&b" + currentPlayersSize + "&7/" + game.getArena().getMaxPlayers() + "]");
 
         // Check players count
-        if(currentPlayersSize != game.getArena().getMaxPlayers()){
+        if(currentPlayersSize < 2){
             // There must be more players
             game.broadcast("&c" + (game.getArena().getMaxPlayers()-currentPlayersSize) + " player(s) left to start!");
             return;
@@ -52,7 +49,8 @@ public class GameListener implements Listener {
 
         // If count is correct, then wait for game start
         game.getArena().setGameState(GameManager.State.FULL);
-        game.broadcast("&7There are enough player(s) to start. You can now use &b/cr startgame");
+        game.broadcast("&7There are enough players to start. Use &b/cr startgame &7to start");
+        game.broadcast("&7With &b/cr setwalls [mat] &7you can set the walls");
     }
 
     @EventHandler
@@ -61,8 +59,10 @@ public class GameListener implements Listener {
         GameManager.Game game = event.getGame();
 
         // Reset Inventory etc.
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
+        gp.clear();
+
         game.leave(player);
-        game.clear(player);
         player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation().add(0, 1, 0));
 
         // Variables
@@ -75,10 +75,14 @@ public class GameListener implements Listener {
         game.broadcast("&c" + player.getDisplayName() + " &7left the game. " +
                 "[&c" + currentPlayersSize + "&7/" + game.getArena().getMaxPlayers() + "]");
 
-        // Check players count
-        if(currentPlayersSize != game.getArena().getMaxPlayers()){
-            // There must be more players
-            game.broadcast("&c" + (game.getArena().getMaxPlayers()-currentPlayersSize) + " player(s) left to start!");
+        if(currentPlayersSize == 0){
+            game.getArena().setGameState(GameManager.State.LOBBY);
+        }
+        else if(currentPlayersSize == 1){
+            game.getArena().setGameState(GameManager.State.LOBBY);
+
+            CastleRush.getPluginManager().callEvent(new GameFinishEvent(game,
+                    game.getArena().getPlayers().get(0).getPlayer()));
         }
     }
 
@@ -133,12 +137,19 @@ public class GameListener implements Listener {
             int index = gp.getGameIndex();
             Location spawn = game.getArena().getArena().getSpawnPoints().get(index);
 
-            game.clear(gp.getPlayer());
+            gp.clear();
             gp.getPlayer().teleport(spawn.clone().add(0, 1, 0));
         }
 
         // End of the game
         game.broadcast("&7The game ended. You can now use &b/cr finishgame");
+    }
+
+    @EventHandler
+    public void onReset(GameResetEvent event){
+        GameManager.Game game = event.getGame();
+
+
     }
 
 }

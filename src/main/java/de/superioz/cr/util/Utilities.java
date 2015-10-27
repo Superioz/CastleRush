@@ -81,6 +81,10 @@ public class Utilities {
         return l;
     }
 
+    public static boolean materialExist(String name){
+        return Material.getMaterial(name) != null;
+    }
+
 
     public static class ItemStacks {
 

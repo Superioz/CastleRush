@@ -34,7 +34,7 @@ public class GameCommand {
         assert game != null;
 
         // Is the lobby full?
-        if(!(game.getArena().getGameState() == GameManager.State.FULL)){
+        if(!(game.enoughPlayers())){
             CastleRush.getChatMessager().send("&cThe lobby is not full!", player);
             return;
         }
@@ -61,11 +61,6 @@ public class GameCommand {
             return;
         }
 
-        System.out.println("Players ingame: " + game.getArena().getPlayers().size());
-        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
-            System.out.println("- " + pl.getPlayer().getDisplayName());
-        }
-
         // teleport all players back
         for(WrappedGamePlayer pl : game.getArena().getPlayers()){
             pl.getPlayer().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
@@ -75,11 +70,6 @@ public class GameCommand {
         // set gamestate
         game.getArena().setGameState(GameManager.State.LOBBY);
         GameManager.removeGameFromQueue(game);
-
-        System.out.println("Players ingame: " + game.getArena().getPlayers().size());
-        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
-            System.out.println("- " + pl.getPlayer().getDisplayName());
-        }
     }
 
     @SubCommand(name = "timeleft", aliases = "tl", permission = "castlerush.timeleft"
@@ -117,14 +107,7 @@ public class GameCommand {
         if(GameManager.isIngame(player))
             return;
 
-        String arenaName = "";
-        for(int i = 0; i < context.argumentsLength(); i++){
-            String add = "";
-            if(i == context.argumentsLength())
-                add = " ";
-
-            arenaName += context.argument(i) + add;
-        }
+        String arenaName = ArenaManager.getName(context, 0);
 
         if(!ArenaManager.checkArenaName(arenaName)
                 || ArenaManager.EditorCache.contains(arenaName)){
@@ -147,6 +130,38 @@ public class GameCommand {
 
         // Call event for further things
         CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player));
+    }
+
+    @SubCommand(name = "leave", aliases = "l", permission = "castlerush.leave"
+            , desc = "Leaves given arena", min = 1)
+    public void leave(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(GameManager.isIngame(player))
+            return;
+
+        String arenaName = ArenaManager.getName(context, 0);
+
+        if(!ArenaManager.checkArenaName(arenaName)
+                || ArenaManager.EditorCache.contains(arenaName)){
+            CastleRush.getChatMessager().send("&cThat name isn't valid!", player);
+            return;
+        }
+
+        Arena arena = ArenaManager.get(arenaName);
+
+        if(!GameManager.containsGameInQueue(arena)){
+            GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY)));
+        }
+        GameManager.Game game = GameManager.getGame(arena);
+        assert game != null;
+
+        if(game.getArena().getGameState() != GameManager.State.LOBBY){
+            CastleRush.getChatMessager().send("&cYou cannot join this arena!", player);
+            return;
+        }
+
+
     }
 
     @SubCommand(name = "isingame", aliases = "ii", permission = "castlerush.isingame"

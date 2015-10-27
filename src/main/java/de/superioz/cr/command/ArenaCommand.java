@@ -35,14 +35,7 @@ public class ArenaCommand {
             return;
         }
 
-        String arenaName = "";
-        for(int i = 0; i < context.argumentsLength(); i++){
-            String add = "";
-            if(i == context.argumentsLength())
-                add = " ";
-
-            arenaName += context.argument(i) + add;
-        }
+        String arenaName = ArenaManager.getName(context, 0);
 
         // Check if name of arena typed in is valid
         if(!ArenaManager.checkArenaName(arenaName)
@@ -61,14 +54,7 @@ public class ArenaCommand {
     public void delete(SubCommandContext context){
         Player player = (Player) context.getSender();
 
-        String arenaName = "";
-        for(int i = 0; i < context.argumentsLength(); i++){
-            String add = "";
-            if(i == context.argumentsLength())
-                add = " ";
-
-            arenaName += context.argument(i) + add;
-        }
+        String arenaName = ArenaManager.getName(context, 0);
 
         Arena ar  = ArenaManager.get(arenaName);
         if(ar == null){

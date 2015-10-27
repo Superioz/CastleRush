@@ -5,8 +5,11 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.main.CastleRush;
+import de.superioz.library.java.util.classes.SimplePair;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -155,24 +158,15 @@ public class GameManager {
             }
         }
 
-        public void clear(Player player){
-            player.setHealth(20D);
-            player.setFoodLevel(20);
-            player.setGameMode(GameMode.SURVIVAL);
-
-            clearInv(player);
-        }
-
-        public void clearInv(Player player){
-            player.getInventory().clear();
-            player.getEquipment().clear();
+        public boolean enoughPlayers(){
+            return getArena().getPlayers().size() >= 2;
         }
 
         public void prepareGame(){
             for(WrappedGamePlayer gamePlayer : getArena().getPlayers()){
                 Player p = gamePlayer.getPlayer();
 
-                clearInv(p);
+                gamePlayer.clearInventory();
                 p.setGameMode(GameMode.CREATIVE);
             }
         }
@@ -185,12 +179,31 @@ public class GameManager {
                 Player p = gamePlayer.getPlayer();
 
                 p.setGameMode(GameMode.SURVIVAL);
-                clearInv(p);
+                gamePlayer.clearInventory();
                 itemKit.setFor(p);
 
                 p.teleport(gamePlayer.getPlot().getTeleportPoint());
             }
+        }
 
+        public void setWalls(String name){
+            Material mat = Material.getMaterial(name);
+
+            if(mat == null)
+                return;
+
+            for(GameWall wall : getArena().getArena().getGameWalls()){
+                SimplePair<Location, Location> boundaries = wall.getBoundaries();
+
+
+            }
+
+        }
+
+        public void resetPlots(){
+            for(GamePlot plot : getArena().getArena().getGamePlots()){
+
+            }
         }
 
     }
