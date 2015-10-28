@@ -105,7 +105,7 @@ public class GameListener implements Listener {
         game.broadcast(CastleRush.getProperties().get("startBuildingCastle"));
 
         // Start the timer
-        countdown = new Countdown(2*60);
+        countdown = new Countdown(60 * CastleRush.getConfigFile().config().getInt("timer"));
         countdown.run(endRunnable -> {
             // What happens at the end
             // Timer runs out - gamestate dont change
@@ -148,7 +148,7 @@ public class GameListener implements Listener {
         // Teleport to spawn
         for(WrappedGamePlayer gp : game.getArena().getPlayers()){
             int index = gp.getGameIndex();
-            Location spawn = game.getArena().getArena().getSpawnPoints().get(index);
+            Location spawn = gp.getSpawnLocation();
 
             gp.clear();
             gp.getPlayer().teleport(spawn.clone().add(0, 1, 0));

@@ -7,7 +7,6 @@ import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameLeaveEvent;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.game.PlayableArena;
 import de.superioz.cr.common.listener.GameListener;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.command.annts.SubCommand;
@@ -120,9 +119,9 @@ public class GameCommand {
         }
 
         Arena arena = ArenaManager.get(arenaName);
-
         if(!GameManager.containsGameInQueue(arena)){
-            GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY)));
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotJoinGameViaCommand"), player);
+            return;
         }
         GameManager.Game game = GameManager.getGame(arena);
         assert game != null;

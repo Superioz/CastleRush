@@ -99,7 +99,8 @@ public class SignListener implements Listener {
             Arena arena = ArenaManager.get(arenaName);
 
             if(!GameManager.containsGameInQueue(arena)){
-                GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY)));
+                GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY,
+                        sign)));
             }
             GameManager.Game game = GameManager.getGame(arena);
             assert game != null;
@@ -116,12 +117,25 @@ public class SignListener implements Listener {
 
     @EventHandler
     public void onGamePlayersAmount(GamePlayersAmountChangeEvent event){
-        // Change sign not really important
+        GameManager.Game game = event.getGame();
+        PlayableArena arena = game.getArena();
+        Sign sign = arena.getSign();
+
+        String text = arena.getPlayers().size() + "/" + arena.getMaxPlayers();
+        sign.setLine(2, text);
+        sign.update();
     }
 
     @EventHandler
     public void onGameStateChange(GameStateChangeEvent event){
-        // Change sign not really important
+        GameManager.Game game = event.getGame();
+        PlayableArena arena = game.getArena();
+        Sign sign = arena.getSign();
+        GameManager.State state = event.getGameState();
+
+        String text = state.getSpecifier();
+        sign.setLine(3, text);
+        sign.update();
     }
 
 }

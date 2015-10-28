@@ -36,7 +36,7 @@ public class WrappedGamePlayer {
 
     public GamePlot getPlot(){
         int index = getGameIndex();
-        Location spawnLocation = getGame().getArena().getArena().getSpawnPoints().get(index);
+        Location spawnLocation = getSpawnLocation();
 
         double distance = -1;
         GamePlot plot = null;
@@ -67,6 +67,10 @@ public class WrappedGamePlayer {
                 return i;
         }
         return -1;
+    }
+
+    public Location getSpawnLocation(){
+        return getGame().getArena().getArena().getSpawnPoints().get(getGameIndex());
     }
 
     public Player getPlayer(){

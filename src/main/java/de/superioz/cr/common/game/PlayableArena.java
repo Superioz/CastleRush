@@ -4,6 +4,7 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.events.GameStateChangeEvent;
 import de.superioz.cr.main.CastleRush;
+import org.bukkit.block.Sign;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +19,13 @@ public class PlayableArena {
     protected Arena arena;
     protected GameManager.State gameState;
     protected List<WrappedGamePlayer> players;
+    protected Sign sign;
 
-    public PlayableArena(Arena arena, GameManager.State gameState){
+    public PlayableArena(Arena arena, GameManager.State gameState, Sign sign){
         this.arena = arena;
         this.gameState = gameState;
         this.players = new ArrayList<>();
+        this.sign = sign;
     }
 
     public List<WrappedGamePlayer> getPlayers(){
@@ -49,4 +52,7 @@ public class PlayableArena {
         return getArena().getSpawnPoints().size();
     }
 
+    public Sign getSign(){
+        return sign;
+    }
 }

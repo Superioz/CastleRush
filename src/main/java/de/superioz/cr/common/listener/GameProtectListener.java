@@ -15,6 +15,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -86,6 +89,40 @@ public class GameProtectListener implements Listener {
             return;
         }
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onHit(EntityDamageByEntityEvent event){
+        if(!(event.getEntity() instanceof Player) || (event.getDamager() instanceof Player)){
+            return;
+        }
+        Player player = (Player) event.getEntity();
+
+        if(GameManager.isIngame(player)){
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDie(PlayerDeathEvent event){
+        Player player = event.getEntity();
+
+        if(!GameManager.isIngame(player))
+            return;
+
+        event.getDrops().clear();
+        event.setDroppedExp(0);
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event){
+        Player player = event.getPlayer();
+
+        if(!GameManager.isIngame(player))
+            return;
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
+
+        event.setRespawnLocation(gp.getSpawnLocation());
     }
 
 
