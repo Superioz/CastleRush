@@ -123,6 +123,7 @@ public class GameProtectListener implements Listener {
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
 
         event.setRespawnLocation(gp.getSpawnLocation());
+        gp.getGame().getArena().getArena().getItemKit().setFor(gp.getPlayer());
     }
 
 

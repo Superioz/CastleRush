@@ -7,6 +7,7 @@ import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
 import de.superioz.library.java.util.classes.SimplePair;
+import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -226,7 +227,9 @@ public class GameManager {
             for(GameWall wall : getArena().getArena().getGameWalls()){
                 SimplePair<Location, Location> boundaries = wall.getBoundaries();
 
-
+                for(Location l : GeometryUtils.cuboid(boundaries.getType1(), boundaries.getType2())){
+                    l.getBlock().setType(mat);
+                }
             }
 
         }

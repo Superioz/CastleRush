@@ -7,11 +7,16 @@ import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameLeaveEvent;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.game.GameWall;
 import de.superioz.cr.common.listener.GameListener;
 import de.superioz.cr.main.CastleRush;
+import de.superioz.library.java.util.classes.SimplePair;
 import de.superioz.library.minecraft.server.command.annts.SubCommand;
 import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
+import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 /**
@@ -196,6 +201,35 @@ public class GameCommand {
                                         .replace("%arena", game.getArena().getArena().getName())
                         : CastleRush.getProperties().get("isNotIngameState")))
                 .replace("%player", target.getDisplayName()), player);
+    }
+
+    @SubCommand(name = "setwalls", aliases = {"setw", "sw"}, permission = "castlerush.setwalls"
+            , desc = "Sets all walls ingame")
+    public void setwalls(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!GameManager.isIngame(player)){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            return;
+        }
+        GameManager.Game game = GameManager.getGame(player);
+        assert game != null;
+
+        // Get wall
+        for(GameWall wall : game.getArena().getArena().getGameWalls()){
+            SimplePair<Location, Location> boundaries = wall.getBoundaries();
+
+            if(context.argumentsLength() == 0){
+                // Toggles the walls
+                for(Location l : GeometryUtils.cuboid(boundaries.getType1(), boundaries.getType2())){
+                    l.getBlock().setType(Material.AIR);
+                }
+            }
+            else if(context.argumentsLength() >= 1){
+                String material = context.argument(0).toUpperCase();
+                game.setWalls(material);
+            }
+        }
     }
 
 }
