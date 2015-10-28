@@ -26,14 +26,14 @@ public class GameManager {
     public static void addGameInQueue(Game game){
         if(!runningGames.contains(game)){
             runningGames.add(game);
-            game.loadWorld();
         }
     }
 
     public static void removeGameFromQueue(Game game){
         if(runningGames.contains(game)){
-            game.unloadWorld();
+            String name = game.unloadWorld();
             runningGames.remove(game);
+            game.loadWorld(name);
         }
     }
 
@@ -155,7 +155,7 @@ public class GameManager {
                     .callEvent(new GamePlayersAmountChangeEvent(this));
         }
 
-        public void unloadWorld(){
+        public String unloadWorld(){
             Arena arena = getArena().getArena();
             World world = arena.getSpawnPoints().get(0).getWorld();
 
@@ -165,16 +165,17 @@ public class GameManager {
             for(Player player : world.getPlayers())
                 player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 
-            if(Utilities.isLoaded(world.getName()))
-                Utilities.unloadWorld(world.getName());
+            String name = world.getName();
+            if(Utilities.isLoaded(name))
+                Utilities.unloadWorld(name);
+            return name;
         }
 
-        public void loadWorld(){
+        public void loadWorld(String name){
             Arena arena = getArena().getArena();
-            World world = arena.getSpawnPoints().get(0).getWorld();
 
-            if(!Utilities.isLoaded(world.getName()))
-                Utilities.loadWorld(world.getName());
+            if(!Utilities.isLoaded(name))
+                Utilities.loadWorld(name);
         }
 
         public void broadcast(String message){

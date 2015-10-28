@@ -151,6 +151,7 @@ public class CacheCommand {
         ArenaManager.add(arena);
         CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaAddedToList")
                 .replace("%arena", arena.getName()).replace("%size", ArenaManager.size()+""), player);
+        ArenaManager.EditorCache.remove(player);
     }
 
     @RawSubCommand(name = "tool", aliases = {"t"}, permission = "castlerush.cache.tool"

@@ -40,7 +40,7 @@ public class CastleRush extends JavaPlugin {
 
         // SuperLogger
         superLogger = new SuperLogger(this);
-        superLogger.consoleLog("SuperLogger initialized!");
+        superLogger.consoleLog("SuperLogger initialized!")   ;
 
         // Properties
         stringProperties = new SuperProperties<>("strings", "", getDataFolder());

@@ -140,13 +140,37 @@ public class GameCommand {
     public void leave(SubCommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!GameManager.isIngame(player))
+        if(!GameManager.isIngame(player)){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
             return;
+        }
 
         GameManager.Game game = GameManager.getGame(player); assert game != null;
 
         CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, player));
         CastleRush.getChatMessager().send(CastleRush.getProperties().get("leftTheGame"), player);
+    }
+
+    @SubCommand(name = "forcetimer", aliases = {"forcet", "ft"}, permission = "castlerush.forcetimer"
+            , desc = "Forces the timer in arena")
+    public void forceTimer(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!GameManager.isIngame(player)){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            return;
+        }
+
+        int timer = GameListener.countdown.getCounter();
+
+        if(timer >= 15){
+            GameListener.countdown.setCounter(15);
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("shortenedTime")
+                    .replace("%sec", 15+""), player);
+        }
+        else{
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("noNeedForShorten"), player);
+        }
     }
 
     @SubCommand(name = "isingame", aliases = "ii", permission = "castlerush.isingame"

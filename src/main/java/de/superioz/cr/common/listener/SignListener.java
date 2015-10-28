@@ -50,6 +50,7 @@ public class SignListener implements Listener {
         }
 
         if(arena.getSpawnPoints().get(0).getWorld() == player.getWorld()){
+            event.getBlock().breakNaturally();
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("mustBeSameWorld"), player);
             return;
         }
@@ -92,11 +93,15 @@ public class SignListener implements Listener {
                 return;
             }
 
-            if(GameManager.isIngame(player))
+            if(GameManager.isIngame(player)){
                 return;
+            }
 
             String arenaName = sign.getLine(1);
             Arena arena = ArenaManager.get(arenaName);
+
+            if(arena == null)
+                return;
 
             if(!GameManager.containsGameInQueue(arena)){
                 GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY,

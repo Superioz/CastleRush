@@ -67,6 +67,7 @@ public class GameListener implements Listener {
         // Reset Inventory etc.
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
         gp.clear();
+        gp.clearInventory();
 
         game.leave(player);
         gp.teleport(gp.getJoinLocation());
@@ -85,7 +86,8 @@ public class GameListener implements Listener {
         if(currentPlayersSize == 0){
             game.getArena().setGameState(GameManager.State.LOBBY);
         }
-        else if(currentPlayersSize == 1){
+        else if(currentPlayersSize == 1
+                && game.getArena().getGameState() != GameManager.State.WAITING){
             game.getArena().setGameState(GameManager.State.LOBBY);
 
             CastleRush.getPluginManager().callEvent(new GameFinishEvent(game,
@@ -128,7 +130,7 @@ public class GameListener implements Listener {
             }
             else if(counter <= 10){
                 game.broadcast(CastleRush.getProperties().get("thereAreSecondsLeft")
-                        .replace("%seconds", counter + ""));
+                        .replace("%time", counter + ""));
             }
         });
     }
