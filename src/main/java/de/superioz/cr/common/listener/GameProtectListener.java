@@ -59,6 +59,8 @@ public class GameProtectListener implements Listener {
                 && block.getType() == Material.WOOL){
             // Player wons the game
             CastleRush.getPluginManager().callEvent(new GameFinishEvent(game, player));
+            event.setCancelled(true);
+            block.setType(Material.AIR);
             return;
         }
 

@@ -178,8 +178,6 @@ public class GameManager {
         }
 
         public void loadWorld(String name){
-            Arena arena = getArena().getArena();
-
             if(!Utilities.isLoaded(name))
                 Utilities.loadWorld(name);
         }
@@ -195,6 +193,8 @@ public class GameManager {
         }
 
         public void prepareGame(){
+            this.arena.getArena().getSpawnPoints().get(0).getWorld().setAutoSave(false);
+
             for(WrappedGamePlayer gamePlayer : getArena().getPlayers()){
                 Player p = gamePlayer.getPlayer();
 

@@ -119,16 +119,19 @@ public class GameCommand {
 
         long timeStamp = System.currentTimeMillis();
         long oldTimeStamp = game.getTimeStamp();
-        int diff = (int) ((timeStamp-oldTimeStamp)/1000);
 
-        int seconds = diff % 60;
-        int minutes = diff / 60;
-        int hours = minutes / 60;
+        if(oldTimeStamp != 0){
+            int diff = (int) ((timeStamp-oldTimeStamp)/1000);
 
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("timeGone")
-                        .replace("%hours", hours+"")
-                        .replace("%minutes", minutes+"")
-                        .replace("%seconds", seconds+""), player);
+            int seconds = diff % 60;
+            int minutes = diff / 60;
+            int hours = minutes / 60;
+
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("timeGone")
+                    .replace("%hours", hours+"")
+                    .replace("%minutes", minutes+"")
+                    .replace("%seconds", seconds+""), player);
+        }
     }
 
     @SubCommand(name = "join", aliases = "j", permission = "castlerush.join"
