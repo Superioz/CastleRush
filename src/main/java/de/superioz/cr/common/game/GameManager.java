@@ -24,6 +24,8 @@ import java.util.List;
 public class GameManager {
 
     private static List<Game> runningGames = new ArrayList<>();
+    public static List<Material> allowedBlocks = Arrays.asList(
+            Material.STONE_BUTTON, Material.WOOD_BUTTON, Material.LEVER);
 
     public static void addGameInQueue(Game game){
         if(!runningGames.contains(game)){
@@ -120,8 +122,8 @@ public class GameManager {
     public static class Game {
 
         protected PlayableArena arena;
-        public static List<Material> allowedBlocks = Arrays.asList(
-                Material.STONE_BUTTON, Material.WOOD_BUTTON, Material.LEVER);
+        protected long timeStamp;
+
 
         public Game(PlayableArena arena){
             this.arena = arena;
@@ -214,6 +216,8 @@ public class GameManager {
 
                 p.teleport(gamePlayer.getPlot().getTeleportPoint());
             }
+
+            timeStamp = System.currentTimeMillis();
         }
 
         public boolean inAnotherWorld(World world){
@@ -237,6 +241,9 @@ public class GameManager {
 
         }
 
+        public long getTimeStamp(){
+            return timeStamp;
+        }
     }
 
 }

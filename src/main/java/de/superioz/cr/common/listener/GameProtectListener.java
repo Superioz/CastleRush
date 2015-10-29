@@ -51,7 +51,7 @@ public class GameProtectListener implements Listener {
         GamePlot plot = gamePlayer.getPlot();
         boolean flag = plot.isPart(loc);
 
-        if(GameManager.Game.allowedBlocks.contains(block.getType())){
+        if(GameManager.allowedBlocks.contains(block.getType())){
             return;
         }
 
@@ -91,7 +91,7 @@ public class GameProtectListener implements Listener {
         GamePlot plot = gamePlayer.getPlot();
         boolean flag = plot.isPart(loc);
 
-        if(GameManager.Game.allowedBlocks.contains(block.getType())){
+        if(GameManager.allowedBlocks.contains(block.getType())){
             return;
         }
 

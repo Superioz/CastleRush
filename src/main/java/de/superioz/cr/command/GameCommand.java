@@ -105,6 +105,32 @@ public class GameCommand {
                     player);
     }
 
+    @SubCommand(name = "timegone", aliases = "tg", permission = "castlerush.timegone"
+            , desc = "Shows how much time gone from jump-run begin")
+    public void timeGone(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!GameManager.isIngame(player)){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            return;
+        }
+        GameManager.Game game = GameManager.getGame(player);
+        assert game != null;
+
+        long timeStamp = System.currentTimeMillis();
+        long oldTimeStamp = game.getTimeStamp();
+        int diff = (int) ((timeStamp-oldTimeStamp)/1000);
+
+        int seconds = diff % 60;
+        int minutes = diff / 60;
+        int hours = minutes / 60;
+
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("timeGone")
+                        .replace("%hours", hours+"")
+                        .replace("%minutes", minutes+"")
+                        .replace("%seconds", seconds+""), player);
+    }
+
     @SubCommand(name = "join", aliases = "j", permission = "castlerush.join"
             , desc = "Joins given arena", min = 1)
     public void join(SubCommandContext context){
