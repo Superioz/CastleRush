@@ -13,6 +13,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -119,6 +120,8 @@ public class GameManager {
     public static class Game {
 
         protected PlayableArena arena;
+        public static List<Material> allowedBlocks = Arrays.asList(
+                Material.STONE_BUTTON, Material.WOOD_BUTTON, Material.LEVER);
 
         public Game(PlayableArena arena){
             this.arena = arena;

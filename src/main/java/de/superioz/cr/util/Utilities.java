@@ -140,7 +140,7 @@ public class Utilities {
                 c.unload();
             }
 
-            return Bukkit.unloadWorld(w, true);
+            return Bukkit.unloadWorld(w, false);
         }
 
         return false;

@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -18,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -48,6 +50,10 @@ public class GameProtectListener implements Listener {
         assert gamePlayer != null;
         GamePlot plot = gamePlayer.getPlot();
         boolean flag = plot.isPart(loc);
+
+        if(GameManager.Game.allowedBlocks.contains(block.getType())){
+            return;
+        }
 
         if(!flag && player.getGameMode() == GameMode.SURVIVAL
                 && block.getType() == Material.WOOL){
@@ -85,6 +91,10 @@ public class GameProtectListener implements Listener {
         GamePlot plot = gamePlayer.getPlot();
         boolean flag = plot.isPart(loc);
 
+        if(GameManager.Game.allowedBlocks.contains(block.getType())){
+            return;
+        }
+
         if(flag){
             return;
         }
@@ -96,6 +106,10 @@ public class GameProtectListener implements Listener {
         if(!(event.getEntity() instanceof Player) || (event.getDamager() instanceof Player)){
             return;
         }
+        else if(event.getDamager() instanceof Projectile){
+            return;
+        }
+
         Player player = (Player) event.getEntity();
 
         if(GameManager.isIngame(player)){
@@ -123,7 +137,13 @@ public class GameProtectListener implements Listener {
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
 
         event.setRespawnLocation(gp.getSpawnLocation());
-        gp.getGame().getArena().getArena().getItemKit().setFor(gp.getPlayer());
+
+        new BukkitRunnable(){
+            @Override
+            public void run(){
+                gp.getGame().getArena().getArena().getItemKit().setFor(gp.getPlayer());
+            }
+        }.runTaskLater(CastleRush.getInstance(), 1L);
     }
 
 
