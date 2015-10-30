@@ -5,11 +5,14 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.main.CastleRush;
-import de.superioz.cr.util.Utilities;
+import de.superioz.cr.util.WorldBackup;
 import de.superioz.library.java.util.classes.SimplePair;
 import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.*;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -30,14 +33,14 @@ public class GameManager {
     public static void addGameInQueue(Game game){
         if(!runningGames.contains(game)){
             runningGames.add(game);
+            game.registerBackup();
         }
     }
 
     public static void removeGameFromQueue(Game game){
         if(runningGames.contains(game)){
-            String name = game.unloadWorld();
             runningGames.remove(game);
-            game.loadWorld(name);
+            game.unregisterBackup();
         }
     }
 
@@ -123,7 +126,7 @@ public class GameManager {
 
         protected PlayableArena arena;
         protected long timeStamp;
-
+        protected WorldBackup backup;
 
         public Game(PlayableArena arena){
             this.arena = arena;
@@ -161,25 +164,20 @@ public class GameManager {
                     .callEvent(new GamePlayersAmountChangeEvent(this));
         }
 
-        public String unloadWorld(){
-            Arena arena = getArena().getArena();
-            World world = arena.getSpawnPoints().get(0).getWorld();
-
-            getArena().getPlayers().stream().filter(pl -> pl.getWorld() == world)
-                    .forEach(pl -> pl.teleport(pl.getJoinLocation()));
-
-            for(Player player : world.getPlayers())
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-
-            String name = world.getName();
-            if(Utilities.isLoaded(name))
-                Utilities.unloadWorld(name);
-            return name;
+        public void registerBackup(){
+            this.backup = new WorldBackup(getArena().getArena()
+                    .getSpawnPoints().get(0).getWorld());
+            CastleRush.getPluginManager().registerEvents(this.backup, CastleRush.getInstance());
+            this.backup.setFlag(true);
         }
 
-        public void loadWorld(String name){
-            if(!Utilities.isLoaded(name))
-                Utilities.loadWorld(name);
+        public void restoreBackup(){
+            this.backup.restoreBlocks();
+        }
+
+        public void unregisterBackup(){
+            this.backup.setFlag(false);
+            this.restoreBackup();
         }
 
         public void broadcast(String message){

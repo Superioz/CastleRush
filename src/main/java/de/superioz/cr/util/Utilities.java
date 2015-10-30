@@ -111,39 +111,4 @@ public class Utilities {
                 .name("&6Multitool - 3 in 1").lore("&7Rightclick: Add spawnpoint; Leftclick: Remove one").build();
     }
 
-    public static World loadWorld(String world){
-        if(!isLoaded(world)){
-            return Bukkit.getServer().createWorld(new WorldCreator(world));
-        }else{
-            return Bukkit.getWorld(world);
-        }
-    }
-
-    public static boolean isLoaded(String world){
-        for(World w : Bukkit.getServer().getWorlds()){
-            if(w.getName().equals(world)){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean unloadWorld(String world){
-        if(isLoaded(world)){
-            World w = Bukkit.getWorld(world);
-            for(Player p : w.getPlayers()){
-                p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-            }
-
-            for(Chunk c : w.getLoadedChunks()){
-                c.unload();
-            }
-
-            return Bukkit.unloadWorld(w, false);
-        }
-
-        return false;
-    }
-
 }

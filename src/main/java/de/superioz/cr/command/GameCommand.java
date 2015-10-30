@@ -120,7 +120,8 @@ public class GameCommand {
         long timeStamp = System.currentTimeMillis();
         long oldTimeStamp = game.getTimeStamp();
 
-        if(oldTimeStamp != 0){
+        if(oldTimeStamp != 0
+                && game.getArena().getGameState() != GameManager.State.WAITING){
             int diff = (int) ((timeStamp-oldTimeStamp)/1000);
 
             int seconds = diff % 60;
@@ -131,6 +132,9 @@ public class GameCommand {
                     .replace("%hours", hours+"")
                     .replace("%minutes", minutes+"")
                     .replace("%seconds", seconds+""), player);
+        }
+        else {
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("noTimeGoneYet"), player);
         }
     }
 
