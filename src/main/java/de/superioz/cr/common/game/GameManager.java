@@ -38,6 +38,7 @@ public class GameManager {
     }
 
     public static void removeGameFromQueue(Game game){
+
         if(runningGames.contains(game)){
             runningGames.remove(game);
             game.unregisterBackup();
@@ -54,6 +55,10 @@ public class GameManager {
                 return g;
         }
         return null;
+    }
+
+    public static void stopArenas(){
+        runningGames.forEach(GameManager.Game::stop);
     }
 
     public static Game getGame(Player player){
@@ -86,8 +91,10 @@ public class GameManager {
     }
 
     public static WrappedGamePlayer getWrappedGamePlayer(Player player){
+        WrappedGamePlayer gp = null;
+
         if(!isIngame(player))
-            return null;
+            return gp;
 
         Game game = getGame(player);
         assert game != null;
@@ -96,16 +103,15 @@ public class GameManager {
             Player p = pl.getPlayer();
 
             if(p.getUniqueId().equals(player.getUniqueId())){
-                return pl;
+                gp = pl;
             }
         }
-        return null;
+        return gp;
     }
 
     public enum State {
 
         LOBBY(ChatColor.GREEN + "lobby"),
-        FULL(ChatColor.RED + "full"),
         INGAME(ChatColor.DARK_RED + "ingame"),
         WAITING(ChatColor.GOLD + "waiting");
 
@@ -137,7 +143,7 @@ public class GameManager {
         }
 
         public void join(Player player, Location loc){
-            WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player, loc);
+            WrappedGamePlayer wrappedGamePlayer = new WrappedGamePlayer(this, player, loc, getRandomIndex());
 
             if(!isIngame(player))
                 arena.players.add(wrappedGamePlayer);
@@ -146,19 +152,41 @@ public class GameManager {
                     .callEvent(new GamePlayersAmountChangeEvent(this));
         }
 
-        public void leave(Player player){
-            WrappedGamePlayer wrappedGamePlayer = getWrappedGamePlayer(player);
-
-            if(isIngame(player)){
-                arena.players.remove(wrappedGamePlayer);
+        public void leave(WrappedGamePlayer player){
+            if(isIngame(player.getPlayer())){
+                arena.players.remove(player);
 
                 CastleRush.getPluginManager()
                         .callEvent(new GamePlayersAmountChangeEvent(this));
             }
         }
 
+        public int getRandomIndex(){
+            int i = getArena().getPlayers().size();
+
+            if(i % 2 == 0){
+                return 0;
+            }
+            else{
+                return 1;
+            }
+        }
+
+        public void stop(){
+            this.setWalls(Material.AIR);
+
+            for(WrappedGamePlayer p : getArena().getPlayers()){
+                if(p == null)
+                    continue;
+                p.teleport(p.getJoinLocation());
+            }
+
+            this.leaveAll();
+            this.getArena().setGameState(State.LOBBY);
+        }
+
         public void leaveAll(){
-            this.getArena().players = new ArrayList<>();
+            this.arena.players = new ArrayList<>();
 
             CastleRush.getPluginManager()
                     .callEvent(new GamePlayersAmountChangeEvent(this));
@@ -226,6 +254,20 @@ public class GameManager {
         public void setWalls(String name){
             Material mat = Material.getMaterial(name);
 
+            if(mat == null)
+                return;
+
+            for(GameWall wall : getArena().getArena().getGameWalls()){
+                SimplePair<Location, Location> boundaries = wall.getBoundaries();
+
+                for(Location l : GeometryUtils.cuboid(boundaries.getType1(), boundaries.getType2())){
+                    l.getBlock().setType(mat);
+                }
+            }
+
+        }
+
+        public void setWalls(Material mat){
             if(mat == null)
                 return;
 

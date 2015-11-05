@@ -7,9 +7,9 @@ import de.superioz.library.minecraft.server.command.annts.Command;
 import de.superioz.library.minecraft.server.command.annts.SubCommand;
 import de.superioz.library.minecraft.server.command.cntxt.CommandContext;
 import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
-import de.superioz.library.minecraft.server.command.enms.AllowedCommandSender;
 import de.superioz.library.minecraft.server.command.wrpper.CommandWrapper;
 import de.superioz.library.minecraft.server.util.chat.BukkitChat;
+import de.superioz.reloaded.minecraft.command.AllowedCommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 

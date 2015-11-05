@@ -44,4 +44,13 @@ public class ItemKit {
         inv.setBoots(armor[0]);
     }
 
+    public void resetArmor(Player player){
+        PlayerInventory inv = player.getInventory();
+
+        inv.setHelmet(armor[3]);
+        inv.setChestplate(armor[2]);
+        inv.setLeggings(armor[1]);
+        inv.setBoots(armor[0]);
+    }
+
 }

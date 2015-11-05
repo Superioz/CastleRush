@@ -5,6 +5,7 @@ import de.superioz.cr.command.CacheCommand;
 import de.superioz.cr.command.GameCommand;
 import de.superioz.cr.command.MainCommand;
 import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.listener.GameListener;
 import de.superioz.cr.common.listener.GameProtectListener;
 import de.superioz.cr.common.listener.SignListener;
@@ -75,6 +76,8 @@ public class CastleRush extends JavaPlugin {
         superLogger.consoleLog("Backup Arenas ..");
         ArenaManager.backup();
         superLogger.consoleLog("Arenas saved.");
+
+        GameManager.stopArenas();
     }
 
     public static ChatMessager getChatMessager(){

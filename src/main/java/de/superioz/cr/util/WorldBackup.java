@@ -74,6 +74,9 @@ public class WorldBackup implements Listener {
     public void restoreBlock(String s){
         String[] blockdata = s.split(":");
 
+        if(blockdata[0].contains("AIR"))
+            blockdata[0] = "0";
+
         int typeId = Integer.parseInt(blockdata[0]);
         byte data = Byte.parseByte(blockdata[1]);
         World world = Bukkit.getWorld(blockdata[2]);

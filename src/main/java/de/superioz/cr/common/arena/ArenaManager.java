@@ -106,10 +106,7 @@ public class ArenaManager {
         }
 
         public static boolean isFinished(Player player){
-            if(!contains(player))
-                return false;
-
-            return editorLast.get(player).isFinished();
+            return contains(player) && editorLast.get(player).isFinished();
         }
 
         public static void remove(Player player){

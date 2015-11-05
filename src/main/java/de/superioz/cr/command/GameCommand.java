@@ -11,6 +11,7 @@ import de.superioz.cr.common.game.GameWall;
 import de.superioz.cr.common.listener.GameListener;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.util.classes.SimplePair;
+import de.superioz.library.java.util.list.ListUtils;
 import de.superioz.library.minecraft.server.command.annts.SubCommand;
 import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
 import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
@@ -185,7 +186,7 @@ public class GameCommand {
 
         GameManager.Game game = GameManager.getGame(player); assert game != null;
 
-        CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, player));
+        CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, GameManager.getWrappedGamePlayer(player)));
         CastleRush.getChatMessager().send(CastleRush.getProperties().get("leftTheGame"), player);
     }
 
@@ -263,6 +264,24 @@ public class GameCommand {
                 game.setWalls(material);
             }
         }
+    }
+
+    @SubCommand(name = "teammates", aliases = {"teamm", "tm"}, permission = "castlerush.teammates"
+            , desc = "Shows your teammates")
+    public void teammates(SubCommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!GameManager.isIngame(player)){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            return;
+        }
+        GameManager.Game game = GameManager.getGame(player);
+        assert game != null;
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player);
+
+        String s = ListUtils.insert(gp.getTeamMatesNames(), ", ");
+        CastleRush.getChatMessager().send(CastleRush.getProperties().get("teamMates")
+                .replace("%pl", s.isEmpty() ? CastleRush.getProperties().get("youDontHaveTeammates"): s), player);
     }
 
 }

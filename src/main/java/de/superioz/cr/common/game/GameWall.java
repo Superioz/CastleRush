@@ -23,12 +23,12 @@ public class GameWall {
 
     @Override
     public String toString(){
-        return new LocationSerializer(boundaries.getType1()).serialize() + "-"
+        return new LocationSerializer(boundaries.getType1()).serialize() + "#"
                 + new LocationSerializer(boundaries.getType2()).serialize();
     }
 
     public static GameWall fromString(String s){
-        String[] arr = s.split("-");
+        String[] arr = s.split("#");
 
         return new GameWall(new SimplePair<>(new LocationSerializer(null).deserialize(arr[0])
             , new LocationSerializer(null).deserialize(arr[1])));

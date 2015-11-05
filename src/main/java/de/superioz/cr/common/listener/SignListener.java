@@ -55,7 +55,6 @@ public class SignListener implements Listener {
             return;
         }
 
-        int maxPlayers = arena.getGamePlots().size();
         int minPlayers = 0;
         String name = arena.getName();
         String header = ChatColor.AQUA + "CastleRush";
@@ -65,7 +64,7 @@ public class SignListener implements Listener {
 
         event.setLine(0, header);
         event.setLine(1, name);
-        event.setLine(2, minPlayers + "/" + maxPlayers);
+        event.setLine(2, arena.getPattern(0));
         event.setLine(3, GameManager.State.LOBBY.getSpecifier());
         event.getBlock().getState().update(true);
 
@@ -87,7 +86,6 @@ public class SignListener implements Listener {
         if(state instanceof Sign){
             Sign sign = (Sign) state;
             Player player = event.getPlayer();
-            Action action = event.getAction();
 
             if(!sign.getLine(0).equalsIgnoreCase(ChatColor.AQUA + "CastleRush")){
                 return;
@@ -124,23 +122,16 @@ public class SignListener implements Listener {
     public void onGamePlayersAmount(GamePlayersAmountChangeEvent event){
         GameManager.Game game = event.getGame();
         PlayableArena arena = game.getArena();
-        Sign sign = arena.getSign();
 
-        String text = arena.getPlayers().size() + "/" + arena.getMaxPlayers();
-        sign.setLine(2, text);
-        sign.update();
+        arena.getSign().updatePlayers();
     }
 
     @EventHandler
     public void onGameStateChange(GameStateChangeEvent event){
         GameManager.Game game = event.getGame();
         PlayableArena arena = game.getArena();
-        Sign sign = arena.getSign();
-        GameManager.State state = event.getGameState();
 
-        String text = state.getSpecifier();
-        sign.setLine(3, text);
-        sign.update();
+        arena.getSign().updateGamestate();
     }
 
 }

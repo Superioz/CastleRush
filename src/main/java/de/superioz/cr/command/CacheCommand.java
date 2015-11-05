@@ -55,6 +55,12 @@ public class CacheCommand {
             return;
         }
 
+        if(unpreparedArena.getGamePlots().size() == 2){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotAddMoreThan")
+                            .replace("%n", 2+""), player);
+            return;
+        }
+
         unpreparedArena.addGamePlot(new GamePlot(rawUnpreparedArena.getRawGamePlots(), LocationUtils.fix(player
                 .getLocation().getBlock().getLocation())));
         CastleRush.getChatMessager().send(CastleRush.getProperties().get("addedANewGameplot")

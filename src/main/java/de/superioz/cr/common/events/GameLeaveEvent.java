@@ -1,7 +1,7 @@
 package de.superioz.cr.common.events;
 
+import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.game.GameManager;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -14,9 +14,9 @@ public class GameLeaveEvent extends Event {
 
     public static final HandlerList handlers = new HandlerList();
     private GameManager.Game game;
-    private Player player;
+    private WrappedGamePlayer player;
 
-    public GameLeaveEvent(GameManager.Game game, Player player){
+    public GameLeaveEvent(GameManager.Game game, WrappedGamePlayer player){
         this.game = game;
         this.player = player;
     }
@@ -25,7 +25,7 @@ public class GameLeaveEvent extends Event {
         return game;
     }
 
-    public Player getPlayer(){
+    public WrappedGamePlayer getPlayer(){
         return player;
     }
 

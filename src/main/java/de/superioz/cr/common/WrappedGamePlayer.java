@@ -7,7 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -19,11 +20,13 @@ public class WrappedGamePlayer {
     protected Player player;
     protected GameManager.Game game;
     protected Location joinLocation;
+    protected int index;
 
-    public WrappedGamePlayer(GameManager.Game game, Player player, Location joinLocation){
+    public WrappedGamePlayer(GameManager.Game game, Player player, Location joinLocation, int index){
         this.game = game;
         this.player = player;
         this.joinLocation = joinLocation;
+        this.index = index;
     }
 
     public GameManager.Game getGame(){
@@ -35,7 +38,6 @@ public class WrappedGamePlayer {
     }
 
     public GamePlot getPlot(){
-        int index = getGameIndex();
         Location spawnLocation = getSpawnLocation();
 
         double distance = -1;
@@ -60,13 +62,7 @@ public class WrappedGamePlayer {
     }
 
     public int getGameIndex(){
-        List<WrappedGamePlayer> players = getGame().getArena().getPlayers();
-
-        for(int i = 0; i < players.size(); i++){
-            if(players.get(i).getPlayer().getUniqueId().equals(player.getUniqueId()))
-                return i;
-        }
-        return -1;
+        return this.index;
     }
 
     public Location getSpawnLocation(){
@@ -86,6 +82,17 @@ public class WrappedGamePlayer {
         player.setHealth(20D);
         player.setFoodLevel(20);
         player.setGameMode(GameMode.SURVIVAL);
+    }
+
+    public List<WrappedGamePlayer> getTeamMates(){
+        return getGame().getArena().getPlayers().stream()
+                .filter(gp -> gp.getGameIndex() == getGameIndex()
+                        && gp != this).collect(Collectors.toList());
+    }
+
+    public List<String> getTeamMatesNames(){
+        return getTeamMates().stream().map(gp -> gp.getPlayer().getDisplayName())
+                .collect(Collectors.toList());
     }
 
     public World getWorld(){

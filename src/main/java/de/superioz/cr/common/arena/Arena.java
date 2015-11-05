@@ -5,6 +5,7 @@ import de.superioz.cr.common.game.GamePlot;
 import de.superioz.cr.common.game.GameWall;
 import de.superioz.library.java.util.list.ListUtils;
 import de.superioz.library.minecraft.server.util.serialize.LocationSerializer;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class Arena {
         return spawnPoints;
     }
 
+    public String getPattern(int playersSize){
+        return ChatColor.BLUE + "Size: " + playersSize;
+    }
 
     @Override
     public String toString(){
