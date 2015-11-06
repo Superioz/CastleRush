@@ -1,7 +1,7 @@
 package de.superioz.cr.common.game.countdowns;
 
 import de.superioz.cr.common.events.GameFinishEvent;
-import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.game.Game;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.util.task.Countdown;
 
@@ -14,7 +14,7 @@ public class BuildCountdown {
 
     public static Countdown instance;
 
-    public static void run(GameManager.Game game){
+    public static void run(Game game){
         instance = new Countdown(60 * CastleRush.getConfigFile().config().getInt("timer"));
 
         instance.run(endRunnable -> {
@@ -42,6 +42,10 @@ public class BuildCountdown {
                         .replace("%time", counter + ""));
             }
         });
+    }
+
+    public static Countdown getCountdown(){
+        return instance;
     }
 
 }

@@ -1,6 +1,7 @@
 package de.superioz.cr.common.events;
 
-import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.game.Game;
+import de.superioz.cr.common.game.division.GameState;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -12,19 +13,19 @@ import org.bukkit.event.HandlerList;
 public class GameStateChangeEvent extends Event {
 
     public static final HandlerList handlers = new HandlerList();
-    private GameManager.Game game;
-    private GameManager.State gameState;
+    private Game game;
+    private GameState gameState;
 
-    public GameStateChangeEvent(GameManager.Game game, GameManager.State newGameState){
+    public GameStateChangeEvent(Game game, GameState newGameState){
         this.game = game;
         this.gameState = newGameState;
     }
 
-    public GameManager.State getGameState(){
+    public GameState getGameState(){
         return gameState;
     }
 
-    public GameManager.Game getGame(){
+    public Game getGame(){
         return game;
     }
 

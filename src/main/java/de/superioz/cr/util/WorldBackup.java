@@ -1,5 +1,8 @@
 package de.superioz.cr.util;
 
+import de.superioz.cr.common.game.Game;
+import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.game.division.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -12,7 +15,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This class was created as a part of CastleRush
@@ -24,15 +26,24 @@ public class WorldBackup implements Listener {
     private List<String> changedBlocks;
     private World world;
     private boolean flag = false;
+    private Game game;
 
-    public WorldBackup(World world){
-        this.world = world;
+    public WorldBackup(Game game){
+        this.game = game;
+        this.world = game.getArena().getArena().getSpawnPoints().get(0).getWorld();
         this.changedBlocks = new ArrayList<>();
     }
 
     public void restoreBlocks(){
-        changedBlocks.forEach(this::restoreBlock);
+        int counter = 0;
+
+        for(String s : changedBlocks){
+            this.restoreBlock(s);
+            counter++;
+        }
+
         changedBlocks.clear();
+        System.out.println(counter + " blocks restored!");
     }
 
     @EventHandler
@@ -40,8 +51,9 @@ public class WorldBackup implements Listener {
         BlockState bs = event.getBlockReplacedState();
 
         if(bs.getWorld().getName().equals(world.getName())
-                && flag && !event.isCancelled()){
-            System.out.println("Block placed and saved");
+                && flag && !event.isCancelled()
+                && game.getArena().getGameState() == GameState.INGAME){
+            System.out.println("Block placed and saved! " + changedBlocks.size());
             changedBlocks.add(serializeBlock(bs));
         }
     }
@@ -49,17 +61,28 @@ public class WorldBackup implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event){
         if(event.getBlock().getWorld().getName().equals(world.getName())
-                && flag && !event.isCancelled())
-            System.out.println("Block destroyed and saved");
+                && flag && !event.isCancelled() && game.getArena().getGameState() == GameState.INGAME)
+            System.out.println("Block broken and saved! " + changedBlocks.size());
             changedBlocks.add(serializeBlock(event.getBlock()));
     }
 
     @EventHandler
     public void onExplode(EntityExplodeEvent event){
         if(event.getLocation().getWorld().getName().equals(world.getName())
-                && flag && !event.isCancelled())
-            changedBlocks.addAll(event.blockList().stream()
-                    .map(this::serializeBlock).collect(Collectors.toList()));
+                && flag && !event.isCancelled() && game.getArena().getGameState() == GameState.INGAME){
+            List<Block> blocks = event.blockList();
+
+            for(int i = 0; i < blocks.size(); i++){
+                Block b = blocks.get(i);
+
+                if(!GameManager.hasPlot(b, game)){
+                    blocks.remove(b);
+                    continue;
+                }
+                changedBlocks.add(serializeBlock(b));
+                System.out.println("Block exploded and saved!");
+            }
+        }
     }
 
     public String serializeBlock(Block b){

@@ -1,7 +1,7 @@
 package de.superioz.cr.common.tool;
 
 import de.superioz.cr.common.arena.ArenaManager;
-import de.superioz.cr.common.arena.RawUnpreparedArena;
+import de.superioz.cr.common.arena.cache.RawUnpreparedArena;
 import de.superioz.cr.common.inventory.ArenaMultiToolInventory;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;

@@ -1,12 +1,12 @@
 package de.superioz.cr.command;
 
 import de.superioz.cr.common.ItemKit;
-import de.superioz.cr.common.arena.Arena;
+import de.superioz.cr.common.arena.object.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
-import de.superioz.cr.common.arena.RawUnpreparedArena;
-import de.superioz.cr.common.arena.UnpreparedArena;
-import de.superioz.cr.common.game.GamePlot;
-import de.superioz.cr.common.game.GameWall;
+import de.superioz.cr.common.arena.cache.RawUnpreparedArena;
+import de.superioz.cr.common.arena.cache.UnpreparedArena;
+import de.superioz.cr.common.game.objects.GamePlot;
+import de.superioz.cr.common.game.objects.GameWall;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
 import de.superioz.library.java.util.classes.SimplePair;

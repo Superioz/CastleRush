@@ -1,8 +1,12 @@
 package de.superioz.cr.common;
 
 
+import de.superioz.cr.main.CastleRush;
+import de.superioz.library.minecraft.server.items.ItemBuilder;
 import de.superioz.library.minecraft.server.util.serialize.ItemStackSerializer;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -34,18 +38,31 @@ public class ItemKit {
                 .deserialize(arr[1]));
     }
 
-    public void setFor(Player player){
-        PlayerInventory inv = player.getInventory();
+    public static ItemStack[] getContents(ItemStack[] cont){
+        ItemStack[] arr = new ItemStack[cont.length];
 
-        inv.setContents(content);
-        inv.setHelmet(armor[3]);
-        inv.setChestplate(armor[2]);
-        inv.setLeggings(armor[1]);
-        inv.setBoots(armor[0]);
+        for(int i = 0; i < cont.length; i++){
+            ItemStack item = cont[i];
+
+            if(item == null || item.getType() == Material.AIR)
+                continue;
+
+            arr[i] = new ItemBuilder(item).unbreakable(true).itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
+                    .lore(CastleRush.getProperties().get("itemIsUnbreakable")).build();
+        }
+        return arr;
     }
 
-    public void resetArmor(Player player){
+    public void setFor(Player player){
         PlayerInventory inv = player.getInventory();
+        inv.setContents(getContents(content));
+
+        this.setArmor(player);
+    }
+
+    public void setArmor(Player player){
+        PlayerInventory inv = player.getInventory();
+        ItemStack[] armor = getContents(this.armor);
 
         inv.setHelmet(armor[3]);
         inv.setChestplate(armor[2]);

@@ -1,13 +1,13 @@
 package de.superioz.cr.common;
 
-import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.game.GamePlot;
+import de.superioz.cr.common.game.Game;
+import de.superioz.cr.common.game.objects.GamePlot;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -18,18 +18,18 @@ import java.util.stream.Collectors;
 public class WrappedGamePlayer {
 
     protected Player player;
-    protected GameManager.Game game;
+    protected Game game;
     protected Location joinLocation;
     protected int index;
 
-    public WrappedGamePlayer(GameManager.Game game, Player player, Location joinLocation, int index){
+    public WrappedGamePlayer(Game game, Player player, Location joinLocation, int index){
         this.game = game;
         this.player = player;
         this.joinLocation = joinLocation;
         this.index = index;
     }
 
-    public GameManager.Game getGame(){
+    public Game getGame(){
         return game;
     }
 
@@ -66,7 +66,8 @@ public class WrappedGamePlayer {
     }
 
     public Location getSpawnLocation(){
-        return getGame().getArena().getArena().getSpawnPoints().get(getGameIndex());
+        return getGame().getArena().getArena().getSpawnPoints()
+                .get(getGameIndex()).clone().add(0, 1, 0);
     }
 
     public Player getPlayer(){

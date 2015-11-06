@@ -1,12 +1,13 @@
 package de.superioz.cr.common.listener;
 
 import de.superioz.cr.common.WrappedGamePlayer;
-import de.superioz.cr.common.events.GameFinishEvent;
-import de.superioz.cr.common.events.GameJoinEvent;
-import de.superioz.cr.common.events.GameLeaveEvent;
-import de.superioz.cr.common.events.GameStartEvent;
+import de.superioz.cr.common.arena.object.PlayableArena;
+import de.superioz.cr.common.events.*;
+import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.game.countdowns.BuildCountdown;
+import de.superioz.cr.common.game.division.GamePhase;
+import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.util.list.ListUtils;
 import org.bukkit.Location;
@@ -26,7 +27,7 @@ public class GameStateListener implements Listener {
     @EventHandler
     public void onGameJoin(GameJoinEvent event){
         Player player = event.getPlayer();
-        GameManager.Game game = event.getGame();
+        Game game = event.getGame();
 
         if(!game.inAnotherWorld(player.getWorld())){
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaMustntInYourWorld"),
@@ -63,7 +64,7 @@ public class GameStateListener implements Listener {
     @EventHandler
     public void onGameLeave(GameLeaveEvent event){
         WrappedGamePlayer player = event.getPlayer();
-        GameManager.Game game = event.getGame();
+        Game game = event.getGame();
 
         // Reset Inventory etc.
         player.clear();
@@ -83,11 +84,11 @@ public class GameStateListener implements Listener {
             .replace("%player", player.getPlayer().getDisplayName()).replace("%current", currentPlayersSize + ""));
 
         if(currentPlayersSize == 0){
-            game.getArena().setGameState(GameManager.State.LOBBY);
+            game.getArena().setGameState(GameState.LOBBY);
         }
         else if(currentPlayersSize == 1
-                && game.getArena().getGameState() != GameManager.State.WAITING){
-            game.getArena().setGameState(GameManager.State.LOBBY);
+                && game.getArena().getGameState() != GameState.WAITING){
+            game.getArena().setGameState(GameState.LOBBY);
 
             CastleRush.getPluginManager().callEvent(new GameFinishEvent(game,
                     game.getArena().getPlayers().get(0)));
@@ -96,8 +97,8 @@ public class GameStateListener implements Listener {
 
     @EventHandler
     public void onGameStart(GameStartEvent event){
-        GameManager.Game game = event.getGame();
-        game.getArena().setGameState(GameManager.State.INGAME);
+        Game game = event.getGame();
+        game.getArena().setGameState(GameState.INGAME);
         game.prepareGame();
 
         // Now the gamemode is set and the players can start build their castles
@@ -112,14 +113,14 @@ public class GameStateListener implements Listener {
     @EventHandler
     public void onGameFinish(GameFinishEvent event){
         WrappedGamePlayer winner = event.getWinner();
-        GameManager.Game game = event.getGame();
+        Game game = event.getGame();
 
         // Announcement
         game.broadcast(CastleRush.getProperties().get("playerWonTheGame")
                 .replace("%player", winner.getPlayer().getDisplayName()));
 
         // Set gamestate
-        game.getArena().setGameState(GameManager.State.WAITING);
+        game.getArena().setGameState(GameState.WAITING);
 
         // Teleport to spawn
         for(WrappedGamePlayer gp : game.getArena().getPlayers()){
@@ -131,6 +132,32 @@ public class GameStateListener implements Listener {
 
         // End of the game
         game.broadcast(CastleRush.getProperties().get("gameEnded"));
+    }
+
+    @EventHandler
+    public void onGamePlayersAmount(GamePlayersAmountChangeEvent event){
+        Game game = event.getGame();
+        PlayableArena arena = game.getArena();
+
+        arena.getSign().updatePlayers();
+    }
+
+    @EventHandler
+    public void onGameStateChange(GameStateChangeEvent event){
+        Game game = event.getGame();
+        PlayableArena arena = game.getArena();
+        GameState state = event.getGameState();
+
+        GamePhase newPhase = GamePhase.UNDEFINED;
+        if(state == GameState.LOBBY)
+            newPhase = GamePhase.WAIT;
+        else if(state == GameState.INGAME)
+            newPhase = GamePhase.BUILD;
+        else if(state == GameState.WAITING)
+            newPhase = GamePhase.END;
+        arena.setGamePhase(newPhase);
+
+        arena.getSign().updateGamestate();
     }
 
 }

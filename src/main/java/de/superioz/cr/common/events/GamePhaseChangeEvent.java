@@ -1,39 +1,32 @@
 package de.superioz.cr.common.events;
 
 import de.superioz.cr.common.game.Game;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import de.superioz.cr.common.game.division.GamePhase;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This class was created as a part of CastleRush (Spigot)
+ * This class was created as a part of CastleRush
  *
  * @author Superioz
  */
-public class GameJoinEvent extends Event {
+public class GamePhaseChangeEvent extends Event {
 
     public static final HandlerList handlers = new HandlerList();
     private Game game;
-    private Player player;
-    private Location loc;
+    private GamePhase gameState;
 
-    public GameJoinEvent(Game game, Player player, Location loc){
+    public GamePhaseChangeEvent(Game game, GamePhase newGamePhase){
         this.game = game;
-        this.player = player;
-        this.loc = loc;
+        this.gameState = newGamePhase;
     }
 
-    public Location getLoc(){
-        return loc;
+    public GamePhase getGamePhase(){
+        return gameState;
     }
 
     public Game getGame(){
         return game;
-    }
-
-    public Player getPlayer(){
-        return player;
     }
 
     public static HandlerList getHandlerList(){
@@ -44,6 +37,5 @@ public class GameJoinEvent extends Event {
     public HandlerList getHandlers(){
         return handlers;
     }
-
 
 }

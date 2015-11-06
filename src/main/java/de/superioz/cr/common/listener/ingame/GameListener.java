@@ -1,10 +1,14 @@
-package de.superioz.cr.common.listener;
+package de.superioz.cr.common.listener.ingame;
 
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.events.GameLeaveEvent;
+import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.game.division.GamePhase;
+import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.main.CastleRush;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -13,10 +17,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
 
 /**
  * This class was created as a part of CastleRush
@@ -24,6 +32,24 @@ import org.bukkit.scheduler.BukkitRunnable;
  * @author Superioz
  */
 public class GameListener implements Listener {
+
+    public HashMap<Player , ItemStack[]> deathDrops = new HashMap<>();
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event){
+        Player player = event.getEntity();
+
+        if(!GameManager.isIngame(player))
+            return;
+
+        ItemStack[] content = event.getEntity().getInventory().getContents();
+        deathDrops.put(event.getEntity(), content);
+        event.getEntity().getInventory().clear();
+
+        event.getDrops().clear();
+        event.setDroppedExp(0);
+    }
+
 
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event){
@@ -62,17 +88,6 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
-    public void onDie(PlayerDeathEvent event){
-        Player player = event.getEntity();
-
-        if(!GameManager.isIngame(player))
-            return;
-
-        event.getDrops().clear();
-        event.setDroppedExp(0);
-    }
-
-    @EventHandler
     public void onRespawn(PlayerRespawnEvent event){
         Player player = event.getPlayer();
 
@@ -85,7 +100,16 @@ public class GameListener implements Listener {
         new BukkitRunnable(){
             @Override
             public void run(){
-                gp.getGame().getArena().getArena().getItemKit().resetArmor(gp.getPlayer());
+                if(deathDrops.containsKey(event.getPlayer())){
+                    event.getPlayer().getInventory().clear();
+                    for(ItemStack stack : deathDrops.get(event.getPlayer())){
+                        if(stack != null)
+                            event.getPlayer().getInventory().addItem(stack);
+                    }
+
+                    deathDrops.remove(event.getPlayer());
+                }
+                gp.getGame().getArena().getArena().getItemKit().setArmor(event.getPlayer());
             }
         }.runTaskLater(CastleRush.getInstance(), 1L);
     }
@@ -97,11 +121,9 @@ public class GameListener implements Listener {
         if(!GameManager.isIngame(player))
             return;
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
-        GameManager.Game game = gp.getGame();
+        Game game = gp.getGame();
 
-        if((game.getArena().getGameState() != GameManager.State.INGAME)
-                || GameStateListener.countdown == null
-                || GameStateListener.countdown.counter <= 0){
+        if(game.getArena().getGameState() != GameState.INGAME){
             CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, gp));
         }
     }
@@ -113,12 +135,35 @@ public class GameListener implements Listener {
         if(!GameManager.isIngame(player))
             return;
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
-        GameManager.Game game = gp.getGame();
+        Game game = gp.getGame();
 
-        if(event.getItem().getType() == Material.WATER_BUCKET
-                || event.getItem().getType() == Material.LAVA_BUCKET
-                && player.getGameMode() != GameMode.CREATIVE){
+        if(event.getItem() == null)
+            return;
+
+        if(player.getGameMode() == GameMode.SURVIVAL
+            && event.getItem().getType() == Material.WATER_BUCKET
+                || event.getItem().getType() == Material.LAVA_BUCKET){
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event){
+        Player player = event.getPlayer();
+
+        if(!GameManager.isIngame(player))
+            return;
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
+        Game game = gp.getGame();
+
+        if(game.getArena().getGamePhase() != GamePhase.WAIT)
+            return;
+
+        Location to = event.getTo();
+        Location spawn = gp.getSpawnLocation();
+
+        if(to.distanceSquared(spawn) > 10){
+            gp.teleport(spawn);
         }
     }
 

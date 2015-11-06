@@ -1,6 +1,6 @@
 package de.superioz.cr.command;
 
-import de.superioz.cr.common.arena.Arena;
+import de.superioz.cr.common.arena.object.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;

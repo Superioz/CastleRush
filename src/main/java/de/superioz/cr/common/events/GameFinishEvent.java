@@ -1,7 +1,7 @@
 package de.superioz.cr.common.events;
 
 import de.superioz.cr.common.WrappedGamePlayer;
-import de.superioz.cr.common.game.GameManager;
+import de.superioz.cr.common.game.Game;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -13,10 +13,10 @@ import org.bukkit.event.HandlerList;
 public class GameFinishEvent extends Event {
 
     public static final HandlerList handlers = new HandlerList();
-    private GameManager.Game game;
+    private Game game;
     private WrappedGamePlayer winner;
 
-    public GameFinishEvent(GameManager.Game game, WrappedGamePlayer winner){
+    public GameFinishEvent(Game game, WrappedGamePlayer winner){
         this.game = game;
         this.winner = winner;
     }
@@ -25,7 +25,7 @@ public class GameFinishEvent extends Event {
         return winner;
     }
 
-    public GameManager.Game getGame(){
+    public Game getGame(){
         return game;
     }
 

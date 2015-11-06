@@ -1,14 +1,17 @@
 package de.superioz.cr.command;
 
 import de.superioz.cr.common.WrappedGamePlayer;
-import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.arena.object.Arena;
 import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameLeaveEvent;
 import de.superioz.cr.common.events.GameStartEvent;
+import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.game.GameWall;
-import de.superioz.cr.common.listener.GameStateListener;
+import de.superioz.cr.common.game.countdowns.BuildCountdown;
+import de.superioz.cr.common.game.division.GamePhase;
+import de.superioz.cr.common.game.division.GameState;
+import de.superioz.cr.common.game.objects.GameWall;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.util.classes.SimplePair;
 import de.superioz.library.java.util.list.ListUtils;
@@ -36,8 +39,12 @@ public class GameCommand {
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
-        GameManager.Game game = GameManager.getGame(player);
+        Game game = GameManager.getGame(player);
         assert game != null;
+
+        if(game.getArena().getGameState() != GameState.LOBBY){
+            return;
+        }
 
         // Is the lobby full?
         if(!(game.enoughPlayers())){
@@ -58,11 +65,11 @@ public class GameCommand {
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
-        GameManager.Game game = GameManager.getGame(player);
+        Game game = GameManager.getGame(player);
         assert game != null;
 
         // Is the game really finished?
-        if(game.getArena().getGameState() != GameManager.State.WAITING){
+        if(game.getArena().getGameState() != GameState.WAITING){
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("gameIsntFinish"), player);
             return;
         }
@@ -76,7 +83,7 @@ public class GameCommand {
         game.leaveAll();
 
         // set gamestate
-        game.getArena().setGameState(GameManager.State.LOBBY);
+        game.getArena().setGameState(GameState.LOBBY);
         GameManager.removeGameFromQueue(game);
     }
 
@@ -89,16 +96,15 @@ public class GameCommand {
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
-        GameManager.Game game = GameManager.getGame(player);
+        Game game = GameManager.getGame(player);
         assert game != null;
 
-        if((game.getArena().getGameState() != GameManager.State.INGAME)
-                || GameStateListener.countdown == null){
+        if(game.getArena().getGamePhase() != GamePhase.BUILD){
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("noTimerAtTheMoment"), player);
             return;
         }
 
-        int counter = GameStateListener.countdown.getCounter();
+        int counter = BuildCountdown.getCountdown().getCounter();
         int seconds = counter % 60;
         int minutes = counter / 60;
         int hours = minutes / 60;
@@ -117,14 +123,14 @@ public class GameCommand {
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
-        GameManager.Game game = GameManager.getGame(player);
+        Game game = GameManager.getGame(player);
         assert game != null;
 
         long timeStamp = System.currentTimeMillis();
         long oldTimeStamp = game.getTimeStamp();
 
         if(oldTimeStamp != 0
-                && game.getArena().getGameState() != GameManager.State.WAITING){
+                && game.getArena().getGamePhase() == GamePhase.CAPTURE){
             int diff = (int) ((timeStamp-oldTimeStamp)/1000);
 
             int seconds = diff % 60;
@@ -164,10 +170,10 @@ public class GameCommand {
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotJoinGameViaCommand"), player);
             return;
         }
-        GameManager.Game game = GameManager.getGame(arena);
+        Game game = GameManager.getGame(arena);
         assert game != null;
 
-        if(game.getArena().getGameState() != GameManager.State.LOBBY){
+        if(game.getArena().getGameState() != GameState.LOBBY){
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotJoinArena"), player);
             return;
         }
@@ -186,7 +192,7 @@ public class GameCommand {
             return;
         }
 
-        GameManager.Game game = GameManager.getGame(player); assert game != null;
+        Game game = GameManager.getGame(player); assert game != null;
 
         CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, GameManager.getWrappedGamePlayer(player)));
         CastleRush.getChatMessager().send(CastleRush.getProperties().get("leftTheGame"), player);
@@ -202,10 +208,10 @@ public class GameCommand {
             return;
         }
 
-        int timer = GameStateListener.countdown.getCounter();
+        int timer = BuildCountdown.getCountdown().getCounter();
 
         if(timer >= 15){
-            GameStateListener.countdown.setCounter(15);
+            BuildCountdown.getCountdown().setCounter(15);
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("shortenedTime")
                     .replace("%sec", 15+""), player);
         }
@@ -228,7 +234,7 @@ public class GameCommand {
         Player target = Bukkit.getPlayer(name);
         boolean b = GameManager.isIngame(target);
 
-        GameManager.Game game = GameManager.getGame(target);
+        Game game = GameManager.getGame(target);
 
         assert game != null;
         CastleRush.getChatMessager().send(CastleRush.getProperties().get("isIngameMessage")
@@ -248,7 +254,7 @@ public class GameCommand {
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
-        GameManager.Game game = GameManager.getGame(player);
+        Game game = GameManager.getGame(player);
         assert game != null;
 
         // Get wall
@@ -277,7 +283,7 @@ public class GameCommand {
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
-        GameManager.Game game = GameManager.getGame(player);
+        Game game = GameManager.getGame(player);
         assert game != null;
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player);
 

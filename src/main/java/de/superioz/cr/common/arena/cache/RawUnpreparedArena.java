@@ -1,4 +1,4 @@
-package de.superioz.cr.common.arena;
+package de.superioz.cr.common.arena.cache;
 
 import de.superioz.cr.common.ItemKit;
 import de.superioz.library.java.util.classes.SimplePair;

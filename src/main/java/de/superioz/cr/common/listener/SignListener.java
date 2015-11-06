@@ -1,12 +1,13 @@
 package de.superioz.cr.common.listener;
 
-import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.arena.object.Arena;
+import de.superioz.cr.common.arena.object.PlayableArena;
 import de.superioz.cr.common.events.GameJoinEvent;
-import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
-import de.superioz.cr.common.events.GameStateChangeEvent;
+import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.arena.PlayableArena;
+import de.superioz.cr.common.game.division.GamePhase;
+import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.main.CastleRush;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -65,7 +66,7 @@ public class SignListener implements Listener {
         event.setLine(0, header);
         event.setLine(1, name);
         event.setLine(2, arena.getPattern(0));
-        event.setLine(3, GameManager.State.LOBBY.getSpecifier());
+        event.setLine(3, GameState.LOBBY.getSpecifier());
         event.getBlock().getState().update(true);
 
         CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaSignMessage")
@@ -102,13 +103,13 @@ public class SignListener implements Listener {
                 return;
 
             if(!GameManager.containsGameInQueue(arena)){
-                GameManager.addGameInQueue(new GameManager.Game(new PlayableArena(arena, GameManager.State.LOBBY,
-                        sign)));
+                GameManager.addGameInQueue(new Game(new PlayableArena(arena,
+                        GameState.LOBBY, GamePhase.WAIT, sign)));
             }
-            GameManager.Game game = GameManager.getGame(arena);
+            Game game = GameManager.getGame(arena);
             assert game != null;
 
-            if(game.getArena().getGameState() != GameManager.State.LOBBY){
+            if(game.getArena().getGameState() != GameState.LOBBY){
                 CastleRush.getChatMessager().send(CastleRush.getProperties().get("youCannotJoinThisArena"), player);
                 return;
             }
@@ -116,22 +117,6 @@ public class SignListener implements Listener {
             // Call event for further things
             CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player, player.getLocation()));
         }
-    }
-
-    @EventHandler
-    public void onGamePlayersAmount(GamePlayersAmountChangeEvent event){
-        GameManager.Game game = event.getGame();
-        PlayableArena arena = game.getArena();
-
-        arena.getSign().updatePlayers();
-    }
-
-    @EventHandler
-    public void onGameStateChange(GameStateChangeEvent event){
-        GameManager.Game game = event.getGame();
-        PlayableArena arena = game.getArena();
-
-        arena.getSign().updateGamestate();
     }
 
 }

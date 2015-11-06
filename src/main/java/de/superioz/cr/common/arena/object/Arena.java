@@ -1,8 +1,8 @@
-package de.superioz.cr.common.arena;
+package de.superioz.cr.common.arena.object;
 
 import de.superioz.cr.common.ItemKit;
-import de.superioz.cr.common.game.GamePlot;
-import de.superioz.cr.common.game.GameWall;
+import de.superioz.cr.common.game.objects.GamePlot;
+import de.superioz.cr.common.game.objects.GameWall;
 import de.superioz.library.java.util.list.ListUtils;
 import de.superioz.library.minecraft.server.util.serialize.LocationSerializer;
 import org.bukkit.ChatColor;

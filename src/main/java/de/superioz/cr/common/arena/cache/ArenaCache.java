@@ -1,6 +1,8 @@
-package de.superioz.cr.common.arena;
+package de.superioz.cr.common.arena.cache;
 
 import com.google.gson.reflect.TypeToken;
+import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.arena.object.Arena;
 import de.superioz.library.java.cache.SimpleCache;
 import de.superioz.library.java.file.type.JsonFile;
 

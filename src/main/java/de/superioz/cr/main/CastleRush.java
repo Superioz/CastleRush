@@ -6,9 +6,9 @@ import de.superioz.cr.command.GameCommand;
 import de.superioz.cr.command.MainCommand;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.listener.GameListener;
+import de.superioz.cr.common.listener.ingame.GameListener;
 import de.superioz.cr.common.listener.GameStateListener;
-import de.superioz.cr.common.listener.GameBuildListener;
+import de.superioz.cr.common.listener.ingame.GamePlotListener;
 import de.superioz.cr.common.listener.SignListener;
 import de.superioz.library.java.file.properties.SuperProperties;
 import de.superioz.library.java.file.type.YamlFile;
@@ -63,7 +63,7 @@ public class CastleRush extends JavaPlugin {
 
         // Listener
         getPluginManager().registerEvents(new GameStateListener(), this);
-        getPluginManager().registerEvents(new GameBuildListener(), this);
+        getPluginManager().registerEvents(new GamePlotListener(), this);
         getPluginManager().registerEvents(new SignListener(), this);
         getPluginManager().registerEvents(new GameListener(), this);
         superLogger.consoleLog("Listener registered!");

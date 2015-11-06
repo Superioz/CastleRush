@@ -1,4 +1,4 @@
-package de.superioz.cr.common.game;
+package de.superioz.cr.common.game.objects;
 
 import de.superioz.library.java.util.list.ListUtils;
 import de.superioz.library.minecraft.server.util.serialize.LocationSerializer;

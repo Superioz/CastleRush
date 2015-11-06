@@ -1,8 +1,10 @@
-package de.superioz.cr.common.arena;
+package de.superioz.cr.common.arena.cache;
 
 import de.superioz.cr.common.ItemKit;
-import de.superioz.cr.common.game.GamePlot;
-import de.superioz.cr.common.game.GameWall;
+import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.arena.object.Arena;
+import de.superioz.cr.common.game.objects.GamePlot;
+import de.superioz.cr.common.game.objects.GameWall;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
