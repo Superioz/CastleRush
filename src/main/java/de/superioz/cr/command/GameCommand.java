@@ -8,7 +8,7 @@ import de.superioz.cr.common.events.GameLeaveEvent;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.game.GameWall;
-import de.superioz.cr.common.listener.GameListener;
+import de.superioz.cr.common.listener.GameStateListener;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.util.classes.SimplePair;
 import de.superioz.library.java.util.list.ListUtils;
@@ -70,6 +70,8 @@ public class GameCommand {
         // teleport all players back
         for(WrappedGamePlayer pl : game.getArena().getPlayers()){
             pl.teleport(pl.getJoinLocation());
+            pl.clear();
+            pl.clearInventory();
         }
         game.leaveAll();
 
@@ -91,12 +93,12 @@ public class GameCommand {
         assert game != null;
 
         if((game.getArena().getGameState() != GameManager.State.INGAME)
-                || GameListener.countdown == null){
+                || GameStateListener.countdown == null){
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("noTimerAtTheMoment"), player);
             return;
         }
 
-        int counter = GameListener.countdown.getCounter();
+        int counter = GameStateListener.countdown.getCounter();
         int seconds = counter % 60;
         int minutes = counter / 60;
         int hours = minutes / 60;
@@ -200,10 +202,10 @@ public class GameCommand {
             return;
         }
 
-        int timer = GameListener.countdown.getCounter();
+        int timer = GameStateListener.countdown.getCounter();
 
         if(timer >= 15){
-            GameListener.countdown.setCounter(15);
+            GameStateListener.countdown.setCounter(15);
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("shortenedTime")
                     .replace("%sec", 15+""), player);
         }

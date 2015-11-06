@@ -23,7 +23,7 @@ public class WorldBackup implements Listener {
 
     private List<String> changedBlocks;
     private World world;
-    private boolean flag;
+    private boolean flag = false;
 
     public WorldBackup(World world){
         this.world = world;
@@ -50,6 +50,7 @@ public class WorldBackup implements Listener {
     public void onBlockBreak(BlockBreakEvent event){
         if(event.getBlock().getWorld().getName().equals(world.getName())
                 && flag && !event.isCancelled())
+            System.out.println("Block destroyed and saved");
             changedBlocks.add(serializeBlock(event.getBlock()));
     }
 
@@ -67,15 +68,17 @@ public class WorldBackup implements Listener {
     }
 
     public String serializeBlock(BlockState b){
-        return b.getTypeId() + ":" + b.getData() + ":" + b.getWorld().getName()
+        return b.getTypeId() + ":" + b.getBlock().getData() + ":" + b.getWorld().getName()
                 + ":" + b.getX() + ":" + +b.getY() + ":" + b.getZ();
     }
 
     public void restoreBlock(String s){
         String[] blockdata = s.split(":");
 
-        if(blockdata[0].contains("AIR"))
-            blockdata[0] = "0";
+        if(blockdata[0].contains("(")){
+            String[] blockdata0 = blockdata[0].split("\\(");
+            blockdata[0] = blockdata0[1].replace(")", "");
+        }
 
         int typeId = Integer.parseInt(blockdata[0]);
         byte data = Byte.parseByte(blockdata[1]);

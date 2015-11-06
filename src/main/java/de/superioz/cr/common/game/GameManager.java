@@ -3,6 +3,7 @@ package de.superioz.cr.common.game;
 import de.superioz.cr.common.ItemKit;
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.Arena;
+import de.superioz.cr.common.arena.PlayableArena;
 import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.WorldBackup;

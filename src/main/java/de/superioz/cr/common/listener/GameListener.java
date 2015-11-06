@@ -1,164 +1,125 @@
 package de.superioz.cr.common.listener;
 
 import de.superioz.cr.common.WrappedGamePlayer;
-import de.superioz.cr.common.events.GameFinishEvent;
-import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameLeaveEvent;
-import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.java.util.list.ListUtils;
-import de.superioz.library.minecraft.server.util.task.Countdown;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.List;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
- * This class was created as a part of CastleRush (Spigot)
+ * This class was created as a part of CastleRush
  *
  * @author Superioz
  */
 public class GameListener implements Listener {
 
-    public static Countdown countdown;
+    @EventHandler
+    public void onHit(EntityDamageByEntityEvent event){
+        if(event.getEntity() instanceof Player){
+            Player p1 = (Player) event.getEntity();
+
+            if(event.getDamager() instanceof Player){
+                Player p2 = (Player) event.getDamager();
+
+                if(GameManager.isIngame(p1)
+                        && GameManager.isIngame(p2)){
+                    WrappedGamePlayer gp1 = GameManager.getWrappedGamePlayer(p1);
+                    WrappedGamePlayer gp2 = GameManager.getWrappedGamePlayer(p2);
+
+                    if(gp2.getTeamMates().contains(gp1))
+                        event.setCancelled(true);
+                }
+            }
+            else if(event.getDamager() instanceof Projectile){
+                ProjectileSource source = ((Projectile)event.getDamager()).getShooter();
+
+                if(source instanceof Player){
+                    Player p2 = (Player) source;
+
+                    if(GameManager.isIngame(p1)
+                            && GameManager.isIngame(p2)){
+                        WrappedGamePlayer gp1 = GameManager.getWrappedGamePlayer(p1);
+                        WrappedGamePlayer gp2 = GameManager.getWrappedGamePlayer(p2);
+
+                        if(gp2.getTeamMates().contains(gp1))
+                            event.setCancelled(true);
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler
-    public void onGameJoin(GameJoinEvent event){
-        Player player = event.getPlayer();
-        GameManager.Game game = event.getGame();
+    public void onDie(PlayerDeathEvent event){
+        Player player = event.getEntity();
 
-        if(!game.inAnotherWorld(player.getWorld())){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaMustntInYourWorld"),
-                    player.getPlayer());
+        if(!GameManager.isIngame(player))
             return;
-        }
 
-        game.join(player.getPlayer(), event.getLoc());
-        List<WrappedGamePlayer> currentPlayers = game.getArena().getPlayers();
-        List<Location> spawnPoints = game.getArena().getArena().getSpawnPoints();
-
-        // Teleport player to one spawnPoint
-        int currentPlayersSize = currentPlayers.size();
-        Location spawnPoint = spawnPoints.get(GameManager.getWrappedGamePlayer(player).getGameIndex());
-
-        player.teleport(spawnPoint.clone().add(0, 1, 0));
-
-        // Send message
-        game.broadcast(CastleRush.getProperties().get("playerJoinedTheGame")
-            .replace("%player", player.getPlayer().getDisplayName()).replace("%current", currentPlayersSize+""));
-
-        // Check players count
-        if(currentPlayersSize < 2){
-            // There must be more players
-            game.broadcast(CastleRush.getProperties().get("playersLeftToStart")
-                    .replace("%size", currentPlayersSize + ""));
-        }
-
-        String s = ListUtils.insert(GameManager.getWrappedGamePlayer(player).getTeamMatesNames(), ", ");
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("teamMates")
-                .replace("%pl", s.isEmpty() ? CastleRush.getProperties().get("youDontHaveTeammates"): s), player);
+        event.getDrops().clear();
+        event.setDroppedExp(0);
     }
 
     @EventHandler
-    public void onGameLeave(GameLeaveEvent event){
-        WrappedGamePlayer player = event.getPlayer();
-        GameManager.Game game = event.getGame();
+    public void onRespawn(PlayerRespawnEvent event){
+        Player player = event.getPlayer();
 
-        // Reset Inventory etc.
-        player.clear();
-        player.clearInventory();
+        if(!GameManager.isIngame(player))
+            return;
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
 
-        game.leave(player);
-        player.teleport(player.getJoinLocation());
+        event.setRespawnLocation(gp.getSpawnLocation());
 
-        // Variables
-        List<WrappedGamePlayer> currentPlayers = game.getArena().getPlayers();
+        new BukkitRunnable(){
+            @Override
+            public void run(){
+                gp.getGame().getArena().getArena().getItemKit().resetArmor(gp.getPlayer());
+            }
+        }.runTaskLater(CastleRush.getInstance(), 1L);
+    }
 
-        // Teleport player to one spawnPoint
-        int currentPlayersSize = currentPlayers.size();
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event){
+        Player player = event.getPlayer();
 
-        // Send message
-        game.broadcast(CastleRush.getProperties().get("playerLeftTheGame")
-            .replace("%player", player.getPlayer().getDisplayName()).replace("%current", currentPlayersSize + ""));
+        if(!GameManager.isIngame(player))
+            return;
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
+        GameManager.Game game = gp.getGame();
 
-        if(currentPlayersSize == 0){
-            game.getArena().setGameState(GameManager.State.LOBBY);
-        }
-        else if(currentPlayersSize == 1
-                && game.getArena().getGameState() != GameManager.State.WAITING){
-            game.getArena().setGameState(GameManager.State.LOBBY);
-
-            CastleRush.getPluginManager().callEvent(new GameFinishEvent(game,
-                    game.getArena().getPlayers().get(0)));
+        if((game.getArena().getGameState() != GameManager.State.INGAME)
+                || GameStateListener.countdown == null
+                || GameStateListener.countdown.counter <= 0){
+            CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, gp));
         }
     }
 
     @EventHandler
-    public void onGameStart(GameStartEvent event){
-        GameManager.Game game = event.getGame();
-        game.getArena().setGameState(GameManager.State.INGAME);
-        game.prepareGame();
+    public void onInteract(PlayerInteractEvent event){
+        Player player = event.getPlayer();
 
-        // Now the gamemode is set and the players can start build their castles
-        for(WrappedGamePlayer gamePlayer : game.getArena().getPlayers())
-            gamePlayer.getPlayer().teleport(gamePlayer.getPlot().getTeleportPoint());
-        game.broadcast(CastleRush.getProperties().get("startBuildingCastle"));
+        if(!GameManager.isIngame(player))
+            return;
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player); assert gp != null;
+        GameManager.Game game = gp.getGame();
 
-        // Start the timer
-        countdown = new Countdown(60 * CastleRush.getConfigFile().config().getInt("timer"));
-        countdown.run(endRunnable -> {
-            // What happens at the end
-            // Timer runs out - gamestate dont change
-            // now the players plays another castle and they have to try to capture the wool
-
-            if(game.getArena().getPlayers().size() < 2){
-                CastleRush.getPluginManager().callEvent(new GameFinishEvent(game,
-                        game.getArena().getPlayers().get(0)));
-                return;
-            }
-
-            game.prepareNextState();
-            game.broadcast(CastleRush.getProperties().get("startCaptureCastle"));
-        }, startRunnable -> {
-            int counter = countdown.getCounter();
-
-            if(counter % (60*5) == 0){
-                game.broadcast(CastleRush.getProperties().get("thereAreMinutesLeft")
-                        .replace("%time", (counter / 60) + ""));
-            }
-            else if(counter <= 10){
-                game.broadcast(CastleRush.getProperties().get("thereAreSecondsLeft")
-                        .replace("%time", counter + ""));
-            }
-        });
-    }
-
-    @EventHandler
-    public void onGameFinish(GameFinishEvent event){
-        WrappedGamePlayer winner = event.getWinner();
-        GameManager.Game game = event.getGame();
-
-        // Announcement
-        game.broadcast(CastleRush.getProperties().get("playerWonTheGame")
-                .replace("%player", winner.getPlayer().getDisplayName()));
-
-        // Set gamestate
-        game.getArena().setGameState(GameManager.State.WAITING);
-
-        // Teleport to spawn
-        for(WrappedGamePlayer gp : game.getArena().getPlayers()){
-            int index = gp.getGameIndex();
-            Location spawn = gp.getSpawnLocation();
-
-            gp.clear();
-            gp.getPlayer().teleport(spawn.clone().add(0, 1, 0));
+        if(event.getItem().getType() == Material.WATER_BUCKET
+                || event.getItem().getType() == Material.LAVA_BUCKET
+                && player.getGameMode() != GameMode.CREATIVE){
+            event.setCancelled(true);
         }
-
-        // End of the game
-        game.broadcast(CastleRush.getProperties().get("gameEnded"));
     }
 
 }

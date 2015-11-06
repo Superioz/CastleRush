@@ -1,8 +1,8 @@
-package de.superioz.cr.common.game;
+package de.superioz.cr.common.arena;
 
 import de.superioz.cr.common.WrappedGamePlayer;
-import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.events.GameStateChangeEvent;
+import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.minecraft.server.util.chat.ChatUtils;
 import org.bukkit.block.Sign;
