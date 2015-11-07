@@ -76,4 +76,9 @@ public class PlayableArena {
     public void setPlayers(List<WrappedGamePlayer> players){
         this.players = players;
     }
+
+    public void setArena(Arena arena){
+        this.arena = arena;
+    }
+
 }

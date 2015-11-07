@@ -108,16 +108,21 @@ public class GamePlotListener implements Listener {
         if(!GameManager.isIngame(player)){
             return;
         }
+        if(event.getFrom().getBlockX() == event.getTo().getBlockX()
+                && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            return;
+        }
 
         Game game = GameManager.getGame(player);
-        Location loc = event.getTo().getBlock().getLocation();
         WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
         GamePlot plot = gamePlayer.getPlot();
+        Location loc = LocationUtils.fix(event.getTo().getBlock().getLocation());
 
         if(!plot.isPart(loc)){
             return;
         }
         // Player entered his plot
+        System.out.println("Entered plot.");
 
         assert game != null;
         if(game.getArena().getGamePhase() != GamePhase.CAPTURE){
@@ -145,7 +150,6 @@ public class GamePlotListener implements Listener {
         if(!plot.isPart(loc)){
             return;
         }
-        // Player entered his plot
 
         assert game != null;
         if(game.getArena().getGamePhase() != GamePhase.CAPTURE){

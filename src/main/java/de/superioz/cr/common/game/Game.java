@@ -2,6 +2,7 @@ package de.superioz.cr.common.game;
 
 import de.superioz.cr.common.ItemKit;
 import de.superioz.cr.common.WrappedGamePlayer;
+import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.arena.object.PlayableArena;
 import de.superioz.cr.common.events.GamePlayersAmountChangeEvent;
 import de.superioz.cr.common.game.division.GamePhase;
@@ -11,10 +12,7 @@ import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.WorldBackup;
 import de.superioz.library.java.util.classes.SimplePair;
 import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -43,6 +41,7 @@ public class Game {
 
         if(!GameManager.isIngame(player))
             arena.getPlayers().add(wrappedGamePlayer);
+        getWorld().setDifficulty(Difficulty.PEACEFUL);
 
         CastleRush.getPluginManager()
                 .callEvent(new GamePlayersAmountChangeEvent(this));
@@ -89,17 +88,12 @@ public class Game {
 
     public void registerBackup(){
         this.backup = new WorldBackup(this);
-        CastleRush.getPluginManager().registerEvents(this.backup, CastleRush.getInstance());
-        this.backup.setFlag(true);
-    }
-
-    public void restoreBackup(){
-        this.backup.restoreBlocks();
+        this.backup.prepareBackup();
     }
 
     public void unregisterBackup(){
-        this.backup.setFlag(false);
-        this.restoreBackup();
+        this.backup.unloadWorld();
+        this.backup.loadWorld();
     }
 
     public void broadcast(String message){
@@ -113,7 +107,9 @@ public class Game {
     }
 
     public void prepareGame(){
-        this.arena.getArena().getSpawnPoints().get(0).getWorld().setAutoSave(false);
+        World world = getWorld();
+        world.setAutoSave(false);
+        world.setTime(0);
 
         for(WrappedGamePlayer gamePlayer : getArena().getPlayers()){
             Player p = gamePlayer.getPlayer();
@@ -144,7 +140,7 @@ public class Game {
     }
 
     public boolean inAnotherWorld(World world){
-        return this.getArena().getArena().getSpawnPoints().get(0).getWorld()
+        return this.getArena().getArena().getWorld()
                 != world;
     }
 
@@ -178,8 +174,40 @@ public class Game {
 
     }
 
+    public String checkJoinable(Player player){
+        World world = getWorld();
+
+        if(world.getName().equals(player.getWorld().getName())){
+            return "wrong world";
+        }
+        else if(!inAnotherWorld(Bukkit.getWorlds().get(0))
+                || !inAnotherWorld(Bukkit.getWorlds().get(1))
+                || !inAnotherWorld(Bukkit.getWorlds().get(2))){
+            return "wrong target world";
+        }
+        else if(ArenaManager.existInWorld(world)){
+            return "world occupied";
+        }
+        return "";
+    }
+
+    public void updateWorld(){
+        ArenaManager.loadAgain(this.getArena().getArena());
+    }
+
     public long getTimeStamp(){
         return timeStamp;
+    }
+
+    public World getWorld(){
+        World world = this.arena.getArena().getWorld();
+
+        if(world == null){
+            ArenaManager.loadAgain(this.arena.getArena());
+            this.arena.setArena(ArenaManager.get(this.arena.getArena().getName()));
+            return this.getWorld();
+        }
+        return world;
     }
 
 }

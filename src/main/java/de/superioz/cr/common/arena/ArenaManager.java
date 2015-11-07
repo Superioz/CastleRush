@@ -8,6 +8,7 @@ import de.superioz.cr.common.tool.ArenaMultiTool;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.file.type.JsonFile;
 import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -32,6 +33,10 @@ public class ArenaManager {
             cache.from(backup);
     }
 
+    public static void loadAgain(Arena arena){
+        cache.loadAgain(backup, arena);
+    }
+
     public static void backup(){
         if(size() > 0){
             backup.load(false, true);
@@ -40,6 +45,14 @@ public class ArenaManager {
         if(backup.exists()){
             cache.write(backup);
         }
+    }
+
+    public static boolean existInWorld(World world){
+        for(Arena arena : cache.arenaList){
+            if(arena.getWorld().getName().equals(world.getName()))
+                return true;
+        }
+        return false;
     }
 
     public static void add(Arena arena){

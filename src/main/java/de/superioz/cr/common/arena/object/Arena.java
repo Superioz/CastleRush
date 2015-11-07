@@ -1,12 +1,16 @@
 package de.superioz.cr.common.arena.object;
 
 import de.superioz.cr.common.ItemKit;
+import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.game.objects.GamePlot;
 import de.superioz.cr.common.game.objects.GameWall;
 import de.superioz.library.java.util.list.ListUtils;
 import de.superioz.library.minecraft.server.util.serialize.LocationSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +51,32 @@ public class Arena {
 
     public String getName(){
         return name;
+    }
+
+    public World getWorld(){
+        return this.getSpawnPoints().get(0).getWorld();
+    }
+
+    public String checkJoinable(Player player){
+        World world = getWorld();
+
+        if(world.getName().equals(player.getWorld().getName())){
+            return "wrong world";
+        }
+        else if(!inAnotherWorld(Bukkit.getWorlds().get(0))
+                || !inAnotherWorld(Bukkit.getWorlds().get(1))
+                || !inAnotherWorld(Bukkit.getWorlds().get(2))){
+            return "wrong target world";
+        }
+        else if(ArenaManager.existInWorld(world)){
+            return "world occupied";
+        }
+        return "";
+    }
+
+    public boolean inAnotherWorld(World world){
+        return this.getWorld()
+                != world;
     }
 
     public List<Location> getSpawnPoints(){

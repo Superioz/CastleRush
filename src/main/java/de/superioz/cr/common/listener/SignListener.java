@@ -50,13 +50,12 @@ public class SignListener implements Listener {
             return;
         }
 
-        if(arena.getSpawnPoints().get(0).getWorld() == player.getWorld()){
-            event.getBlock().breakNaturally();
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("mustBeSameWorld"), player);
+        if(!arena.checkJoinable(player).isEmpty()){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotCreateSignReason")
+                    .replace("%reason", arena.checkJoinable(player).toUpperCase()), player.getPlayer());
             return;
         }
 
-        int minPlayers = 0;
         String name = arena.getName();
         String header = ChatColor.AQUA + "CastleRush";
 

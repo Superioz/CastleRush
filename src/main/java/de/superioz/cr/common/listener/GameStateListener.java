@@ -29,9 +29,9 @@ public class GameStateListener implements Listener {
         Player player = event.getPlayer();
         Game game = event.getGame();
 
-        if(!game.inAnotherWorld(player.getWorld())){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaMustntInYourWorld"),
-                    player.getPlayer());
+        if(!game.checkJoinable(player).isEmpty()){
+            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youCannotJoinThisArenaReason")
+                    .replace("%reason", game.checkJoinable(player).toUpperCase()), player.getPlayer());
             return;
         }
 

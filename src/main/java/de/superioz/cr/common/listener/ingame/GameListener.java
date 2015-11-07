@@ -162,7 +162,7 @@ public class GameListener implements Listener {
         Location to = event.getTo();
         Location spawn = gp.getSpawnLocation();
 
-        if(to.distanceSquared(spawn) > 10){
+        if(to.distance(spawn) > 10){
             gp.teleport(spawn);
         }
     }

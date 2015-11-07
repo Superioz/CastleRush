@@ -41,6 +41,30 @@ public class ArenaCache extends SimpleCache<String> {
             this.arenaList = fromStringList(stringList);
     }
 
+    public void loadAgain(JsonFile file, Arena arena){
+        List<Arena> l = load(file);
+        int index = getIndex(arena);
+
+        if(index == -1){
+            return;
+        }
+
+        arenaList.set(index, l.get(getIndex(arena, l)));
+        write(file);
+    }
+
+    public List<Arena> load(JsonFile file){
+        if(file == null)
+             return new ArrayList<>();
+
+        List<String> stringList = file.read(new TypeToken<ArrayList<String>>(){}.getType());
+
+        if(this.list == null)
+            return new ArrayList<>();
+        else
+            return fromStringList(stringList);
+    }
+
     public void add(Arena object){
         if(!this.contains(object))
             this.arenaList.add(object);
@@ -81,6 +105,19 @@ public class ArenaCache extends SimpleCache<String> {
                 return true;
         }
         return false;
+    }
+
+    public int getIndex(Arena arena){
+        return getIndex(arena, arenaList);
+    }
+
+    public int getIndex(Arena arena, List<Arena> arenaList){
+        for(int i = 0; i < arenaList.size(); i++){
+            Arena ar = arenaList.get(i);
+            if(ar.getName().equals(arena.getName()))
+                return i;
+        }
+        return -1;
     }
 
 }
