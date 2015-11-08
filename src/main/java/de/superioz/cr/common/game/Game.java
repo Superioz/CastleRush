@@ -88,12 +88,10 @@ public class Game {
 
     public void registerBackup(){
         this.backup = new WorldBackup(this);
-        this.backup.prepareBackup();
     }
 
     public void unregisterBackup(){
-        this.backup.unloadWorld();
-        this.backup.loadWorld();
+        this.backup.rollback();
     }
 
     public void broadcast(String message){
@@ -185,7 +183,7 @@ public class Game {
                 || !inAnotherWorld(Bukkit.getWorlds().get(2))){
             return "wrong target world";
         }
-        else if(ArenaManager.existInWorld(world)){
+        else if(ArenaManager.existInWorld(world, getArena().getArena())){
             return "world occupied";
         }
         return "";

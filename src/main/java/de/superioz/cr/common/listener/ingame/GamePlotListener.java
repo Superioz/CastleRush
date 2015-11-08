@@ -118,7 +118,8 @@ public class GamePlotListener implements Listener {
         GamePlot plot = gamePlayer.getPlot();
         Location loc = LocationUtils.fix(event.getTo().getBlock().getLocation());
 
-        if(!plot.isPart(loc)){
+        if(!plot.isPart(loc)
+                || plot.isPart(LocationUtils.fix(event.getFrom().getBlock().getLocation()))){
             return;
         }
         // Player entered his plot
@@ -126,7 +127,7 @@ public class GamePlotListener implements Listener {
 
         assert game != null;
         if(game.getArena().getGamePhase() != GamePhase.CAPTURE){
-            event.setCancelled(true);
+            return;
         }
 
         if(player.getGameMode() != GameMode.CREATIVE){
@@ -141,19 +142,26 @@ public class GamePlotListener implements Listener {
         if(!GameManager.isIngame(player)){
             return;
         }
-
-        Game game = GameManager.getGame(player);
-        Location loc = event.getFrom().getBlock().getLocation();
-        WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
-        GamePlot plot = gamePlayer.getPlot();
-
-        if(!plot.isPart(loc)){
+        if(event.getFrom().getBlockX() == event.getTo().getBlockX()
+                && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
             return;
         }
 
+        Game game = GameManager.getGame(player);
+        WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
+        GamePlot plot = gamePlayer.getPlot();
+        Location loc = LocationUtils.fix(event.getFrom().getBlock().getLocation());
+
+        if(!plot.isPart(loc)
+                || plot.isPart(LocationUtils.fix(event.getTo().getBlock().getLocation()))){
+            return;
+        }
+        // Player entered his plot
+        System.out.println("Left plot.");
+
         assert game != null;
         if(game.getArena().getGamePhase() != GamePhase.CAPTURE){
-            event.setCancelled(true);
+            return;
         }
 
         if(player.getGameMode() == GameMode.CREATIVE){

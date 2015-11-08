@@ -51,8 +51,9 @@ public class SignListener implements Listener {
         }
 
         if(!arena.checkJoinable(player).isEmpty()){
+            event.getBlock().breakNaturally();
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotCreateSignReason")
-                    .replace("%reason", arena.checkJoinable(player).toUpperCase()), player.getPlayer());
+                    .replace("%reason", arena.checkJoinable(player)), player);
             return;
         }
 

@@ -141,8 +141,8 @@ public class GameListener implements Listener {
             return;
 
         if(player.getGameMode() == GameMode.SURVIVAL
-            && event.getItem().getType() == Material.WATER_BUCKET
-                || event.getItem().getType() == Material.LAVA_BUCKET){
+            && (event.getItem().getType() == Material.WATER_BUCKET
+                || event.getItem().getType() == Material.LAVA_BUCKET)){
             event.setCancelled(true);
         }
     }

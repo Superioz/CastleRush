@@ -77,8 +77,8 @@ public class GameCommand {
         // teleport all players back
         for(WrappedGamePlayer pl : game.getArena().getPlayers()){
             pl.teleport(pl.getJoinLocation());
-            pl.clear();
             pl.clearInventory();
+            pl.clear();
         }
         game.leaveAll();
 

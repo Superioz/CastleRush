@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class Arena {
                 || !inAnotherWorld(Bukkit.getWorlds().get(2))){
             return "wrong target world";
         }
-        else if(ArenaManager.existInWorld(world)){
+        else if(ArenaManager.existInWorld(world, this)){
             return "world occupied";
         }
         return "";
@@ -77,6 +78,10 @@ public class Arena {
     public boolean inAnotherWorld(World world){
         return this.getWorld()
                 != world;
+    }
+
+    public boolean hasTemplateBackup(){
+        return new File(Bukkit.getWorldContainer(), getWorld().getName() + "_template").exists();
     }
 
     public List<Location> getSpawnPoints(){

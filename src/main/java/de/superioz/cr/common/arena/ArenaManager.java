@@ -47,9 +47,10 @@ public class ArenaManager {
         }
     }
 
-    public static boolean existInWorld(World world){
+    public static boolean existInWorld(World world, Arena except){
         for(Arena arena : cache.arenaList){
-            if(arena.getWorld().getName().equals(world.getName()))
+            if(arena.getWorld().getName().equals(world.getName())
+                    && !arena.getName().equals(except.getName()))
                 return true;
         }
         return false;

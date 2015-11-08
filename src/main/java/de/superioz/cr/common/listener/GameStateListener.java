@@ -31,7 +31,11 @@ public class GameStateListener implements Listener {
 
         if(!game.checkJoinable(player).isEmpty()){
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youCannotJoinThisArenaReason")
-                    .replace("%reason", game.checkJoinable(player).toUpperCase()), player.getPlayer());
+                    .replace("%reason", game.checkJoinable(player)), player.getPlayer());
+            return;
+        }
+        if(!game.getArena().getArena().hasTemplateBackup()){
+            System.out.println("No Backup!");
             return;
         }
 

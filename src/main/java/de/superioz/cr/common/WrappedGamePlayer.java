@@ -4,8 +4,10 @@ import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.objects.GamePlot;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,8 +78,16 @@ public class WrappedGamePlayer {
 
     public void clearInventory(){
         player.getInventory().clear();
-        player.getEquipment().clear();
+        this.clearArmor();
     }
+
+    public void clearArmor(){
+        player.getInventory().setHelmet(new ItemStack(Material.AIR));
+        player.getInventory().setBoots(new ItemStack(Material.AIR));
+        player.getInventory().setChestplate(new ItemStack(Material.AIR));
+        player.getInventory().setLeggings(new ItemStack(Material.AIR));
+    }
+
 
     public void clear(){
         player.setHealth(20D);
