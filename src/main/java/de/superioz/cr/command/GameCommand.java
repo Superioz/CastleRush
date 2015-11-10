@@ -8,7 +8,7 @@ import de.superioz.cr.common.events.GameLeaveEvent;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.game.countdowns.BuildCountdown;
+import de.superioz.cr.common.countdowns.BuildCountdown;
 import de.superioz.cr.common.game.division.GamePhase;
 import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.common.game.objects.GameWall;

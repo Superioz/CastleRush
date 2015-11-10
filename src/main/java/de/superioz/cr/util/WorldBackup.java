@@ -111,7 +111,7 @@ public class WorldBackup implements Listener {
                     deleteDirectory(file);
                 }else{
                     file.delete();
-                } //end else
+                }
             }
         }
         return (path.delete());

@@ -173,20 +173,7 @@ public class Game {
     }
 
     public String checkJoinable(Player player){
-        World world = getWorld();
-
-        if(world.getName().equals(player.getWorld().getName())){
-            return "wrong world";
-        }
-        else if(!inAnotherWorld(Bukkit.getWorlds().get(0))
-                || !inAnotherWorld(Bukkit.getWorlds().get(1))
-                || !inAnotherWorld(Bukkit.getWorlds().get(2))){
-            return "wrong target world";
-        }
-        else if(ArenaManager.existInWorld(world, getArena().getArena())){
-            return "world occupied";
-        }
-        return "";
+        return getArena().getArena().checkJoinable(player);
     }
 
     public void updateWorld(){

@@ -71,7 +71,7 @@ public class ArenaCommand {
     @RawSubCommand(name = "edit", aliases = {"e"}, permission = "castlerush.arena.edit"
             , min = 1, usage = "[arenaName]", desc = "Edits an arena. Puts you into editor cache")
     public void edit(SubCommandContext context){
-
+        //TODO
     }
 
     @RawSubCommand(name = "list", aliases = {"l"}, permission = "castlerush.arena.list"

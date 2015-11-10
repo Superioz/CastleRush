@@ -72,6 +72,9 @@ public class Arena {
         else if(ArenaManager.existInWorld(world, this)){
             return "world occupied";
         }
+        else if(!hasTemplateBackup()){
+            return "no backup";
+        }
         return "";
     }
 

@@ -1,4 +1,4 @@
-package de.superioz.cr.common.game.countdowns;
+package de.superioz.cr.common.countdowns;
 
 import de.superioz.cr.common.events.GameFinishEvent;
 import de.superioz.cr.common.game.Game;

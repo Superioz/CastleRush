@@ -122,8 +122,6 @@ public class GamePlotListener implements Listener {
                 || plot.isPart(LocationUtils.fix(event.getFrom().getBlock().getLocation()))){
             return;
         }
-        // Player entered his plot
-        System.out.println("Entered plot.");
 
         assert game != null;
         if(game.getArena().getGamePhase() != GamePhase.CAPTURE){
@@ -156,8 +154,6 @@ public class GamePlotListener implements Listener {
                 || plot.isPart(LocationUtils.fix(event.getTo().getBlock().getLocation()))){
             return;
         }
-        // Player entered his plot
-        System.out.println("Left plot.");
 
         assert game != null;
         if(game.getArena().getGamePhase() != GamePhase.CAPTURE){

@@ -5,7 +5,7 @@ import de.superioz.cr.common.arena.object.PlayableArena;
 import de.superioz.cr.common.events.*;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.game.countdowns.BuildCountdown;
+import de.superioz.cr.common.countdowns.BuildCountdown;
 import de.superioz.cr.common.game.division.GamePhase;
 import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.main.CastleRush;
@@ -32,10 +32,6 @@ public class GameStateListener implements Listener {
         if(!game.checkJoinable(player).isEmpty()){
             CastleRush.getChatMessager().send(CastleRush.getProperties().get("youCannotJoinThisArenaReason")
                     .replace("%reason", game.checkJoinable(player)), player.getPlayer());
-            return;
-        }
-        if(!game.getArena().getArena().hasTemplateBackup()){
-            System.out.println("No Backup!");
             return;
         }
 
