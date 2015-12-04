@@ -1,7 +1,7 @@
 package de.superioz.cr.common.game.objects;
 
-import de.superioz.library.java.util.list.ListUtils;
-import de.superioz.library.minecraft.server.util.serialize.LocationSerializer;
+import de.superioz.library.java.util.list.ListUtil;
+import de.superioz.library.minecraft.server.util.SerializeUtil;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -48,21 +48,20 @@ public class GamePlot {
         List<Location> spawnPoints = new ArrayList<>();
 
         for(String sp : spawnPointArray){
-            Location loc = new LocationSerializer(null).deserialize(sp);
+            Location loc = SerializeUtil.locFromString(sp);
             spawnPoints.add(loc);
         }
 
-        return new GamePlot(spawnPoints, new LocationSerializer(null).deserialize(array[1]));
+        return new GamePlot(spawnPoints, SerializeUtil.locFromString(array[1]));
     }
 
     @Override
     public String toString(){
         String[] spawnpoints = new String[this.locations.size()];
         for(int i = 0; i < spawnpoints.length; i++){
-            spawnpoints[i] = new LocationSerializer(this.locations.get(i)).serialize();
+            spawnpoints[i] = SerializeUtil.toString(this.locations.get(i));
         }
 
-        return "[" + ListUtils.insert(spawnpoints, ",") + "#" + new LocationSerializer(this.teleportPoint).serialize
-                () + "]";
+        return "[" + ListUtil.insert(spawnpoints, ",") + "#" + SerializeUtil.toString(this.teleportPoint) + "]";
     }
 }

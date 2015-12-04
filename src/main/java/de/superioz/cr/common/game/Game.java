@@ -11,7 +11,7 @@ import de.superioz.cr.common.game.objects.GameWall;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.WorldBackup;
 import de.superioz.library.java.util.classes.SimplePair;
-import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
+import de.superioz.library.minecraft.server.util.GeometryUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -96,7 +96,7 @@ public class Game {
 
     public void broadcast(String message){
         for(WrappedGamePlayer gp : getArena().getPlayers()){
-            CastleRush.getChatMessager().send(message, gp.getPlayer());
+            CastleRush.getChatMessager().write(message, gp.getPlayer());
         }
     }
 
@@ -151,7 +151,7 @@ public class Game {
         for(GameWall wall : getArena().getArena().getGameWalls()){
             SimplePair<Location, Location> boundaries = wall.getBoundaries();
 
-            for(Location l : GeometryUtils.cuboid(boundaries.getType1(), boundaries.getType2())){
+            for(Location l : GeometryUtil.calcCuboid(boundaries.getType1(), boundaries.getType2())){
                 l.getBlock().setType(mat);
             }
         }
@@ -165,7 +165,7 @@ public class Game {
         for(GameWall wall : getArena().getArena().getGameWalls()){
             SimplePair<Location, Location> boundaries = wall.getBoundaries();
 
-            for(Location l : GeometryUtils.cuboid(boundaries.getType1(), boundaries.getType2())){
+            for(Location l : GeometryUtil.calcCuboid(boundaries.getType1(), boundaries.getType2())){
                 l.getBlock().setType(mat);
             }
         }

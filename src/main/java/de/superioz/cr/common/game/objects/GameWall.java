@@ -1,7 +1,7 @@
 package de.superioz.cr.common.game.objects;
 
 import de.superioz.library.java.util.classes.SimplePair;
-import de.superioz.library.minecraft.server.util.serialize.LocationSerializer;
+import de.superioz.library.minecraft.server.util.SerializeUtil;
 import org.bukkit.Location;
 
 /**
@@ -23,15 +23,15 @@ public class GameWall {
 
     @Override
     public String toString(){
-        return new LocationSerializer(boundaries.getType1()).serialize() + "#"
-                + new LocationSerializer(boundaries.getType2()).serialize();
+        return SerializeUtil.toString(boundaries.getType1()) + "#"
+                + SerializeUtil.toString(boundaries.getType2());
     }
 
     public static GameWall fromString(String s){
         String[] arr = s.split("#");
 
-        return new GameWall(new SimplePair<>(new LocationSerializer(null).deserialize(arr[0])
-            , new LocationSerializer(null).deserialize(arr[1])));
+        return new GameWall(new SimplePair<>(SerializeUtil.locFromString(arr[0])
+            , SerializeUtil.locFromString(arr[1])));
     }
 
 

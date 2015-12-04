@@ -37,4 +37,5 @@ public class GameFinishEvent extends Event {
     public HandlerList getHandlers(){
         return handlers;
     }
+
 }

@@ -8,7 +8,7 @@ import de.superioz.cr.common.game.division.GamePhase;
 import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.common.game.objects.GamePlot;
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.minecraft.server.util.LocationUtils;
+import de.superioz.library.minecraft.server.util.LocationUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,7 +36,7 @@ public class GamePlotListener implements Listener {
         }
         Game game = GameManager.getGame(player);
         Block block = event.getBlock();
-        Location loc = LocationUtils.fix(block.getLocation());
+        Location loc = LocationUtil.fix(block.getLocation());
         WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
 
         assert game != null;
@@ -78,7 +78,7 @@ public class GamePlotListener implements Listener {
         }
         Game game = GameManager.getGame(player);
         Block block = event.getBlock();
-        Location loc = LocationUtils.fix(block.getLocation());
+        Location loc = LocationUtil.fix(block.getLocation());
         WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
 
         assert game != null;
@@ -116,10 +116,10 @@ public class GamePlotListener implements Listener {
         Game game = GameManager.getGame(player);
         WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
         GamePlot plot = gamePlayer.getPlot();
-        Location loc = LocationUtils.fix(event.getTo().getBlock().getLocation());
+        Location loc = LocationUtil.fix(event.getTo().getBlock().getLocation());
 
         if(!plot.isPart(loc)
-                || plot.isPart(LocationUtils.fix(event.getFrom().getBlock().getLocation()))){
+                || plot.isPart(LocationUtil.fix(event.getFrom().getBlock().getLocation()))){
             return;
         }
 
@@ -148,10 +148,10 @@ public class GamePlotListener implements Listener {
         Game game = GameManager.getGame(player);
         WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
         GamePlot plot = gamePlayer.getPlot();
-        Location loc = LocationUtils.fix(event.getFrom().getBlock().getLocation());
+        Location loc = LocationUtil.fix(event.getFrom().getBlock().getLocation());
 
         if(!plot.isPart(loc)
-                || plot.isPart(LocationUtils.fix(event.getTo().getBlock().getLocation()))){
+                || plot.isPart(LocationUtil.fix(event.getTo().getBlock().getLocation()))){
             return;
         }
 

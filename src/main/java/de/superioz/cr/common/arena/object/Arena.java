@@ -4,8 +4,8 @@ import de.superioz.cr.common.ItemKit;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.game.objects.GamePlot;
 import de.superioz.cr.common.game.objects.GameWall;
-import de.superioz.library.java.util.list.ListUtils;
-import de.superioz.library.minecraft.server.util.serialize.LocationSerializer;
+import de.superioz.library.java.util.list.ListUtil;
+import de.superioz.library.minecraft.server.util.SerializeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -64,9 +64,7 @@ public class Arena {
         if(world.getName().equals(player.getWorld().getName())){
             return "wrong world";
         }
-        else if(!inAnotherWorld(Bukkit.getWorlds().get(0))
-                || !inAnotherWorld(Bukkit.getWorlds().get(1))
-                || !inAnotherWorld(Bukkit.getWorlds().get(2))){
+        else if(!checkWorld()){
             return "wrong target world";
         }
         else if(ArenaManager.existInWorld(world, this)){
@@ -82,6 +80,35 @@ public class Arena {
         return this.getWorld()
                 != world;
     }
+
+    // Sorry for hard code, I'll make it better later
+    public boolean checkWorld(){
+        if(!inAnotherWorld(Bukkit.getWorlds().get(0))
+                || !inAnotherWorld(Bukkit.getWorlds().get(1))
+                || !inAnotherWorld(Bukkit.getWorlds().get(2))){
+            return false;
+        }
+
+        for(GamePlot plot : getGamePlots()){
+            if(plot.getTeleportPoint().getWorld() == Bukkit.getWorlds().get(0)
+                    || plot.getTeleportPoint().getWorld() == Bukkit.getWorlds().get(1)
+                    || plot.getTeleportPoint().getWorld() == Bukkit.getWorlds().get(2))
+                return false;
+        }
+
+        for(GameWall wall : getGameWalls()){
+            if((wall.getBoundaries().getType1().getWorld() == Bukkit.getWorlds().get(0)
+                    || wall.getBoundaries().getType1().getWorld() == Bukkit.getWorlds().get(1)
+                    || wall.getBoundaries().getType1().getWorld() == Bukkit.getWorlds().get(2))
+                    || wall.getBoundaries().getType2().getWorld() == Bukkit.getWorlds().get(0)
+                    || wall.getBoundaries().getType2().getWorld() == Bukkit.getWorlds().get(1)
+                    || wall.getBoundaries().getType2().getWorld() == Bukkit.getWorlds().get(2))
+                return false;
+        }
+        return true;
+    }
+
+
 
     public boolean hasTemplateBackup(){
         return new File(Bukkit.getWorldContainer(), getWorld().getName() + "_template").exists();
@@ -100,7 +127,7 @@ public class Arena {
         String name = this.name;
         String[] spawnpoints = new String[this.spawnPoints.size()];
         for(int i = 0; i < spawnpoints.length; i++){
-            spawnpoints[i] = new LocationSerializer(this.spawnPoints.get(i)).serialize();
+            spawnpoints[i] = SerializeUtil.toString(this.spawnPoints.get(i));
         }
 
         String[] gamePlots = new String[this.gamePlots.size()];
@@ -116,9 +143,9 @@ public class Arena {
         String gameKit = itemKit.toString();
 
         return name + "&"
-                + "[" + ListUtils.insert(spawnpoints, ",") + "]" + "&"
-                + "[" + ListUtils.insert(gamePlots, "%") + "]" + "&"
-                + "[" + ListUtils.insert(gameWalls, "%") + "]" + "&"
+                + "[" + ListUtil.insert(spawnpoints, ",") + "]" + "&"
+                + "[" + ListUtil.insert(gamePlots, "%") + "]" + "&"
+                + "[" + ListUtil.insert(gameWalls, "%") + "]" + "&"
                 + gameKit;
     }
 
@@ -132,7 +159,7 @@ public class Arena {
         List<Location> spawnPoints = new ArrayList<>();
 
         for(String sp : spawnPointArray){
-            Location loc = new LocationSerializer(null).deserialize(sp);
+            Location loc = SerializeUtil.locFromString(sp);
             spawnPoints.add(loc);
         }
 

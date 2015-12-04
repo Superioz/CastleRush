@@ -46,13 +46,13 @@ public class SignListener implements Listener {
 
         if(arena == null){
             event.getBlock().breakNaturally();
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaDoesntExist"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaDoesntExist"), player);
             return;
         }
 
         if(!arena.checkJoinable(player).isEmpty()){
             event.getBlock().breakNaturally();
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotCreateSignReason")
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotCreateSignReason")
                     .replace("%reason", arena.checkJoinable(player)), player);
             return;
         }
@@ -69,7 +69,7 @@ public class SignListener implements Listener {
         event.setLine(3, GameState.LOBBY.getSpecifier());
         event.getBlock().getState().update(true);
 
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaSignMessage")
+        CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaSignMessage")
                 .replace("%arena", name), player);
     }
 
@@ -110,7 +110,7 @@ public class SignListener implements Listener {
             assert game != null;
 
             if(game.getArena().getGameState() != GameState.LOBBY){
-                CastleRush.getChatMessager().send(CastleRush.getProperties().get("youCannotJoinThisArena"), player);
+                CastleRush.getChatMessager().write(CastleRush.getProperties().get("youCannotJoinThisArena"), player);
                 return;
             }
 

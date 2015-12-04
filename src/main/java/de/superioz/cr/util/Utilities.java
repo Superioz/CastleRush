@@ -1,19 +1,14 @@
 package de.superioz.cr.util;
 
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.minecraft.server.command.CommandHandler;
-import de.superioz.library.minecraft.server.command.help.CommandHelpPage;
-import de.superioz.library.minecraft.server.command.help.CommandHelpPattern;
-import de.superioz.library.minecraft.server.items.ItemBuilder;
-import de.superioz.library.minecraft.server.util.chat.BukkitChat;
-import de.superioz.library.minecraft.server.util.chat.ChatUtils;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import de.superioz.library.minecraft.server.common.command.CommandHandler;
+import de.superioz.library.minecraft.server.common.item.SimpleItem;
+import de.superioz.library.minecraft.server.message.BukkitChat;
+import de.superioz.library.minecraft.server.util.ChatUtil;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,59 +21,31 @@ public class Utilities {
 
     public static CommandHelpPage commandHelpPage;
 
+    static {
+
+        commandHelpPage = new CommandHelpPage(10, CommandHandler.getCommands());
+
+    }
+
     public static String getSpacer(String middle){
-        return ChatUtils.colored("&8===========[ &b" + middle + "&r &8]===========");
+        return ChatUtil.colored("&8===========[ &b" + middle + "&r &8]===========");
     }
 
     public static String getListItem(String item){
-        return ChatUtils.colored("&8# " + item);
+        return ChatUtil.colored("&8# " + item);
     }
 
     public static void getPluginInformationPage(Player player){
         List<String> str = Arrays.asList(
                 getSpacer("CastleRush"),
                 getListItem("&7Author: &b" + CastleRush.getInstance().getDescription().getAuthors().get(0)),
-                getListItem("&7Commands: &b" + CommandHandler.size()),
+                getListItem("&7Commands: &b" + CommandHandler.getAllCommands().size()),
                 getListItem("&7Version: &b" + CastleRush.getInstance().getDescription().getVersion()),
                 getSpacer("CastleRush")
         );
 
         for(String s : str)
             BukkitChat.send(s, player);
-    }
-
-    public static void initCommandHelp(String nextPageCommand){
-        if(commandHelpPage == null){
-            commandHelpPage = new CommandHelpPage(new CommandHelpPattern(
-                    12, CastleRush.getProperties().get("helpCommandHover"),
-                    getListItem(CastleRush.getProperties().get("helpCommandListItem")),
-                    getListItem(CastleRush.getProperties().get("helpCommandNextPage").replace("%label", nextPageCommand)),
-                    CastleRush.getProperties().get("helpCommandHover"),
-                    CastleRush.getProperties().get("helpCommandNextPageHover"),
-                    getListItem(CastleRush.getProperties().get("helpCommandListItem"))
-            ));
-        }
-    }
-
-    public static List<TextComponent> getCommandHelp(String command, int page){
-        List<TextComponent> l = new ArrayList<>();
-
-        if(!commandHelpPage.getPageList().firstCheckPage(page)){
-            return null;
-        }
-
-        l.add(new TextComponent(getSpacer("CastleRush Help &7(&b" + page + "&7/"
-                + commandHelpPage.getPageList().getTotalPages() + "&7)")));
-        l.addAll(commandHelpPage.get(page));
-
-        if(page < commandHelpPage.getPageList().getTotalPages()){
-            l.add(null);
-            l.add(commandHelpPage.getNextPageComponent("/" + command, commandHelpPage.getPattern().getNextPagePattern()));
-        }
-
-        l.add(new TextComponent(getSpacer("CastleRush Help &7(&b" + page + "&7/"
-                + commandHelpPage.getPageList().getTotalPages() + "&7)")));
-        return l;
     }
 
     public static boolean materialExist(String name){
@@ -88,27 +55,47 @@ public class Utilities {
 
     public static class ItemStacks {
 
-        public static final ItemStack MULTITOOL_STACK = new ItemBuilder(Material.DIAMOND_BARDING)
-                .amount(1).unbreakable(true)
-                .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                .name("&6Multitool - 3 in 1").lore("&7Sneak-Rightclick to change tool").build();
+        public static final SimpleItem MULTITOOL_STACK = new SimpleItem(Material.DIAMOND_BARDING)
+                .setAmount(1).setUnbreakable(true)
+                .setFlags(true, ItemFlag.HIDE_UNBREAKABLE)
+                .setName("&6Multitool - 3 in 1").setLore("&7Sneak-Rightclick to change tool");
 
-        public static final ItemStack MULTITOOL_STACK_SHOVEL = new ItemBuilder(Material.DIAMOND_SPADE)
-                .amount(1).unbreakable(true)
-                .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                .name("&6Multitool - 3 in 1").lore("&7Rightclick: Area pos1; Leftclick: Area pos2;").lore
-                        ("&7Sneak+Leftclick: Single point")
-                .build();
+        public static final SimpleItem MULTITOOL_STACK_SHOVEL = new SimpleItem(Material.DIAMOND_SPADE)
+                .setAmount(1).setUnbreakable(true)
+                .setFlags(true, ItemFlag.HIDE_UNBREAKABLE)
+                .setName("&6Multitool - 3 in 1").setLore("&7Rightclick: Area pos1; Leftclick: Area pos2;").setLore
+                        ("&7Sneak+Leftclick: Single point");
 
-        public static final ItemStack MULTITOOL_STACK_PICKAXE = new ItemBuilder(Material.DIAMOND_PICKAXE)
-                .amount(1).unbreakable(true)
-                .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                .name("&6Multitool - 3 in 1").lore("&7Rightclick: Set pos1; Leftclick: Set pos2").build();
+        public static final SimpleItem MULTITOOL_STACK_PICKAXE = new SimpleItem(Material.DIAMOND_PICKAXE)
+                .setAmount(1).setUnbreakable(true)
+                .setFlags(true, ItemFlag.HIDE_UNBREAKABLE)
+                .setName("&6Multitool - 3 in 1").setLore("&7Rightclick: Set pos1; Leftclick: Set pos2");
 
-        public static final ItemStack MULTITOOL_STACK_HOE = new ItemBuilder(Material.DIAMOND_HOE)
-                .amount(1).unbreakable(true)
-                .itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                .name("&6Multitool - 3 in 1").lore("&7Rightclick: Add spawnpoint; Leftclick: Remove one").build();
+        public static final SimpleItem MULTITOOL_STACK_HOE = new SimpleItem(Material.DIAMOND_HOE)
+                .setAmount(1).setUnbreakable(true)
+                .setFlags(true, ItemFlag.HIDE_UNBREAKABLE)
+                .setName("&6Multitool - 3 in 1").setLore("&7Rightclick: Add spawnpoint; Leftclick: Remove one");
+
+        // ========================================================================================================
+
+        public static final SimpleItem EDITOR_CACHE_CLOSE_INV_ITEM = new SimpleItem(Material.BARRIER)
+                .setName("&cClose Inventory").setLore("&7&cClick to close the inventory");
+
+        public static final SimpleItem EDITOR_CACHE_INVENTORY_INFO = new SimpleItem(Material.BOOK)
+                .setName("&9Editor Cache Inventory");
+
+        public static final SimpleItem EDITOR_CACHE_BACK = new SimpleItem(Material.ARROW)
+                .setName("&eGet back").setLore("&7&cClick to get back to the inventory");
+
+        public static final SimpleItem EDITOR_CACHE_SPAWNPOINTS = new SimpleItem(Material.ENDER_PEARL)
+                .setName("&dSpawnpoints").setLore("&7&cClick to overview all spawnpoints");
+
+        public static final SimpleItem EDITOR_CACHE_PLOTS = new SimpleItem(Material.GRASS)
+                .setName("&dPlots").setLore("&7&cClick to overview all plots");
+
+        public static final SimpleItem EDITOR_CACHE_WALLS = new SimpleItem(Material.BRICK)
+                .setName("&dWalls").setLore("&7&cClick to overview all walls");
+
     }
 
 }

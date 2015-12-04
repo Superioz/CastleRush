@@ -1,6 +1,6 @@
 package de.superioz.cr.common.arena.object;
 
-import de.superioz.library.minecraft.server.util.chat.ChatUtils;
+import de.superioz.library.minecraft.server.util.ChatUtil;
 import org.bukkit.block.Sign;
 
 /**
@@ -25,11 +25,11 @@ public class ArenaSign {
     }
 
     public void setLine(int line, String message){
-        getSign().setLine(line, ChatUtils.colored(message));
+        getSign().setLine(line, ChatUtil.colored(message));
     }
 
     public void setLine(ArenaSignLine line, String message){
-        getSign().setLine(line.getLine(), ChatUtils.colored(message));
+        getSign().setLine(line.getLine(), ChatUtil.colored(message));
     }
 
     public void update(){

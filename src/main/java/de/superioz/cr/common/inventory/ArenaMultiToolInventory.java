@@ -1,9 +1,8 @@
 package de.superioz.cr.common.inventory;
 
-import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
-import de.superioz.library.minecraft.server.common.inventory.VirtualInventory;
-import de.superioz.library.minecraft.server.items.interact.ItemInteractable;
+import de.superioz.library.minecraft.server.common.inventory.InventoryContent;
+import de.superioz.library.minecraft.server.common.item.InteractableSimpleItem;
 import org.bukkit.entity.Player;
 
 /**
@@ -11,53 +10,46 @@ import org.bukkit.entity.Player;
  *
  * @author Superioz
  */
-public class ArenaMultiToolInventory extends VirtualInventory {
+public class ArenaMultiToolInventory {
 
-    public ArenaMultiToolInventory(){
-        super(CastleRush.getProperties().get("multitoolHeader"), Size.THREE_ROWS);
-    }
+    @InventoryContent
+    InteractableSimpleItem defaultItem = new InteractableSimpleItem(11, Utilities.ItemStacks.MULTITOOL_STACK,
+            event -> {
+                Player player = event.getPlayer();
+                player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK.getWrappedStack());
 
-    public void load(){
-        ItemInteractable defaultItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK,
-                super.getRaw(), event -> {
-            Player player = event.getPlayer();
-            player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
+                event.cancelEvent();
+                event.closeInventory();
+            });
 
-            event.cancel();
-            event.close();
-        });
+    @InventoryContent
+    InteractableSimpleItem shovelItem = new InteractableSimpleItem(13, Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL,
+            event -> {
+                Player player = event.getPlayer();
+                player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL.getWrappedStack());
 
-        ItemInteractable shovelItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL,
-                super.getRaw(), event -> {
-            Player player = event.getPlayer();
-            player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL);
+                event.cancelEvent();
+                event.closeInventory();
+            });
 
-            event.cancel();
-            event.close();
-        });
+    @InventoryContent
+    InteractableSimpleItem pickaxeItem = new InteractableSimpleItem(14, Utilities.ItemStacks.MULTITOOL_STACK_PICKAXE,
+            event -> {
+                Player player = event.getPlayer();
+                player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_PICKAXE.getWrappedStack());
 
-        ItemInteractable pickaxeItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_PICKAXE,
-                super.getRaw(), event -> {
-            Player player = event.getPlayer();
-            player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_PICKAXE);
+                event.cancelEvent();
+                event.closeInventory();
+            });
 
-            event.cancel();
-            event.close();
-        });
+    @InventoryContent
+    InteractableSimpleItem hoeItem = new InteractableSimpleItem(15, Utilities.ItemStacks.MULTITOOL_STACK_HOE,
+            event -> {
+                Player player = event.getPlayer();
+                player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_HOE.getWrappedStack());
 
-        ItemInteractable hoeItem = new ItemInteractable(Utilities.ItemStacks.MULTITOOL_STACK_HOE,
-                super.getRaw(), event -> {
-            Player player = event.getPlayer();
-            player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK_HOE);
-
-            event.cancel();
-            event.close();
-        });
-
-        super.setItem(11, defaultItem);
-        super.setItem(13, shovelItem);
-        super.setItem(14, pickaxeItem);
-        super.setItem(15, hoeItem);
-    }
+                event.cancelEvent();
+                event.closeInventory();
+            });
 
 }

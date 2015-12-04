@@ -2,14 +2,14 @@ package de.superioz.cr.common.listener;
 
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.object.PlayableArena;
+import de.superioz.cr.common.countdowns.BuildCountdown;
 import de.superioz.cr.common.events.*;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.countdowns.BuildCountdown;
 import de.superioz.cr.common.game.division.GamePhase;
 import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.java.util.list.ListUtils;
+import de.superioz.library.java.util.list.ListUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,7 +30,7 @@ public class GameStateListener implements Listener {
         Game game = event.getGame();
 
         if(!game.checkJoinable(player).isEmpty()){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youCannotJoinThisArenaReason")
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youCannotJoinThisArenaReason")
                     .replace("%reason", game.checkJoinable(player)), player.getPlayer());
             return;
         }
@@ -56,8 +56,8 @@ public class GameStateListener implements Listener {
                     .replace("%size", currentPlayersSize + ""));
         }
 
-        String s = ListUtils.insert(GameManager.getWrappedGamePlayer(player).getTeamMatesNames(), ", ");
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("teamMates")
+        String s = ListUtil.insert(GameManager.getWrappedGamePlayer(player).getTeamMatesNames(), ", ");
+        CastleRush.getChatMessager().write(CastleRush.getProperties().get("teamMates")
                 .replace("%pl", s.isEmpty() ? CastleRush.getProperties().get("youDontHaveTeammates"): s), player);
     }
 

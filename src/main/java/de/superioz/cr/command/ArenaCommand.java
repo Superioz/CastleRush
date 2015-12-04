@@ -1,12 +1,11 @@
 package de.superioz.cr.command;
 
-import de.superioz.cr.common.arena.object.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
+import de.superioz.cr.common.arena.object.Arena;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
-import de.superioz.library.minecraft.server.command.annts.RawSubCommand;
-import de.superioz.library.minecraft.server.command.annts.SubCommand;
-import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
+import de.superioz.library.minecraft.server.common.command.SubCommand;
+import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -18,65 +17,92 @@ import java.util.List;
  */
 public class ArenaCommand {
 
-    @SubCommand(name = "arena", aliases = {"ar", "a"}, permission = "castlerush.arena"
-            , min = 1, usage = "[delete:create:edit:list]", desc = "Commands for handling arenas")
-    public void arenaCommand(SubCommandContext context){
-        context.forward(this.getClass(), "delete", "create", "edit", "list");
+    @SubCommand(label = "arena", aliases = {"ar", "a"}, permission = "castlerush.arena"
+            , usage = "", desc = "Commands for handling arenas")
+    public void arenaCommand(CommandContext context){
+        CastleRush.getChatMessager().write("&c/cr arena [delete:create:edit:list]",
+                (Player)context.getSender());
     }
 
-    @RawSubCommand(name = "create", aliases = {"crea", "c"}, permission = "castlerush.arena.create"
+    @SubCommand.Nested(parent = "arena")
+    @SubCommand(label = "create", aliases = {"crea", "c"}, permission = "castlerush.arena.create"
             , min = 1, usage = "[arenaName]", desc = "Creates an arena. Puts you into editor cache")
-    public void create(SubCommandContext context){
+    public void create(CommandContext context){
         Player player = (Player) context.getSender();
 
         // Check if player already started to edit/create an arena
         if(ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("alreadyInEditorCache"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("alreadyInEditorCache"), player);
             return;
         }
 
-        String arenaName = ArenaManager.getName(context, 0);
+        String arenaName = ArenaManager.getName(context, 1);
 
         // Check if name of arena typed in is valid
         if(!ArenaManager.checkArenaName(arenaName)
                 || ArenaManager.EditorCache.contains(arenaName)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("nameNotValid"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("nameNotValid")
+                    + " ["+arenaName+"]", player);
+
             return;
         }
 
         ArenaManager.EditorCache.addPlayer(player, arenaName);
-        player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK);
-        CastleRush.getChatMessager().send(
+        player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK.getWrappedStack());
+        CastleRush.getChatMessager().write(
                 CastleRush.getProperties().get("startCreatingArena").replace("%arena", arenaName), player);
     }
 
-    @RawSubCommand(name = "delete", aliases = {"del", "d"}, permission = "castlerush.arena.delete"
+    @SubCommand.Nested(parent = "arena")
+    @SubCommand(label = "delete", aliases = {"del", "d"}, permission = "castlerush.arena.delete"
             , min = 1, usage = "[arenaName]", desc = "Deletes an arena")
-    public void delete(SubCommandContext context){
+    public void delete(CommandContext context){
         Player player = (Player) context.getSender();
 
-        String arenaName = ArenaManager.getName(context, 0);
+        String arenaName = ArenaManager.getName(context, 1);
 
         Arena ar  = ArenaManager.get(arenaName);
         if(ar == null){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("arenaDoesntExist"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaDoesntExist"), player);
             return;
         }
 
         ArenaManager.getCache().remove(ar);
-        CastleRush.getChatMessager().send(
+        CastleRush.getChatMessager().write(
                 CastleRush.getProperties().get("arenaRemoved").replace("%arena", arenaName), player);
     }
 
-    @RawSubCommand(name = "edit", aliases = {"e"}, permission = "castlerush.arena.edit"
+    @SubCommand.Nested(parent = "arena")
+    @SubCommand(label = "edit", aliases = {"e"}, permission = "castlerush.arena.edit"
             , min = 1, usage = "[arenaName]", desc = "Edits an arena. Puts you into editor cache")
-    public void edit(SubCommandContext context){
-        //TODO
+    public void edit(CommandContext context){
+        Player player = (Player) context.getSender();
+
+        // Check if player already started to edit/create an arena
+        if(ArenaManager.EditorCache.contains(player)){
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("alreadyInEditorCache"), player);
+            return;
+        }
+
+        String arenaName = ArenaManager.getName(context, 1);
+
+        // Check if arena already exists
+        Arena ar  = ArenaManager.get(arenaName);
+        if(ar == null){
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaDoesntExist"), player);
+            return;
+        }
+
+        ArenaManager.EditorCache.insert(player, ar);
+        player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK.getWrappedStack());
+        CastleRush.getChatMessager().write(
+                CastleRush.getProperties().get("startEditingArena").replace("%arena", arenaName), player);
     }
 
-    @RawSubCommand(name = "list", aliases = {"l"}, permission = "castlerush.arena.list"
+    @SubCommand.Nested(parent = "arena")
+    @SubCommand(label = "list", aliases = {"l"}, permission = "castlerush.arena.list"
             , desc = "Lists all arenas")
-    public void list(SubCommandContext context){
+    public void list(CommandContext context){
         Player player = (Player) context.getSender();
 
         List<Arena> arenas = ArenaManager.getCache().arenaList;
@@ -86,7 +112,7 @@ public class ArenaCommand {
             msg += CastleRush.getProperties().get("arenaInList").replace("%arena", arena.getName());
         }
 
-        CastleRush.getChatMessager().send(
+        CastleRush.getChatMessager().write(
                 CastleRush.getProperties().get("arenaList").replace("%arenas", msg)
                         .replace("%size", arenas.size() + ""), player);
     }

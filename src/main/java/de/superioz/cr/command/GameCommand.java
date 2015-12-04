@@ -3,21 +3,21 @@ package de.superioz.cr.command;
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.arena.object.Arena;
+import de.superioz.cr.common.countdowns.BuildCountdown;
 import de.superioz.cr.common.events.GameJoinEvent;
 import de.superioz.cr.common.events.GameLeaveEvent;
 import de.superioz.cr.common.events.GameStartEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.countdowns.BuildCountdown;
 import de.superioz.cr.common.game.division.GamePhase;
 import de.superioz.cr.common.game.division.GameState;
 import de.superioz.cr.common.game.objects.GameWall;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.util.classes.SimplePair;
-import de.superioz.library.java.util.list.ListUtils;
-import de.superioz.library.minecraft.server.command.annts.SubCommand;
-import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
-import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
+import de.superioz.library.java.util.list.ListUtil;
+import de.superioz.library.minecraft.server.common.command.SubCommand;
+import de.superioz.library.minecraft.server.common.command.context.CommandContext;
+import de.superioz.library.minecraft.server.util.GeometryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,13 +30,13 @@ import org.bukkit.entity.Player;
  */
 public class GameCommand {
 
-    @SubCommand(name = "startgame", aliases = "start", permission = "castlerush.startgame"
+    @SubCommand(label = "startgame", aliases = "start", permission = "castlerush.startgame"
         , desc = "Starts the current game")
-    public void startGame(SubCommandContext commandContext){
+    public void startGame(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
@@ -48,7 +48,7 @@ public class GameCommand {
 
         // Is the lobby full?
         if(!(game.enoughPlayers())){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("notEnoughPlayers"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notEnoughPlayers"), player);
             return;
         }
 
@@ -56,13 +56,13 @@ public class GameCommand {
         CastleRush.getPluginManager().callEvent(new GameStartEvent(game));
     }
 
-    @SubCommand(name = "finishgame", aliases = "finish", permission = "castlerush.finishgame"
+    @SubCommand(label = "finishgame", aliases = "finish", permission = "castlerush.finishgame"
         , desc = "Finished the current game")
-    public void finishGame(SubCommandContext commandContext){
+    public void finishGame(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
@@ -70,7 +70,7 @@ public class GameCommand {
 
         // Is the game really finished?
         if(game.getArena().getGameState() != GameState.WAITING){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("gameIsntFinish"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("gameIsntFinish"), player);
             return;
         }
 
@@ -87,40 +87,40 @@ public class GameCommand {
         GameManager.removeGameFromQueue(game);
     }
 
-    @SubCommand(name = "timeleft", aliases = "tl", permission = "castlerush.timeleft"
+    @SubCommand(label = "timeleft", aliases = "tl", permission = "castlerush.timeleft"
             , desc = "Shows the counter from current timer")
-    public void timeLeft(SubCommandContext commandContext){
+    public void timeLeft(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
         assert game != null;
 
         if(game.getArena().getGamePhase() != GamePhase.BUILD){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("noTimerAtTheMoment"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("noTimerAtTheMoment"), player);
             return;
         }
 
-        int counter = BuildCountdown.getCountdown().getCounter();
+        int counter = BuildCountdown.getRepeater().getCounter();
         int seconds = counter % 60;
         int minutes = counter / 60;
         int hours = minutes / 60;
 
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("timeLeft")
+        CastleRush.getChatMessager().write(CastleRush.getProperties().get("timeLeft")
                 .replace("%hours", hours+"").replace("%minutes", minutes+"").replace("%seconds", seconds+""),
                     player);
     }
 
-    @SubCommand(name = "timegone", aliases = "tg", permission = "castlerush.timegone"
+    @SubCommand(label = "timegone", aliases = "tg", permission = "castlerush.timegone"
             , desc = "Shows how much time gone from jump-run begin")
-    public void timeGone(SubCommandContext context){
+    public void timeGone(CommandContext context){
         Player player = (Player) context.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
@@ -137,44 +137,44 @@ public class GameCommand {
             int minutes = diff / 60;
             int hours = minutes / 60;
 
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("timeGone")
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("timeGone")
                     .replace("%hours", hours+"")
                     .replace("%minutes", minutes+"")
                     .replace("%seconds", seconds+""), player);
         }
         else {
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("noTimeGoneYet"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("noTimeGoneYet"), player);
         }
     }
 
-    @SubCommand(name = "join", aliases = "j", permission = "castlerush.join"
+    @SubCommand(label = "join", aliases = "j", permission = "castlerush.join"
             , desc = "Joins given arena", min = 1)
-    public void join(SubCommandContext context){
+    public void join(CommandContext context){
         Player player = (Player) context.getSender();
 
         if(GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youAreAlreadyIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youAreAlreadyIngame"), player);
             return;
         }
 
-        String arenaName = ArenaManager.getName(context, 0);
+        String arenaName = ArenaManager.getName(context, 1);
 
         if(!ArenaManager.checkArenaName(arenaName)
                 || ArenaManager.EditorCache.contains(arenaName)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("nameNotValid"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("nameNotValid"), player);
             return;
         }
 
         Arena arena = ArenaManager.get(arenaName);
         if(!GameManager.containsGameInQueue(arena)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotJoinGameViaCommand"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotJoinGameViaCommand"), player);
             return;
         }
         Game game = GameManager.getGame(arena);
         assert game != null;
 
         if(game.getArena().getGameState() != GameState.LOBBY){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("cannotJoinArena"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotJoinArena"), player);
             return;
         }
 
@@ -182,52 +182,52 @@ public class GameCommand {
         CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player, player.getLocation()));
     }
 
-    @SubCommand(name = "leave", aliases = "l", permission = "castlerush.leave"
+    @SubCommand(label = "leave", aliases = "l", permission = "castlerush.leave"
             , desc = "Leaves given arena")
-    public void leave(SubCommandContext context){
+    public void leave(CommandContext context){
         Player player = (Player) context.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
 
         Game game = GameManager.getGame(player); assert game != null;
 
         CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, GameManager.getWrappedGamePlayer(player)));
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("leftTheGame"), player);
+        CastleRush.getChatMessager().write(CastleRush.getProperties().get("leftTheGame"), player);
     }
 
-    @SubCommand(name = "forcetimer", aliases = {"forcet", "ft"}, permission = "castlerush.forcetimer"
+    @SubCommand(label = "forcetimer", aliases = {"forcet", "ft"}, permission = "castlerush.forcetimer"
             , desc = "Forces the timer in arena")
-    public void forceTimer(SubCommandContext context){
+    public void forceTimer(CommandContext context){
         Player player = (Player) context.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
 
-        int timer = BuildCountdown.getCountdown().getCounter();
+        int timer = BuildCountdown.getRepeater().getCounter();
 
         if(timer >= 15){
-            BuildCountdown.getCountdown().setCounter(15);
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("shortenedTime")
+            BuildCountdown.getRepeater().setCounter(15);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("shortenedTime")
                     .replace("%sec", 15+""), player);
         }
         else{
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("noNeedForShorten"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("noNeedForShorten"), player);
         }
     }
 
-    @SubCommand(name = "isingame", aliases = "ii", permission = "castlerush.isingame"
+    @SubCommand(label = "isingame", aliases = "ii", permission = "castlerush.isingame"
             , desc = "Joins given arena", min = 1, usage = "[player]")
-    public void isIngame(SubCommandContext context){
+    public void isIngame(CommandContext context){
         Player player = (Player) context.getSender();
 
-        String name = context.argument(0);
+        String name = context.getArgument(0);
         if(Bukkit.getPlayer(name) == null){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("playerIsntOnline"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("playerIsntOnline"), player);
             return;
         }
 
@@ -237,7 +237,7 @@ public class GameCommand {
         Game game = GameManager.getGame(target);
 
         assert game != null;
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("isIngameMessage")
+        CastleRush.getChatMessager().write(CastleRush.getProperties().get("isIngameMessage")
                 .replace("%ingameState", (b ?
                                 CastleRush.getProperties().get("isIngameState")
                                         .replace("%arena", game.getArena().getArena().getName())
@@ -245,13 +245,13 @@ public class GameCommand {
                 .replace("%player", target.getDisplayName()), player);
     }
 
-    @SubCommand(name = "setwalls", aliases = {"setw", "sw"}, permission = "castlerush.setwalls"
+    @SubCommand(label = "setwalls", aliases = {"setw", "sw"}, permission = "castlerush.setwalls"
             , desc = "Sets all walls ingame")
-    public void setwalls(SubCommandContext context){
+    public void setwalls(CommandContext context){
         Player player = (Player) context.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
@@ -261,34 +261,34 @@ public class GameCommand {
         for(GameWall wall : game.getArena().getArena().getGameWalls()){
             SimplePair<Location, Location> boundaries = wall.getBoundaries();
 
-            if(context.argumentsLength() == 0){
+            if(context.getArgumentsLength() == 0){
                 // Toggles the walls
-                for(Location l : GeometryUtils.cuboid(boundaries.getType1(), boundaries.getType2())){
+                for(Location l : GeometryUtil.calcCuboid(boundaries.getType1(), boundaries.getType2())){
                     l.getBlock().setType(Material.AIR);
                 }
             }
-            else if(context.argumentsLength() >= 1){
-                String material = context.argument(0).toUpperCase();
+            else if(context.getArgumentsLength() >= 1){
+                String material = context.getArgument(1).toUpperCase();
                 game.setWalls(material);
             }
         }
     }
 
-    @SubCommand(name = "teammates", aliases = {"teamm", "tm"}, permission = "castlerush.teammates"
+    @SubCommand(label = "teammates", aliases = {"teamm", "tm"}, permission = "castlerush.teammates"
             , desc = "Shows your teammates")
-    public void teammates(SubCommandContext context){
+    public void teammates(CommandContext context){
         Player player = (Player) context.getSender();
 
         if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().send(CastleRush.getProperties().get("youArentIngame"), player);
+            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
         assert game != null;
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player);
 
-        String s = ListUtils.insert(gp.getTeamMatesNames(), ", ");
-        CastleRush.getChatMessager().send(CastleRush.getProperties().get("teamMates")
+        String s = ListUtil.insert(gp.getTeamMatesNames(), ", ");
+        CastleRush.getChatMessager().write(CastleRush.getProperties().get("teamMates")
                 .replace("%pl", s.isEmpty() ? CastleRush.getProperties().get("youDontHaveTeammates"): s), player);
     }
 

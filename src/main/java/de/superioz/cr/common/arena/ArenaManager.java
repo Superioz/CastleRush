@@ -7,7 +7,7 @@ import de.superioz.cr.common.arena.object.Arena;
 import de.superioz.cr.common.tool.ArenaMultiTool;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.library.java.file.type.JsonFile;
-import de.superioz.library.minecraft.server.command.cntxt.SubCommandContext;
+import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -57,8 +57,15 @@ public class ArenaManager {
     }
 
     public static void add(Arena arena){
-        cache.add(arena);
+        if(cache.contains(arena)){
+            cache.arenaList.set(cache.getIndex(arena), arena);
+        }
+        else{
+            cache.add(arena);
+        }
+
         backup();
+        loadAgain(arena);
     }
 
     public static void remove(int index){
@@ -75,14 +82,14 @@ public class ArenaManager {
         return null;
     }
 
-    public static String getName(SubCommandContext context, int arg){
+    public static String getName(CommandContext context, int arg){
         String arenaName = "";
-        for(int i = arg; i < context.argumentsLength(); i++){
+        for(int i = arg; i < context.getArgumentsLength()+1; i++){
             String add = " ";
-            if(i == (context.argumentsLength()-1))
+            if(i == (context.getArgumentsLength()))
                 add = "";
 
-            arenaName += context.argument(i) + add;
+            arenaName += context.getArgument(i) + add;
         }
         return arenaName;
     }
@@ -121,6 +128,25 @@ public class ArenaManager {
                 editorLast.put(player, new UnpreparedArena(name));
                 editorCache.put(player, new RawUnpreparedArena(name));
             }
+        }
+
+        public static void insert(Player player, Arena arena){
+            addPlayer(player, arena.getName());
+
+            RawUnpreparedArena rawUnpreparedArena = get(player);
+            UnpreparedArena unpreparedArena = getLast(player);
+
+            if(rawUnpreparedArena == null
+                    || unpreparedArena == null){
+                System.out.println("Lel!");
+                return;
+            }
+
+            arena.getSpawnPoints().forEach(rawUnpreparedArena::addSpawnpoint);
+            rawUnpreparedArena.setItemKit(arena.getItemKit());
+            arena.getGameWalls().forEach(unpreparedArena::addGameWall);
+            arena.getGamePlots().forEach(unpreparedArena::addGamePlot);
+
         }
 
         public static boolean isFinished(Player player){

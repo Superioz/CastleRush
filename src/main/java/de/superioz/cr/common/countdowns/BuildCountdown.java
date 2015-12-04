@@ -3,7 +3,7 @@ package de.superioz.cr.common.countdowns;
 import de.superioz.cr.common.events.GameFinishEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.minecraft.server.util.task.Countdown;
+import de.superioz.library.minecraft.server.common.runnable.SuperRepeater;
 
 /**
  * This class was created as a part of CastleRush
@@ -12,12 +12,11 @@ import de.superioz.library.minecraft.server.util.task.Countdown;
  */
 public class BuildCountdown {
 
-    public static Countdown instance;
+    private static SuperRepeater repeater = new SuperRepeater();
 
     public static void run(Game game){
-        instance = new Countdown(60 * CastleRush.getConfigFile().config().getInt("timer"));
 
-        instance.run(endRunnable -> {
+        repeater.run(endRunnable -> {
             // What happens at the end
             // Timer runs out - gamestate dont change
             // now the players plays another castle and they have to try to capture the wool
@@ -31,9 +30,9 @@ public class BuildCountdown {
             game.prepareNextState();
             game.broadcast(CastleRush.getProperties().get("startCaptureCastle"));
         }, startRunnable -> {
-            int counter = instance.getCounter();
+            int counter = repeater.getCounter();
 
-            if(counter % (60*5) == 0){
+            if(counter % (60 * 5) == 0){
                 game.broadcast(CastleRush.getProperties().get("thereAreMinutesLeft")
                         .replace("%time", (counter / 60) + ""));
             }
@@ -41,11 +40,10 @@ public class BuildCountdown {
                 game.broadcast(CastleRush.getProperties().get("thereAreSecondsLeft")
                         .replace("%time", counter + ""));
             }
-        });
+        }, 20, 60 * CastleRush.getConfigFile().config().getInt("timer"));
     }
 
-    public static Countdown getCountdown(){
-        return instance;
+    public static SuperRepeater getRepeater(){
+        return repeater;
     }
-
 }

@@ -2,8 +2,8 @@ package de.superioz.cr.common;
 
 
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.minecraft.server.items.ItemBuilder;
-import de.superioz.library.minecraft.server.util.serialize.ItemStackSerializer;
+import de.superioz.library.minecraft.server.common.item.SimpleItem;
+import de.superioz.library.minecraft.server.util.SerializeUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -27,15 +27,14 @@ public class ItemKit {
 
     @Override
     public String toString(){
-        return new ItemStackSerializer(content).serialize()
-                + "%" + new ItemStackSerializer(armor).serialize();
+        return SerializeUtil.toString(content)
+                + "%" + SerializeUtil.toString(armor);
     }
 
     public static ItemKit fromString(String s){
         String[] arr = s.split("%");
 
-        return new ItemKit(new ItemStackSerializer(null).deserialize(arr[0]), new ItemStackSerializer(null)
-                .deserialize(arr[1]));
+        return new ItemKit(SerializeUtil.itemsFromString(arr[0]), SerializeUtil.itemsFromString(arr[1]));
     }
 
     public static ItemStack[] getContents(ItemStack[] cont){
@@ -47,8 +46,8 @@ public class ItemKit {
             if(item == null || item.getType() == Material.AIR)
                 continue;
 
-            arr[i] = new ItemBuilder(item).unbreakable(true).itemFlag(ItemFlag.HIDE_UNBREAKABLE, true)
-                    .lore(CastleRush.getProperties().get("itemIsUnbreakable")).build();
+            arr[i] = new SimpleItem(item).setUnbreakable(true).setFlags(true, ItemFlag.HIDE_UNBREAKABLE)
+                    .setLore(CastleRush.getProperties().get("itemIsUnbreakable")).getWrappedStack();
         }
         return arr;
     }

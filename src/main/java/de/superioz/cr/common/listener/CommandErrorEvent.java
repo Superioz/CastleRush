@@ -1,6 +1,6 @@
 package de.superioz.cr.common.listener;
 
-import de.superioz.library.minecraft.server.deep.events.command.ExecutionErrorEvent;
+import de.superioz.library.minecraft.server.event.CommandExecutionErrorEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -12,7 +12,7 @@ import org.bukkit.event.Listener;
 public class CommandErrorEvent implements Listener {
 
     @EventHandler
-    public void onCommandError(ExecutionErrorEvent event){
+    public void onCommandError(CommandExecutionErrorEvent event){
         //
     }
 

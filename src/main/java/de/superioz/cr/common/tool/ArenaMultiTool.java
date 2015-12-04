@@ -5,9 +5,12 @@ import de.superioz.cr.common.arena.cache.RawUnpreparedArena;
 import de.superioz.cr.common.inventory.ArenaMultiToolInventory;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.Utilities;
-import de.superioz.library.minecraft.server.items.ItemTool;
-import de.superioz.library.minecraft.server.util.LocationUtils;
-import de.superioz.library.minecraft.server.util.geometry.GeometryUtils;
+import de.superioz.library.minecraft.server.common.inventory.InventorySize;
+import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
+import de.superioz.library.minecraft.server.common.item.SimpleItemTool;
+import de.superioz.library.minecraft.server.exception.InventoryCreateException;
+import de.superioz.library.minecraft.server.util.GeometryUtil;
+import de.superioz.library.minecraft.server.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -20,7 +23,7 @@ import java.util.List;
  *
  * @author Superioz
  */
-public class ArenaMultiTool extends ItemTool {
+public class ArenaMultiTool extends SimpleItemTool {
 
     public ArenaMultiToolHoe hoe = new ArenaMultiToolHoe();
     public ArenaMultiToolPickaxe pickaxe = new ArenaMultiToolPickaxe();
@@ -28,14 +31,14 @@ public class ArenaMultiTool extends ItemTool {
 
     public ArenaMultiTool(){
         super(Utilities.ItemStacks.MULTITOOL_STACK, event -> {
-            Action action = event.action();
-            Player player = event.player();
+            Action action = event.getAction();
+            Player player = event.getPlayer();
 
-            event.cancel();
+            event.getEvent().setCancelled(true);
             if(checkAction(action, player))
                 return;
 
-            CastleRush.getChatMessager().send("&6You can't do anything with this. Use Sneak+Rightclick", player);
+            CastleRush.getChatMessager().write("&6You can't do anything with this. Use Sneak+Rightclick", player);
         });
     }
 
@@ -43,22 +46,27 @@ public class ArenaMultiTool extends ItemTool {
         if((action == Action.RIGHT_CLICK_AIR
                 || action == Action.RIGHT_CLICK_BLOCK)
                 && player.isSneaking()){
-            ArenaMultiToolInventory inv = new ArenaMultiToolInventory();
-            inv.load();
-            player.openInventory(inv.build());
-            return true;
+            SuperInventory inv = null;
+            try{
+                inv = new SuperInventory(CastleRush.getProperties().get("multitoolHeader"), InventorySize
+                        .THREE_ROWS).from(ArenaMultiToolInventory.class);
+                player.openInventory(inv.build());
+                return true;
+            }catch(InventoryCreateException e){
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     // ====================================================================================
 
-    public class ArenaMultiToolShovel extends ItemTool {
+    public class ArenaMultiToolShovel extends SimpleItemTool {
         public ArenaMultiToolShovel(){
             super(Utilities.ItemStacks.MULTITOOL_STACK_SHOVEL, event -> {
-                Action action = event.action();
-                Player player = event.player();
-                Block block = event.clickedBlock();
+                Action action = event.getAction();
+                Player player = event.getPlayer();
+                Block block = event.getClickedBlock();
 
                 if(checkAction(action, player))
                     return;
@@ -70,18 +78,18 @@ public class ArenaMultiTool extends ItemTool {
                 RawUnpreparedArena arena = ArenaManager.EditorCache.get(player);
                 assert arena != null;
 
-                event.cancel();
+                event.getEvent().setCancelled(true);
                 switch(action){
                     case LEFT_CLICK_BLOCK:
                         if(player.isSneaking()){
-                            Location l = LocationUtils.fix(block.getLocation());
+                            Location l = LocationUtil.fix(block.getLocation());
 
                             if(!arena.addGamePlotLocation(new Location(l.getWorld(), l.getX(), 0, l.getZ()))){
-                                CastleRush.getChatMessager().send("&cThis position was already added to plot!", player);
+                                CastleRush.getChatMessager().write("&cThis position was already added to plot!", player);
                                 return;
                             }
 
-                            CastleRush.getChatMessager().send("&7Added @&9"+LocationUtils.toString(l)+" &7to plot.",
+                            CastleRush.getChatMessager().write("&7Added @&9"+LocationUtil.toString(l)+" &7to plot.",
                                     player);
                             break;
                         }
@@ -89,43 +97,43 @@ public class ArenaMultiTool extends ItemTool {
                         // Set Position 2
                         if(arena.getRawGamePlotMarker().getType1() == null){
                             // Location 1 is not set
-                            CastleRush.getChatMessager().send("&cSet 1st Plot-location first!", player);
+                            CastleRush.getChatMessager().write("&cSet 1st Plot-location first!", player);
                             break;
                         }
 
                         Location pos1 = arena.getRawGamePlotMarker().getType1();
-                        Location pos2 = LocationUtils.fix(block.getLocation());
+                        Location pos2 = LocationUtil.fix(block.getLocation());
 
-                        List<Location> locs = GeometryUtils.cuboid(pos1, pos2);
+                        List<Location> locs = GeometryUtil.calcCuboid(pos1, pos2);
                         for(Location lo : locs){
-                            Location location = LocationUtils.fix(lo.getBlock().getLocation());
+                            Location location = LocationUtil.fix(lo.getBlock().getLocation());
                             Location fixedLocation = new Location(
                                     location.getWorld(), location.getX(), 0, location.getZ());
 
                             if(!arena.addGamePlotLocation(fixedLocation)){
-                                CastleRush.getChatMessager().send("&cOne of these positions was already added to " +
+                                CastleRush.getChatMessager().write("&cOne of these positions was already added to " +
                                         "plot!", player);
                                 return;
                             }
                         }
 
-                        CastleRush.getChatMessager().send("&7Plot-position &e#2 set &7and added marked locations to " +
+                        CastleRush.getChatMessager().write("&7Plot-position &e#2 set &7and added marked locations to " +
                                         "plot", player);
 
                         // remove from
                         arena.getRawGamePlotMarker().setType1(null);
                         arena.getRawGamePlotMarker().setType2(null);
 
-                        CastleRush.getChatMessager().send("&7@&9"
-                                + LocationUtils.toString(pos1) + "&7 - @&9"
-                                + LocationUtils.toString(pos2), player);
+                        CastleRush.getChatMessager().write("&7@&9"
+                                + LocationUtil.toString(pos1) + "&7 - @&9"
+                                + LocationUtil.toString(pos2), player);
                         break;
                     case RIGHT_CLICK_BLOCK:
                         //Set position 2
-                        Location pos = LocationUtils.fix(block.getLocation());
+                        Location pos = LocationUtil.fix(block.getLocation());
 
                         arena.getRawGamePlotMarker().setType1(pos);
-                        CastleRush.getChatMessager().send("&7Plot-position &e#1 set &7@&9"+LocationUtils.toString(pos),
+                        CastleRush.getChatMessager().write("&7Plot-position &e#1 set &7@&9"+LocationUtil.toString(pos),
                                 player);
                         break;
                 }
@@ -133,12 +141,12 @@ public class ArenaMultiTool extends ItemTool {
         }
     }
 
-    public class ArenaMultiToolPickaxe extends ItemTool {
+    public class ArenaMultiToolPickaxe extends SimpleItemTool {
         public ArenaMultiToolPickaxe(){
             super(Utilities.ItemStacks.MULTITOOL_STACK_PICKAXE, event -> {
-                Action action = event.action();
-                Player player = event.player();
-                Block block = event.clickedBlock();
+                Action action = event.getAction();
+                Player player = event.getPlayer();
+                Block block = event.getClickedBlock();
 
                 if(checkAction(action, player))
                     return;
@@ -150,22 +158,22 @@ public class ArenaMultiTool extends ItemTool {
                 RawUnpreparedArena arena = ArenaManager.EditorCache.get(player);
                 assert arena != null;
 
-                event.cancel();
+                event.getEvent().setCancelled(true);
                 switch(action){
                     case RIGHT_CLICK_BLOCK:
                         // Position 1
-                        Location pos1 = LocationUtils.fix(block.getLocation());
+                        Location pos1 = LocationUtil.fix(block.getLocation());
 
                         arena.getRawGameWalls().setType1(pos1);
-                        CastleRush.getChatMessager().send("&7Wall-position &e#1 set &7@&9"+LocationUtils.toString(pos1),
+                        CastleRush.getChatMessager().write("&7Wall-position &e#1 set &7@&9"+LocationUtil.toString(pos1),
                                 player);
                         break;
                     case LEFT_CLICK_BLOCK:
                         // Position 2
-                        Location pos2 = LocationUtils.fix(block.getLocation());
+                        Location pos2 = LocationUtil.fix(block.getLocation());
 
                         arena.getRawGameWalls().setType2(pos2);
-                        CastleRush.getChatMessager().send("&7Wall-position &e#2 set &7@&9"+LocationUtils.toString(pos2),
+                        CastleRush.getChatMessager().write("&7Wall-position &e#2 set &7@&9"+LocationUtil.toString(pos2),
                                 player);
                         break;
                 }
@@ -173,12 +181,12 @@ public class ArenaMultiTool extends ItemTool {
         }
     }
 
-    public class ArenaMultiToolHoe extends ItemTool {
+    public class ArenaMultiToolHoe extends SimpleItemTool {
         public ArenaMultiToolHoe(){
             super(Utilities.ItemStacks.MULTITOOL_STACK_HOE, event -> {
-                Action action = event.action();
-                Player player = event.player();
-                Block block = event.clickedBlock();
+                Action action = event.getAction();
+                Player player = event.getPlayer();
+                Block block = event.getClickedBlock();
 
                 if(checkAction(action, player))
                     return;
@@ -190,25 +198,25 @@ public class ArenaMultiTool extends ItemTool {
                 RawUnpreparedArena arena = ArenaManager.EditorCache.get(player);
                 assert arena != null;
 
-                event.cancel();
+                event.getEvent().setCancelled(true);
                 switch(action){
                     case RIGHT_CLICK_BLOCK:
-                        Location pos = LocationUtils.fix(block.getLocation());
+                        Location pos = LocationUtil.fix(block.getLocation());
                         boolean b = arena.addSpawnpoint(pos);
-                        String text = b ? "&7Spawnpoint &aadded &7@&9"+LocationUtils.toString(pos)
+                        String text = b ? "&7Spawnpoint &aadded &7@&9"+LocationUtil.toString(pos)
                                 + " &7[&b" + arena.getSpawnPoints().size() + "&7]"
                                 : "&cThis spawnpoint already exists!";
 
-                        CastleRush.getChatMessager().send(text, player);
+                        CastleRush.getChatMessager().write(text, player);
                         break;
                     case LEFT_CLICK_BLOCK:
-                        Location pos1 = LocationUtils.fix(block.getLocation());
+                        Location pos1 = LocationUtil.fix(block.getLocation());
                         boolean b1 = arena.removeSpawnpoint(pos1);
-                        String text1 = b1 ? "&7Spawnpoint &cremoved &7@&9"+LocationUtils.toString(pos1)
+                        String text1 = b1 ? "&7Spawnpoint &cremoved &7@&9"+LocationUtil.toString(pos1)
                                 + " &7[&b" + arena.getSpawnPoints().size() + "&7]"
                                 : "&cThis spawnpoint doesn't exist!";
 
-                        CastleRush.getChatMessager().send(text1, player);
+                        CastleRush.getChatMessager().write(text1, player);
                         break;
                 }
             });

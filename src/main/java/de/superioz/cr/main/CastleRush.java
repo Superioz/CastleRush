@@ -6,16 +6,17 @@ import de.superioz.cr.command.GameCommand;
 import de.superioz.cr.command.MainCommand;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.listener.ingame.GameListener;
 import de.superioz.cr.common.listener.GameStateListener;
-import de.superioz.cr.common.listener.ingame.GamePlotListener;
 import de.superioz.cr.common.listener.SignListener;
+import de.superioz.cr.common.listener.ingame.GameListener;
+import de.superioz.cr.common.listener.ingame.GamePlotListener;
 import de.superioz.library.java.file.properties.SuperProperties;
 import de.superioz.library.java.file.type.YamlFile;
-import de.superioz.library.java.logging.SuperLogger;
 import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.command.CommandHandler;
-import de.superioz.library.minecraft.server.util.chat.ChatMessager;
+import de.superioz.library.minecraft.server.common.command.CommandHandler;
+import de.superioz.library.minecraft.server.exception.CommandRegisterException;
+import de.superioz.library.minecraft.server.logging.SuperLogger;
+import de.superioz.library.minecraft.server.message.PlayerMessager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,7 +30,7 @@ public class CastleRush extends JavaPlugin {
     private static CastleRush instance;
     private static SuperLogger superLogger;
     private static PluginManager pluginManager;
-    private static ChatMessager chatMessager;
+    private static PlayerMessager chatMessager;
 
     private static SuperProperties<String> stringProperties;
     private static YamlFile configFile;
@@ -54,11 +55,16 @@ public class CastleRush extends JavaPlugin {
         configFile.load(true, true);
 
         // ChatMessager
-        chatMessager = new ChatMessager(stringProperties.get("chatPrefix") + "&8┃ &r");
+        chatMessager = new PlayerMessager(stringProperties.get("chatPrefix") + "&8┃ &r");
         superLogger.consoleLog("ChatMessager loaded!");
 
         // Commands
-        CommandHandler.registerWith(MainCommand.class, ArenaCommand.class, GameCommand.class, CacheCommand.class);
+        try{
+            CommandHandler.registerCommand(MainCommand.class,
+                    ArenaCommand.class, GameCommand.class, CacheCommand.class);
+        }catch(CommandRegisterException e){
+            e.printStackTrace();
+        }
         superLogger.consoleLog("Commands registered!");
 
         // Listener
@@ -82,7 +88,7 @@ public class CastleRush extends JavaPlugin {
         GameManager.stopArenas();
     }
 
-    public static ChatMessager getChatMessager(){
+    public static PlayerMessager getChatMessager(){
         return chatMessager;
     }
 

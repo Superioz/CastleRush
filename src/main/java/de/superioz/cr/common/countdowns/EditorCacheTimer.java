@@ -5,7 +5,7 @@ import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.arena.cache.RawUnpreparedArena;
 import de.superioz.cr.common.arena.cache.UnpreparedArena;
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.minecraft.server.util.LocationUtils;
+import de.superioz.library.minecraft.server.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,7 +32,7 @@ public class EditorCacheTimer {
                 }
 
                 for(Location loc : rawArena.getSpawnPoints()){
-                    Location fixed = LocationUtils.fix(loc.getBlock().getLocation());
+                    Location fixed = LocationUtil.fix(loc.getBlock().getLocation());
 
                 }
             }
