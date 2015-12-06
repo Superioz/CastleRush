@@ -81,10 +81,6 @@ public class CastleRush extends JavaPlugin {
 
     @Override
     public void onDisable(){
-        superLogger.consoleLog("Backup Arenas ..");
-        ArenaManager.backup();
-        superLogger.consoleLog("Arenas saved.");
-
         GameManager.stopArenas();
     }
 

@@ -163,6 +163,13 @@ public class ArenaManager {
             }
         }
 
+        public static void removeForSure(Player player){
+            if(contains(player)){
+                editorLast.remove(player);
+                editorCache.remove(player);
+            }
+        }
+
         public static boolean contains(Player player){
             return editorCache.containsKey(player);
         }

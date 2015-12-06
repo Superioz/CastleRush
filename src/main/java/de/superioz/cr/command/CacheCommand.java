@@ -279,8 +279,8 @@ public class CacheCommand {
     }
 
     @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "leave", permission = "castlerush.cache.edit.delwalls"
-            , desc = "Edits the cache")
+    @SubCommand(label = "leave", permission = "castlerush.cache.leave"
+            , desc = "Leaves the cache")
     public void leave(CommandContext context){
         Player player = (Player) context.getSender();
 
@@ -288,7 +288,7 @@ public class CacheCommand {
             CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
             return;
         }
-        ArenaManager.EditorCache.remove(player);
+        ArenaManager.EditorCache.removeForSure(player);
 
         CastleRush.getChatMessager().write(CastleRush.getProperties().get("removedFromCache"), player);
     }
