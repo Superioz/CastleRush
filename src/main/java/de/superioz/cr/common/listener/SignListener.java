@@ -1,14 +1,17 @@
 package de.superioz.cr.common.listener;
 
+import de.superioz.cr.common.ChatManager;
 import de.superioz.cr.common.arena.ArenaManager;
-import de.superioz.cr.common.arena.object.Arena;
-import de.superioz.cr.common.arena.object.PlayableArena;
-import de.superioz.cr.common.events.GameJoinEvent;
+import de.superioz.cr.common.event.GameJoinEvent;
+import de.superioz.cr.common.event.GameSignInteractEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.game.division.GamePhase;
-import de.superioz.cr.common.game.division.GameState;
-import de.superioz.cr.main.CastleRush;
+import de.superioz.cr.common.game.GameSign;
+import de.superioz.cr.common.inv.GameCreateInventory;
+import de.superioz.library.java.util.SimpleStringUtils;
+import de.superioz.library.main.SuperLibrary;
+import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
+import de.superioz.library.minecraft.server.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -20,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -27,6 +31,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
  * @author Superioz
  */
 public class SignListener implements Listener {
+
+    private static final String SIGN_HEADER = ChatColor.BLUE + "CastleRush";
+    private static final String SIGN_CREATE = ChatColor.LIGHT_PURPLE + "[CREATE LOBBY]";
+    private static final String SIGN_JOIN = ChatColor.DARK_GREEN + "[JOIN LOBBY]";
+    private static final String SIGN_SPACER = "&8&m----------";
+    private static final String SIGN_ENDLINE = "&7Rightclick";
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onSign(SignChangeEvent event){
@@ -42,35 +52,26 @@ public class SignListener implements Listener {
             return;
         }
 
-        Arena arena = ArenaManager.get(l1);
 
-        if(arena == null){
+        if(l1.equalsIgnoreCase("create")){
+            event.setLine(0, SIGN_HEADER);
+            event.setLine(1, SIGN_CREATE);
+            event.setLine(2, ChatUtil.colored(SIGN_SPACER));
+            event.setLine(3, ChatUtil.colored(SIGN_ENDLINE));
+        }
+        else if(l1.equalsIgnoreCase("join")){
+            event.setLine(0, SIGN_HEADER);
+            event.setLine(1, SIGN_JOIN);
+            event.setLine(2, ChatUtil.colored(SIGN_SPACER));
+            event.setLine(3, ChatUtil.colored(SIGN_ENDLINE));
+        }
+        else{
             event.getBlock().breakNaturally();
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaDoesntExist"), player);
+            ChatManager.info().write("&cWrong sign command.", player);
             return;
         }
 
-        if(!arena.checkJoinable(player).isEmpty()){
-            event.getBlock().breakNaturally();
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotCreateSignReason")
-                    .replace("%reason", arena.checkJoinable(player)), player);
-            return;
-        }
-
-        String name = arena.getName();
-        String header = ChatColor.AQUA + "CastleRush";
-
-        if(name.length() > 16)
-            name = name.substring(0, 16);
-
-        event.setLine(0, header);
-        event.setLine(1, name);
-        event.setLine(2, arena.getPattern(0));
-        event.setLine(3, GameState.LOBBY.getSpecifier());
-        event.getBlock().getState().update(true);
-
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaSignMessage")
-                .replace("%arena", name), player);
+        ChatManager.info().write("&7Sign created.", player);
     }
 
     @EventHandler
@@ -88,34 +89,62 @@ public class SignListener implements Listener {
             Sign sign = (Sign) state;
             Player player = event.getPlayer();
 
-            if(!sign.getLine(0).equalsIgnoreCase(ChatColor.AQUA + "CastleRush")){
+            if(!sign.getLine(0).equalsIgnoreCase(SIGN_HEADER)){
                 return;
             }
 
-            if(GameManager.isIngame(player)){
-                return;
+            String type = sign.getLine(1);
+
+            if(type.equals(SIGN_CREATE)){
+                // CREATE A LOBBY
+                if(!ArenaManager.hasFreeWorld()){
+                    ChatManager.info().write("&cThere's no free world left!", player);
+                    return;
+                }
+                SuperLibrary.callEvent(new GameSignInteractEvent(player, GameSign.Type.CREATE_GAME));
             }
+            else if(type.equals(SIGN_JOIN)){
+                // JOIN A LOBBY
+                if(GameManager.getRunningGames().size() == 0){
+                    ChatManager.info().write("&cThere's no game running at the moment!", player);
+                    return;
+                }
 
-            String arenaName = sign.getLine(1);
-            Arena arena = ArenaManager.get(arenaName);
-
-            if(arena == null)
-                return;
-
-            if(!GameManager.containsGameInQueue(arena)){
-                GameManager.addGameInQueue(new Game(new PlayableArena(arena,
-                        GameState.LOBBY, GamePhase.WAIT, sign)));
+                SuperLibrary.callEvent(new GameSignInteractEvent(player, GameSign.Type.JOIN_GAME));
             }
-            Game game = GameManager.getGame(arena);
-            assert game != null;
+        }
+    }
 
-            if(game.getArena().getGameState() != GameState.LOBBY){
-                CastleRush.getChatMessager().write(CastleRush.getProperties().get("youCannotJoinThisArena"), player);
-                return;
-            }
+    @EventHandler
+    public void onGameSign(GameSignInteractEvent event){
+        Player player = event.getPlayer();
+        GameSign.Type type = event.getType();
 
-            // Call event for further things
-            CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player, player.getLocation()));
+        if(type == GameSign.Type.CREATE_GAME){
+            GameCreateInventory.open(player);
+        }
+        else{
+            SuperInventory inventory = GameManager.getGameOverview("Choose game", clickEvent -> {
+                ItemStack item = clickEvent.getItem();
+                clickEvent.cancelEvent();
+
+                if(!item.hasItemMeta()){
+                    return;
+                }
+
+                String id = item.getItemMeta().getDisplayName().split("#")[1];
+                if(!SimpleStringUtils.isInteger(id)){
+                    return;
+                }
+                int idInteger = Integer.parseInt(id);
+                Game game = GameManager.getRunningGames().get(idInteger-1);
+
+                // Call event for further things
+                SuperLibrary.callEvent(new GameJoinEvent(game.getArena().getArena(),
+                        clickEvent.getPlayer(), clickEvent.getPlayer().getLocation()));
+                clickEvent.closeInventory();
+            });
+            player.openInventory(inventory.build());
         }
     }
 

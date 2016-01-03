@@ -1,23 +1,36 @@
 package de.superioz.cr.command;
 
-import de.superioz.cr.common.ItemKit;
+import de.superioz.cr.common.ChatManager;
+import de.superioz.cr.common.lang.LanguageManager;
+import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
-import de.superioz.cr.common.arena.cache.RawUnpreparedArena;
-import de.superioz.cr.common.arena.cache.UnpreparedArena;
-import de.superioz.cr.common.arena.object.Arena;
-import de.superioz.cr.common.game.objects.GamePlot;
-import de.superioz.cr.common.game.objects.GameWall;
+import de.superioz.cr.common.cache.EditorCache;
+import de.superioz.cr.common.arena.ItemKit;
+import de.superioz.cr.common.arena.raw.RawUnpreparedArena;
+import de.superioz.cr.common.arena.raw.UnpreparedArena;
+import de.superioz.cr.common.game.GamePlot;
+import de.superioz.cr.common.game.GameWall;
+import de.superioz.cr.common.game.team.TeamColor;
+import de.superioz.cr.common.tool.IngameTeleportTool;
 import de.superioz.cr.main.CastleRush;
-import de.superioz.cr.util.Utilities;
+import de.superioz.cr.util.PluginColor;
+import de.superioz.cr.util.PluginItems;
 import de.superioz.library.java.util.classes.SimplePair;
+import de.superioz.library.java.util.list.ListUtil;
+import de.superioz.library.minecraft.server.common.command.CommandWrapper;
 import de.superioz.library.minecraft.server.common.command.SubCommand;
 import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import de.superioz.library.minecraft.server.util.LocationUtil;
+import de.superioz.library.minecraft.server.util.SerializeUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -27,72 +40,76 @@ import java.util.ArrayList;
 public class CacheCommand {
 
     @SubCommand(label = "cache", aliases = {"c"}, permission = "castlerush.cache"
-            , usage = ""
             , desc = "Commands for handling editor's cache")
     public void cache(CommandContext context){
-        CastleRush.getChatMessager().write("&c/cr cache [addplot:addwall:setkit:finish:tool:leave]",
+        List<String> subCommands = context.getCommand().getSubCommands().stream().map(CommandWrapper::getLabel)
+                .collect(Collectors.toList());
+
+        ChatManager.info().write("&c/cr cache [" + ListUtil.insert(subCommands, ":") +"]",
                 (Player)context.getSender());
     }
 
     @SubCommand.Nested(parent = "cache")
     @SubCommand(label = "info", aliases = {"i"}, permission = "castlerush.cache.info"
-            , usage = ""
             , desc = "Adds selected wall to editor cache")
     public void info(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(
-                    CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(
+                    LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
-        assert rawUnpreparedArena != null;
+        UnpreparedArena unpreparedArena = EditorCache.getLast(player);
         assert unpreparedArena != null;
 
-        CastleRush.getChatMessager().write(
-                "&7Name: &b" + unpreparedArena.getName() + "&8; "
-                        + "&b" + unpreparedArena.getGameWalls().size() + " &7wall(s)&8; "
-                        + "&b" + unpreparedArena.getGamePlots().size() + " &7plot(s)&8; "
-                        + "&b" + rawUnpreparedArena.getSpawnPoints().size() + " &7spawn(s)&8; "
-                        + "&7Kit " + ((rawUnpreparedArena.getItemKit() != null) ? "&aexist" : "&cdoesn't exist")
-                , player);
+        // Get strings to send
+        String spacer = PluginColor.DARK + "; ";
+        String name = PluginColor.LIGHT + "Name: " + PluginColor.ICE + unpreparedArena.getName();
+        String walls = PluginColor.ICE + unpreparedArena.getGameWalls().size() + " " + PluginColor.LIGHT + "wall(s)";
+        String plots = PluginColor.ICE + unpreparedArena.getGamePlots().size() + " " + PluginColor.LIGHT + "plot(s)";
+        String spawn = PluginColor.LIGHT + "Spawn " + ((unpreparedArena.getSpawnPoint() != null)
+                ? PluginColor.LIME + "exist" : PluginColor.RED + "doesn't exist");
+        String kit = PluginColor.LIGHT + "Kit " + ((unpreparedArena.getItemKit() != null)
+                ? PluginColor.LIME + "exist" : PluginColor.RED + "doesn't exist");
+
+        // Send at least
+        ChatManager.info().write(
+                name + spacer + walls + spacer + plots + spacer + spacer + spacer + kit, player);
     }
 
     @SubCommand.Nested(parent = "cache")
     @SubCommand(label = "addplot", aliases = {"addp", "ap"}, permission = "castlerush.cache.addplot"
-            , usage = ""
             , desc = "Adds selected plot to editor cache")
     public void addplot(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(
-                    CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(
+                    LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
+        RawUnpreparedArena rawUnpreparedArena = EditorCache.get(player);
+        UnpreparedArena unpreparedArena = EditorCache.getLast(player);
         assert rawUnpreparedArena != null;
         assert unpreparedArena != null;
 
         if(!(rawUnpreparedArena.getRawGamePlots().size() >= 1)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("plotNeedsOneLocation"), player);
+            ChatManager.info().write(LanguageManager.get("plotNeedsOneLocation"), player);
             return;
         }
 
-        if(unpreparedArena.getGamePlots().size() >= 2){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotAddMoreThan")
+        if(unpreparedArena.getGamePlots().size() >= TeamColor.values().length){
+            ChatManager.info().write(LanguageManager.get("cannotAddMoreThan")
                     .replace("%n", 2 + ""), player);
             return;
         }
 
         unpreparedArena.addGamePlot(new GamePlot(rawUnpreparedArena.getRawGamePlots(), LocationUtil.fix(player
                 .getLocation().getBlock().getLocation())));
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("addedANewGameplot")
+        ChatManager.info().write(LanguageManager.get("addedANewGameplot")
                 .replace("%size", unpreparedArena.getGamePlots().size() + ""), player);
 
         rawUnpreparedArena.setRawGamePlots(new ArrayList<>());
@@ -100,55 +117,58 @@ public class CacheCommand {
 
     @SubCommand.Nested(parent = "cache")
     @SubCommand(label = "setkit", aliases = {"setk", "sk"}, permission = "castlerush.cache.setkit"
-            , usage = ""
             , desc = "Sets the kit for unprepared arena")
     public void setkit(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
-        assert rawUnpreparedArena != null;
+        if(player.getInventory().getItem(IngameTeleportTool.SLOT) != null
+                && player.getInventory().getItem(IngameTeleportTool.SLOT).getType() != Material.AIR){
+            ChatManager.info().write(LanguageManager.get("slotMustBeFree")
+                    .replace("%slot", IngameTeleportTool.SLOT + ""), player);
+            return;
+        }
+
+        UnpreparedArena unpreparedArena = EditorCache.getLast(player);
         assert unpreparedArena != null;
 
         PlayerInventory inv = player.getInventory();
         ItemKit kit = new ItemKit(inv.getContents(), inv.getArmorContents());
 
-        rawUnpreparedArena.setItemKit(kit);
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("setGamekitForCache"), player);
+        unpreparedArena.setItemKit(kit);
+        ChatManager.info().write(LanguageManager.get("setGamekitForCache"), player);
     }
 
     @SubCommand.Nested(parent = "cache")
     @SubCommand(label = "addwall", aliases = {"addw", "aw"}, permission = "castlerush.cache.addwall"
-            , usage = ""
             , desc = "Adds selected wall to editor cache")
     public void addwall(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
+        RawUnpreparedArena rawUnpreparedArena = EditorCache.get(player);
+        UnpreparedArena unpreparedArena = EditorCache.getLast(player);
         assert rawUnpreparedArena != null;
         assert unpreparedArena != null;
 
         if(rawUnpreparedArena.getRawGameWalls() == null
                 || rawUnpreparedArena.getRawGameWalls().getType1() == null
                 || rawUnpreparedArena.getRawGameWalls().getType2() == null){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youMustMarkTwoLocations"), player);
+            ChatManager.info().write(LanguageManager.get("youMustMarkTwoLocations"), player);
             return;
         }
 
-        if(unpreparedArena.getGamePlots().size() >= 27){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotAddMoreThan")
-                    .replace("%n", 27 + ""), player);
+        if(unpreparedArena.getGamePlots().size() >= TeamColor.values().length){
+            ChatManager.info().write(LanguageManager.get("cannotAddMoreThan")
+                    .replace("%n", TeamColor.values().length + ""), player);
             return;
         }
 
@@ -156,64 +176,70 @@ public class CacheCommand {
         Location pos2 = rawUnpreparedArena.getRawGameWalls().getType2();
 
         unpreparedArena.addGameWall(new GameWall(new SimplePair<>(pos1, pos2)));
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("addedANewWall").replace("%size",
+        ChatManager.info().write(LanguageManager.get("addedANewWall").replace("%size",
                 unpreparedArena.getGameWalls().size() + ""), player);
+
+        rawUnpreparedArena.setRawGameWalls(new SimplePair<>(null, null));
     }
 
     @SubCommand.Nested(parent = "cache")
     @SubCommand(label = "finish", aliases = {"fin", "f"}, permission = "castlerush.cache.finish"
-            , usage = ""
             , desc = "Finished the editor cache and saves it")
     public void finish(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
-        assert rawUnpreparedArena != null;
+        UnpreparedArena unpreparedArena = EditorCache.getLast(player);
         assert unpreparedArena != null;
 
-        if(rawUnpreparedArena.isFinished()){
-            unpreparedArena.setSpawnPoints(rawUnpreparedArena.getSpawnPoints());
-            unpreparedArena.setItemKit(rawUnpreparedArena.getItemKit());
+        if(unpreparedArena.isFinished()){
+            unpreparedArena.setItemKit(unpreparedArena.getItemKit());
         }else{
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentFinished")
-                    .replace("%reason", rawUnpreparedArena.getNotFinishedReason()), player);
+            ChatManager.info().write(LanguageManager.get("youArentFinished")
+                    .replace("%reason", unpreparedArena.getNotFinishedReason()), player);
             return;
         }
 
         if(!unpreparedArena.isFinished()){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentFinished")
-                    .replace("%reason", rawUnpreparedArena.getNotFinishedReason()), player);
+            ChatManager.info().write(LanguageManager.get("youArentFinished")
+                    .replace("%reason", unpreparedArena.getNotFinishedReason()), player);
             return;
         }
 
-        Arena arena = new Arena(unpreparedArena.getName(), unpreparedArena.getSpawnPoints()
-                , unpreparedArena.getGamePlots(), unpreparedArena.getGameWalls(), unpreparedArena.getItemKit());
-        ArenaManager.add(arena);
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaAddedToList")
-                .replace("%arena", arena.getName()).replace("%size", ArenaManager.size() + ""), player);
-        ArenaManager.EditorCache.remove(player);
+        ChatManager.info().write(LanguageManager.get("setArenaToList"), player);
+        new BukkitRunnable() {
+            @Override
+            public void run(){
+                Arena arena = new Arena(unpreparedArena.getName(),
+                        SerializeUtil.toString(unpreparedArena.getSpawnPoint()),
+                        unpreparedArena.getGamePlots(),
+                        unpreparedArena.getGameWalls(),
+                        unpreparedArena.getItemKit());
+                ArenaManager.add(arena);
+                ChatManager.info().write(LanguageManager.get("arenaAddedToList")
+                        .replace("%arena", arena.getName()).replace("%size", ArenaManager.size() + ""), player);
+                EditorCache.remove(player);
+            }
+        }.runTaskLater(CastleRush.getInstance(), 1L);
     }
 
     @SubCommand.Nested(parent = "cache")
     @SubCommand(label = "tool", aliases = {"t"}, permission = "castlerush.cache.tool"
-            , usage = ""
             , desc = "Gives you the editor cache multi-tool")
     public void tool(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK.getWrappedStack());
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("heresYourMultiTool"), player);
+        player.setItemInHand(PluginItems.MULTITOOL_STACK.getWrappedStack());
+        ChatManager.info().write(LanguageManager.get("heresYourMultiTool"), player);
     }
 
     // ========================================================================================================
@@ -224,18 +250,18 @@ public class CacheCommand {
     public void delplots(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
+        RawUnpreparedArena rawUnpreparedArena = EditorCache.get(player);
+        UnpreparedArena unpreparedArena = EditorCache.getLast(player);
         assert rawUnpreparedArena != null;
         assert unpreparedArena != null;
 
         unpreparedArena.getGamePlots().clear();
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("clearedPlotsInCache"), player);
+        ChatManager.info().write(LanguageManager.get("clearedPlotsInCache"), player);
     }
 
     @SubCommand.Nested(parent = "cache")
@@ -244,38 +270,18 @@ public class CacheCommand {
     public void delwalls(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("notInEditorCache"), player);
             return;
         }
 
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
+        RawUnpreparedArena rawUnpreparedArena = EditorCache.get(player);
+        UnpreparedArena unpreparedArena = EditorCache.getLast(player);
         assert rawUnpreparedArena != null;
         assert unpreparedArena != null;
 
         unpreparedArena.getGameWalls().clear();
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("clearedWallsInCache"), player);
-    }
-
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "delspawns", permission = "castlerush.cache.edit.delspawns"
-            , desc = "Edits the cache")
-    public void delspawns(CommandContext context){
-        Player player = (Player) context.getSender();
-
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
-            return;
-        }
-
-        RawUnpreparedArena rawUnpreparedArena = ArenaManager.EditorCache.get(player);
-        UnpreparedArena unpreparedArena = ArenaManager.EditorCache.getLast(player);
-        assert rawUnpreparedArena != null;
-        assert unpreparedArena != null;
-
-        rawUnpreparedArena.getSpawnPoints().clear();
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("clearedSpawnsInCache"), player);
+        ChatManager.info().write(LanguageManager.get("clearedWallsInCache"), player);
     }
 
     @SubCommand.Nested(parent = "cache")
@@ -284,13 +290,13 @@ public class CacheCommand {
     public void leave(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notInEditorCache"), player);
+        if(!EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("notInEditorCache"), player);
             return;
         }
-        ArenaManager.EditorCache.removeForSure(player);
+        EditorCache.removeForSure(player);
 
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("removedFromCache"), player);
+        ChatManager.info().write(LanguageManager.get("removedFromCache"), player);
     }
 
 }

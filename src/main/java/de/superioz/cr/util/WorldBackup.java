@@ -22,12 +22,22 @@ public class WorldBackup implements Listener {
     private String worldName;
     private Game game;
 
+    /**
+     * Class to backup a world
+     *
+     * @param game Game object
+     */
     public WorldBackup(Game game){
         this.game = game;
         this.world = game.getWorld();
         this.worldName = world.getName();
     }
 
+    /**
+     * Unloads wrapped world
+     *
+     * @return Result as boolean
+     */
     public boolean unloadWorld(){
         for(Player player : world.getPlayers()){
             player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
@@ -36,22 +46,34 @@ public class WorldBackup implements Listener {
         return Bukkit.getServer().unloadWorld(this.getWorld(), false);
     }
 
+    /**
+     * Loads wrapped world
+     */
     public void loadWorld(){
         Bukkit.getServer().createWorld(new WorldCreator(worldName).copy(world));
         this.updateWorlds();
     }
 
+    /**
+     * Update world
+     */
     public void updateWorlds(){
         this.world = Bukkit.getWorld(worldName);
         this.game.updateWorld();
     }
 
+    /**
+     * @return The world
+     */
     public World getWorld(){
         if(world == null)
             world = Bukkit.getWorld(worldName);
         return world;
     }
 
+    /**
+     * Rollbacks the wrapped world
+     */
     public void rollback(){
         World world = getWorld();
         File folder = world.getWorldFolder();
@@ -73,6 +95,12 @@ public class WorldBackup implements Listener {
         this.loadWorld();
     }
 
+    /**
+     * Method to copy a directory
+     *
+     * @param source The source
+     * @param target The target
+     */
     private void copyDir(File source, File target){
         try{
             ArrayList<String> ignore = new ArrayList<>(Arrays.asList("uid.dat", "session.dat"));
@@ -86,13 +114,13 @@ public class WorldBackup implements Listener {
                         File destFile = new File(target, file);
                         copyDir(srcFile, destFile);
                     }
-                }else{
+                }
+                else{
                     InputStream in = new FileInputStream(source);
                     OutputStream out = new FileOutputStream(target);
                     byte[] buffer = new byte[1024];
                     int length;
-                    while((length = in.read(buffer)) > 0)
-                        out.write(buffer, 0, length);
+                    while((length = in.read(buffer)) > 0){ out.write(buffer, 0, length); }
                     in.close();
                     out.close();
                 }
@@ -102,6 +130,13 @@ public class WorldBackup implements Listener {
         }
     }
 
+    /**
+     * Deletes a directory
+     *
+     * @param path Path to directory
+     *
+     * @return Result as boolean
+     */
     private boolean deleteDirectory(File path){
         if(path.exists()){
             File files[] = path.listFiles();
@@ -109,7 +144,8 @@ public class WorldBackup implements Listener {
             for(File file : files){
                 if(file.isDirectory()){
                     deleteDirectory(file);
-                }else{
+                }
+                else{
                     file.delete();
                 }
             }

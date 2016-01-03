@@ -1,8 +1,9 @@
 package de.superioz.cr.command;
 
-import de.superioz.cr.util.CommandHelpPage;
-import de.superioz.cr.main.CastleRush;
-import de.superioz.cr.util.Utilities;
+import de.superioz.cr.common.ChatManager;
+import de.superioz.cr.common.lang.LanguageManager;
+import de.superioz.cr.util.PluginHelp;
+import de.superioz.cr.util.PluginUtilities;
 import de.superioz.library.java.util.SimpleStringUtils;
 import de.superioz.library.minecraft.server.common.command.*;
 import de.superioz.library.minecraft.server.common.command.context.CommandContext;
@@ -26,7 +27,7 @@ public class MainCommand implements CommandCase {
 
     @Override
     public void execute(CommandContext commandContext){
-        Utilities.getPluginInformationPage((Player) commandContext.getSender());
+        PluginUtilities.getPluginInformationPage((Player) commandContext.getSender());
     }
 
     @SubCommand(label = "help", aliases = "?", desc = "Shows the help page",
@@ -42,17 +43,17 @@ public class MainCommand implements CommandCase {
                 page = Integer.parseInt(arg);
         }
 
-        CommandHelpPage commandHelpPage = new CommandHelpPage(12, CommandHandler.getAllCommands());
+        PluginHelp commandHelpPage = new PluginHelp(12, CommandHandler.getAllCommands());
 
         List<TextComponent> textComponents = commandHelpPage.getPage(page);
         if(textComponents == null){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("helpCommandPageDoesntExist"), player);
+            ChatManager.info().write(LanguageManager.get("helpCommandPageDoesntExist"), player);
             return;
         }
 
         for(TextComponent tc : textComponents){
             if(tc == null){
-                CastleRush.getChatMessager().write(Utilities.getListItem(""), player);
+                ChatManager.info().write(PluginUtilities.getListItem(""), player);
                 continue;
             }
 

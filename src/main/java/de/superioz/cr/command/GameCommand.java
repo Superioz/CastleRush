@@ -1,27 +1,30 @@
 package de.superioz.cr.command;
 
+import de.superioz.cr.common.ChatManager;
 import de.superioz.cr.common.WrappedGamePlayer;
+import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
-import de.superioz.cr.common.arena.object.Arena;
-import de.superioz.cr.common.countdowns.BuildCountdown;
-import de.superioz.cr.common.events.GameJoinEvent;
-import de.superioz.cr.common.events.GameLeaveEvent;
-import de.superioz.cr.common.events.GameStartEvent;
-import de.superioz.cr.common.game.Game;
-import de.superioz.cr.common.game.GameManager;
-import de.superioz.cr.common.game.division.GamePhase;
-import de.superioz.cr.common.game.division.GameState;
-import de.superioz.cr.common.game.objects.GameWall;
-import de.superioz.cr.main.CastleRush;
-import de.superioz.library.java.util.classes.SimplePair;
+import de.superioz.cr.common.cache.EditorCache;
+import de.superioz.cr.common.event.GameJoinEvent;
+import de.superioz.cr.common.event.GameLeaveEvent;
+import de.superioz.cr.common.event.GamePhaseEvent;
+import de.superioz.cr.common.game.*;
+import de.superioz.cr.common.game.team.Team;
+import de.superioz.cr.common.lang.LanguageManager;
+import de.superioz.cr.common.timer.GameCountdown;
+import de.superioz.cr.util.TimeType;
 import de.superioz.library.java.util.list.ListUtil;
+import de.superioz.library.main.SuperLibrary;
 import de.superioz.library.minecraft.server.common.command.SubCommand;
 import de.superioz.library.minecraft.server.common.command.context.CommandContext;
-import de.superioz.library.minecraft.server.util.GeometryUtil;
+import de.superioz.library.minecraft.server.event.WrappedInventoryClickEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -35,25 +38,39 @@ public class GameCommand {
     public void startGame(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
         assert game != null;
 
+        // Check if the player is the game master
+        if(!game.isGamemaster(player)){
+            ChatManager.info().write(LanguageManager.get("youArentGamemaster"), player);
+            return;
+        }
+
+        // Check if the game can be started
         if(game.getArena().getGameState() != GameState.LOBBY){
+            ChatManager.info().write(LanguageManager.get("gameAlreadyStarted"), player);
+            return;
+        }
+
+        // Check game mode (automatic?)
+        if(game.getType() == GameType.PUBLIC){
+            game.getGameCountdown().getLobbyToBuild().setCounter(GameCountdown.LAST_COUNTDOWN);
             return;
         }
 
         // Is the lobby full?
         if(!(game.enoughPlayers())){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("notEnoughPlayers"), player);
+            ChatManager.info().write(LanguageManager.get("notEnoughPlayers"), player);
             return;
         }
 
         // Call event, that the game start
-        CastleRush.getPluginManager().callEvent(new GameStartEvent(game));
+        SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.BUILD));
     }
 
     @SubCommand(label = "finishgame", aliases = "finish", permission = "castlerush.finishgame"
@@ -61,30 +78,33 @@ public class GameCommand {
     public void finishGame(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
         assert game != null;
 
+        // Check game mode (automatic?)
+        if(game.getType() == GameType.PUBLIC){
+            ChatManager.info().write(LanguageManager.get("cannotUseCommandInPublicGame"), player);
+            return;
+        }
+
+        // Check if the player is the game master
+        if(!game.isGamemaster(player)){
+            ChatManager.info().write(LanguageManager.get("youArentGamemaster"), player);
+            return;
+        }
+
         // Is the game really finished?
         if(game.getArena().getGameState() != GameState.WAITING){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("gameIsntFinish"), player);
+            ChatManager.info().write(LanguageManager.get("gameIsntFinish"), player);
             return;
         }
 
         // teleport all players back
-        for(WrappedGamePlayer pl : game.getArena().getPlayers()){
-            pl.teleport(pl.getJoinLocation());
-            pl.clearInventory();
-            pl.clear();
-        }
-        game.leaveAll();
-
-        // set gamestate
-        game.getArena().setGameState(GameState.LOBBY);
-        GameManager.removeGameFromQueue(game);
+        SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.FINISH));
     }
 
     @SubCommand(label = "timeleft", aliases = "tl", permission = "castlerush.timeleft"
@@ -92,26 +112,22 @@ public class GameCommand {
     public void timeLeft(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
         assert game != null;
 
         if(game.getArena().getGamePhase() != GamePhase.BUILD){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("noTimerAtTheMoment"), player);
+            ChatManager.info().write(LanguageManager.get("noTimerAtTheMoment"), player);
             return;
         }
 
-        int counter = BuildCountdown.getRepeater().getCounter();
-        int seconds = counter % 60;
-        int minutes = counter / 60;
-        int hours = minutes / 60;
-
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("timeLeft")
-                .replace("%hours", hours+"").replace("%minutes", minutes+"").replace("%seconds", seconds+""),
-                    player);
+        ChatManager.info().write(LanguageManager.get("timeLeft")
+                .replace("%hours", game.getTime(TimeType.HOURS))
+                .replace("%minutes", game.getTime(TimeType.MINUTES))
+                .replace("%seconds", game.getTime(TimeType.SECONDS)), player);
     }
 
     @SubCommand(label = "timegone", aliases = "tg", permission = "castlerush.timegone"
@@ -119,8 +135,8 @@ public class GameCommand {
     public void timeGone(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
@@ -131,55 +147,47 @@ public class GameCommand {
 
         if(oldTimeStamp != 0
                 && game.getArena().getGamePhase() == GamePhase.CAPTURE){
-            int diff = (int) ((timeStamp-oldTimeStamp)/1000);
-
-            int seconds = diff % 60;
-            int minutes = diff / 60;
-            int hours = minutes / 60;
-
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("timeGone")
-                    .replace("%hours", hours+"")
-                    .replace("%minutes", minutes+"")
-                    .replace("%seconds", seconds+""), player);
+            ChatManager.info().write(LanguageManager.get("timeGone")
+                    .replace("%hours", game.getTime(TimeType.HOURS))
+                    .replace("%minutes", game.getTime(TimeType.MINUTES))
+                    .replace("%seconds", game.getTime(TimeType.SECONDS)), player);
         }
         else {
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("noTimeGoneYet"), player);
+            ChatManager.info().write(LanguageManager.get("noTimeGoneYet"), player);
         }
     }
 
     @SubCommand(label = "join", aliases = "j", permission = "castlerush.join"
-            , desc = "Joins given arena", min = 1)
+            , desc = "Joins given arena", min = 1, usage = "[arena]")
     public void join(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youAreAlreadyIngame"), player);
+        if(GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youAreAlreadyIngame"), player);
             return;
         }
 
         String arenaName = ArenaManager.getName(context, 1);
 
         if(!ArenaManager.checkArenaName(arenaName)
-                || ArenaManager.EditorCache.contains(arenaName)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("nameNotValid"), player);
+                || EditorCache.contains(arenaName)){
+            ChatManager.info().write(LanguageManager.get("nameNotValid"), player);
             return;
         }
 
         Arena arena = ArenaManager.get(arenaName);
-        if(!GameManager.containsGameInQueue(arena)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotJoinGameViaCommand"), player);
+        if(arena == null){
+            ChatManager.info().write(LanguageManager.get("arenaDoesntExist"), player);
             return;
         }
-        Game game = GameManager.getGame(arena);
-        assert game != null;
 
-        if(game.getArena().getGameState() != GameState.LOBBY){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("cannotJoinArena"), player);
+        if(!GameManager.containsGameInQueue(arena)){
+            ChatManager.info().write(LanguageManager.get("cannotJoinGameViaCommand"), player);
             return;
         }
 
         // Call event for further things
-        CastleRush.getPluginManager().callEvent(new GameJoinEvent(game, player, player.getLocation()));
+        SuperLibrary.callEvent(new GameJoinEvent(arena, player, player.getLocation()));
     }
 
     @SubCommand(label = "leave", aliases = "l", permission = "castlerush.leave"
@@ -187,15 +195,16 @@ public class GameCommand {
     public void leave(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
 
         Game game = GameManager.getGame(player); assert game != null;
 
-        CastleRush.getPluginManager().callEvent(new GameLeaveEvent(game, GameManager.getWrappedGamePlayer(player)));
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("leftTheGame"), player);
+        SuperLibrary.callEvent(new GameLeaveEvent(game, GameManager.getWrappedGamePlayer(player),
+                GameLeaveEvent.Type.COMMAND_LEAVE));
+        ChatManager.info().write(LanguageManager.get("leftTheGame"), player);
     }
 
     @SubCommand(label = "forcetimer", aliases = {"forcet", "ft"}, permission = "castlerush.forcetimer"
@@ -203,20 +212,22 @@ public class GameCommand {
     public void forceTimer(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
+        Game game = GameManager.getGame(player);
+        assert game != null;
 
-        int timer = BuildCountdown.getRepeater().getCounter();
+        int timer = game.getBuildCountdown().getRepeater().getCounter();
 
-        if(timer >= 15){
-            BuildCountdown.getRepeater().setCounter(15);
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("shortenedTime")
-                    .replace("%sec", 15+""), player);
+        if(timer >= GameCountdown.LAST_COUNTDOWN){
+            game.getBuildCountdown().getRepeater().setCounter(GameCountdown.LAST_COUNTDOWN);
+            ChatManager.info().write(LanguageManager.get("shortenedTime")
+                    .replace("%sec", GameCountdown.LAST_COUNTDOWN+""), player);
         }
         else{
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("noNeedForShorten"), player);
+            ChatManager.info().write(LanguageManager.get("noNeedForShorten"), player);
         }
     }
 
@@ -227,21 +238,21 @@ public class GameCommand {
 
         String name = context.getArgument(0);
         if(Bukkit.getPlayer(name) == null){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("playerIsntOnline"), player);
+            ChatManager.info().write(LanguageManager.get("playerIsntOnline"), player);
             return;
         }
 
         Player target = Bukkit.getPlayer(name);
-        boolean b = GameManager.isIngame(target);
+        boolean b = GameManager.isIngame(target.getUniqueId());
 
         Game game = GameManager.getGame(target);
 
         assert game != null;
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("isIngameMessage")
+        ChatManager.info().write(LanguageManager.get("isIngameMessage")
                 .replace("%ingameState", (b ?
-                                CastleRush.getProperties().get("isIngameState")
+                                LanguageManager.get("isIngameState")
                                         .replace("%arena", game.getArena().getArena().getName())
-                        : CastleRush.getProperties().get("isNotIngameState")))
+                        : LanguageManager.get("isNotIngameState")))
                 .replace("%player", target.getDisplayName()), player);
     }
 
@@ -250,37 +261,45 @@ public class GameCommand {
     public void setwalls(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
         assert game != null;
 
+        // Check if command can be used in game type
+        if(game.getType() == GameType.PUBLIC){
+            ChatManager.info().write(LanguageManager.get("cannotUseCommandInPublicGame"), player);
+            return;
+        }
+
+        // Check if the player is the game master
+        if(!game.isGamemaster(player)){
+            ChatManager.info().write(LanguageManager.get("youArentGamemaster"), player);
+            return;
+        }
+
         // Get wall
         for(GameWall wall : game.getArena().getArena().getGameWalls()){
-            SimplePair<Location, Location> boundaries = wall.getBoundaries();
-
             if(context.getArgumentsLength() == 0){
                 // Toggles the walls
-                for(Location l : GeometryUtil.calcCuboid(boundaries.getType1(), boundaries.getType2())){
-                    l.getBlock().setType(Material.AIR);
-                }
+                game.getArena().resetWalls();
             }
             else if(context.getArgumentsLength() >= 1){
                 String material = context.getArgument(1).toUpperCase();
-                game.setWalls(material);
+                game.getArena().setWalls(Material.getMaterial(material));
             }
         }
     }
 
-    @SubCommand(label = "teammates", aliases = {"teamm", "tm"}, permission = "castlerush.teammates"
+    @SubCommand(label = "teammates", aliases = {"teamm", "tm", "mates"}, permission = "castlerush.teammates"
             , desc = "Shows your teammates")
     public void teammates(CommandContext context){
         Player player = (Player) context.getSender();
 
-        if(!GameManager.isIngame(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("youArentIngame"), player);
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
             return;
         }
         Game game = GameManager.getGame(player);
@@ -288,8 +307,88 @@ public class GameCommand {
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player);
 
         String s = ListUtil.insert(gp.getTeamMatesNames(), ", ");
-        CastleRush.getChatMessager().write(CastleRush.getProperties().get("teamMates")
-                .replace("%pl", s.isEmpty() ? CastleRush.getProperties().get("youDontHaveTeammates"): s), player);
+        ChatManager.info().write(LanguageManager.get("teamMates")
+                .replace("%pl", s.isEmpty() ? LanguageManager.get("youDontHaveTeammates"): s)
+                .replace("%team", gp.getTeam() == null ? "NO TEAM" : gp.getTeam().getColoredName(gp.getGame())), player);
     }
+
+    @SubCommand(label = "teams", permission = "castlerush.teams"
+            , desc = "Shows the teams")
+    public void teams(CommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
+            return;
+        }
+        Game game = GameManager.getGame(player);
+        assert game != null;
+        WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player);
+        ChatManager.info().write(LanguageManager.get("teamOverviewHeader"), player);
+
+        for(Team t : game.getTeamManager().getTeams()){
+            List<String> teamPlayer = new ArrayList<>();
+            t.getTeamPlayer().forEach(wrappedGamePlayer
+                    -> teamPlayer.add(wrappedGamePlayer.getPlayer().getDisplayName()));
+
+            ChatManager.info().write(LanguageManager.get("teamOverviewItem")
+                    .replace("%teamName", t.getColoredName(gp.getGame()))
+                    .replace("%player", ListUtil.insert(teamPlayer, ", ")), player);
+        }
+    }
+
+    @SubCommand(label = "games", permission = "castlerush.games"
+            , desc = "Shows all running games")
+    public void games(CommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(GameManager.getRunningGames().size() == 0){
+            ChatManager.info().write("&cNo game running at the moment!", player);
+            return;
+        }
+
+        player.openInventory(GameManager.getGameOverview("Running games", WrappedInventoryClickEvent::cancelEvent).build());
+    }
+
+    @SubCommand(label = "forcestop", aliases = {"forcest", "fs"}, permission = "castlerush.forcestop"
+            , desc = "Stops your current arena")
+    public void forcestop(CommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
+            return;
+        }
+        Game game = GameManager.getGame(player);
+        assert game != null;
+
+        ChatManager.info().write(LanguageManager.get("waitingForStopGame"), player);
+        if(game.getArena().getGameState() == GameState.LOBBY){
+            ChatManager.info().write(LanguageManager.get("couldntStopGame"), player);
+            return;
+        }
+
+        // teleport all players back
+        SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.FINISH));
+    }
+
+    @SubCommand(label = "gamemode", aliases = {"gm"}, permission = "castlerush.gamemode"
+            , desc = "Gives you gamemode")
+    public void gamemode(CommandContext context){
+        Player player = (Player) context.getSender();
+
+        if(!GameManager.isIngame(player.getUniqueId())){
+            ChatManager.info().write(LanguageManager.get("youArentIngame"), player);
+            return;
+        }
+        WrappedGamePlayer gamePlayer = GameManager.getWrappedGamePlayer(player);
+
+        if(!gamePlayer.isOnPlot()){
+            ChatManager.info().write(LanguageManager.get("youArentOnYourPlot"), player);
+            return;
+        }
+        gamePlayer.setGameMode(GameMode.CREATIVE);
+    }
+
 
 }

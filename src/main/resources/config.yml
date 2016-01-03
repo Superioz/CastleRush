@@ -1,2 +1,87 @@
-# Timer of a game in minutes
-timer: 20
+# Are players allowed to join an arena with items in their inventory?
+# If true, the items will be automatically removed
+clearInv: false
+
+# If false, the max of players in an arena is 2
+# If true, infinite players can join the arena to build up to 8 teams (with no player limit)
+teamMode: false
+
+# Settings for public games (and partially private games)
+game:
+  # Timer (in minutes) until the build phase ends
+  buildTimer: 20
+
+  # Timer (in seconds) until the build phase starts
+  # [Only working if mode is set to 'automatic']
+  lobbyTimer: 90
+
+  # Distance the players are allowed to move away from the spawn location during lobby
+  # Set to '-1' to disable it
+  lobbyMaxDistance: 10
+
+  # Timer (in seconds) until the waiting phase at the end stops
+  endTimer: 15
+
+  # Time a player who left ingame has before he will be kicked out of game (in seconds)
+  rejoinTime: 300
+
+  # Should players enter other plots during the build phase?
+  # Set to 'true' if they're allowed to
+  enterPlotDuringBuild: true
+
+  # Which blocks can be destroyed and place during capture phase
+  #
+  # So if you want to allow players destroying and placing leavers than
+  # set this option to 'allowedBlocks: lever"
+  #
+  # Format: 'materialName';'materialName';[...]
+  allowedBlocks: lever;stone_button;wood_button
+
+  # Options for the walls (only if you chose automatic mode)
+  walls:
+    # Should the walls be set?
+    set: true
+
+    # If set=true choose the material
+    material: bedrock
+
+# Settings for the playerStats
+playerStats:
+
+  # If stats should be saved from every player to rank them
+  enabled: true
+
+  # Settings for elo (ranking)
+  elo:
+
+    # Set to true if you want the players to play ranked
+    enabled: true
+
+    # Elo is the value of "skill". After every game this value will get higher or lower
+    # However this is the default value players will have after first server join
+    default: 1000
+
+    # Base winner elo which will be used to calculate the elo
+    baseWinner: 25
+
+    # Elo the loser team(s) will lose after game
+    loser: 10
+
+    # If enabled players can have negative elo
+    negative: false
+
+# Settings for database
+database:
+
+  # Type of database ('sqlite' or 'mysql')
+  type: mysql
+
+  # Data for mysql
+  mysql:
+    hostname: ''
+    port: 3306
+    database: ''
+    user: ''
+    password: ''
+
+

@@ -1,14 +1,19 @@
 package de.superioz.cr.command;
 
+import de.superioz.cr.common.ChatManager;
+import de.superioz.cr.common.lang.LanguageManager;
+import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
-import de.superioz.cr.common.arena.object.Arena;
-import de.superioz.cr.main.CastleRush;
-import de.superioz.cr.util.Utilities;
+import de.superioz.cr.common.cache.EditorCache;
+import de.superioz.cr.util.PluginItems;
+import de.superioz.library.java.util.list.ListUtil;
+import de.superioz.library.minecraft.server.common.command.CommandWrapper;
 import de.superioz.library.minecraft.server.common.command.SubCommand;
 import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class was created as a part of CastleRush (Spigot)
@@ -20,7 +25,10 @@ public class ArenaCommand {
     @SubCommand(label = "arena", aliases = {"ar", "a"}, permission = "castlerush.arena"
             , usage = "", desc = "Commands for handling arenas")
     public void arenaCommand(CommandContext context){
-        CastleRush.getChatMessager().write("&c/cr arena [delete:create:edit:list]",
+        List<String> subCommands = context.getCommand().getSubCommands().stream().map(CommandWrapper::getLabel)
+                .collect(Collectors.toList());
+
+        ChatManager.info().write("&c/cr arena [" + ListUtil.insert(subCommands, ":") +"]",
                 (Player)context.getSender());
     }
 
@@ -31,8 +39,8 @@ public class ArenaCommand {
         Player player = (Player) context.getSender();
 
         // Check if player already started to edit/create an arena
-        if(ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("alreadyInEditorCache"), player);
+        if(EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("alreadyInEditorCache"), player);
             return;
         }
 
@@ -40,17 +48,17 @@ public class ArenaCommand {
 
         // Check if name of arena typed in is valid
         if(!ArenaManager.checkArenaName(arenaName)
-                || ArenaManager.EditorCache.contains(arenaName)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("nameNotValid")
+                || EditorCache.contains(arenaName)){
+            ChatManager.info().write(LanguageManager.get("nameNotValid")
                     + " ["+arenaName+"]", player);
 
             return;
         }
 
-        ArenaManager.EditorCache.addPlayer(player, arenaName);
-        player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK.getWrappedStack());
-        CastleRush.getChatMessager().write(
-                CastleRush.getProperties().get("startCreatingArena").replace("%arena", arenaName), player);
+        EditorCache.addPlayer(player, arenaName);
+        player.setItemInHand(PluginItems.MULTITOOL_STACK.getWrappedStack());
+        ChatManager.info().write(
+                LanguageManager.get("startCreatingArena").replace("%arena", arenaName), player);
     }
 
     @SubCommand.Nested(parent = "arena")
@@ -63,13 +71,13 @@ public class ArenaCommand {
 
         Arena ar  = ArenaManager.get(arenaName);
         if(ar == null){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaDoesntExist"), player);
+            ChatManager.info().write(LanguageManager.get("arenaDoesntExist"), player);
             return;
         }
 
         ArenaManager.getCache().remove(ar);
-        CastleRush.getChatMessager().write(
-                CastleRush.getProperties().get("arenaRemoved").replace("%arena", arenaName), player);
+        ChatManager.info().write(
+                LanguageManager.get("arenaRemoved").replace("%arena", arenaName), player);
     }
 
     @SubCommand.Nested(parent = "arena")
@@ -79,24 +87,24 @@ public class ArenaCommand {
         Player player = (Player) context.getSender();
 
         // Check if player already started to edit/create an arena
-        if(ArenaManager.EditorCache.contains(player)){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("alreadyInEditorCache"), player);
+        if(EditorCache.contains(player)){
+            ChatManager.info().write(LanguageManager.get("alreadyInEditorCache"), player);
             return;
         }
 
         String arenaName = ArenaManager.getName(context, 1);
 
-        // Check if arena already exists
+        // Check if arena not exists
         Arena ar  = ArenaManager.get(arenaName);
         if(ar == null){
-            CastleRush.getChatMessager().write(CastleRush.getProperties().get("arenaDoesntExist"), player);
+            ChatManager.info().write(LanguageManager.get("arenaDoesntExist"), player);
             return;
         }
 
-        ArenaManager.EditorCache.insert(player, ar);
-        player.setItemInHand(Utilities.ItemStacks.MULTITOOL_STACK.getWrappedStack());
-        CastleRush.getChatMessager().write(
-                CastleRush.getProperties().get("startEditingArena").replace("%arena", arenaName), player);
+        EditorCache.insert(player, ar);
+        player.setItemInHand(PluginItems.MULTITOOL_STACK.getWrappedStack());
+        ChatManager.info().write(
+                LanguageManager.get("startEditingArena").replace("%arena", arenaName), player);
     }
 
     @SubCommand.Nested(parent = "arena")
@@ -109,12 +117,32 @@ public class ArenaCommand {
         String msg = "";
 
         for(Arena arena : arenas){
-            msg += CastleRush.getProperties().get("arenaInList").replace("%arena", arena.getName());
+            msg += LanguageManager.get("arenaInList").replace("%arena", arena.getName());
         }
 
-        CastleRush.getChatMessager().write(
-                CastleRush.getProperties().get("arenaList").replace("%arenas", msg)
+        ChatManager.info().write(
+                LanguageManager.get("arenaList").replace("%arenas", msg)
                         .replace("%size", arenas.size() + ""), player);
+    }
+
+    @SubCommand.Nested(parent = "arena")
+    @SubCommand(label = "teleport", aliases = {"tp"}, permission = "castlerush.arena.teleport"
+            , desc = "Teleports you to an arena", min = 1, usage = "[arena]")
+    public void teleport(CommandContext context){
+        Player player = (Player) context.getSender();
+
+        String s = ArenaManager.getName(context, 1);
+
+        // Check if arena not exists
+        Arena ar = ArenaManager.get(s);
+        if(ar == null){
+            ChatManager.info().write(LanguageManager.get("arenaDoesntExist"), player);
+            return;
+        }
+
+        ArenaManager.reload();
+        player.teleport(ar.getSpawnPoint());
+        ChatManager.info().write(LanguageManager.get("teleportedToArena").replace("%arena", s), player);
     }
 
 }
