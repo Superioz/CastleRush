@@ -186,15 +186,17 @@ public class ArenaManager {
      * @return The full name as string
      */
     public static String getName(CommandContext context, int arg){
-        String arenaName = "";
+        StringBuilder builder = new StringBuilder("");
+
         for(int i = arg; i < context.getArgumentsLength() + 1; i++){
             String add = " ";
             if(i == (context.getArgumentsLength()))
                 add = "";
 
-            arenaName += context.getArgument(i) + add;
+            builder.append(context.getArgument(i)).append(add);
         }
-        return arenaName;
+
+        return builder.toString();
     }
 
     /**
