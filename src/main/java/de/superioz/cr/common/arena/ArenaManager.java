@@ -195,7 +195,6 @@ public class ArenaManager {
 
             builder.append(context.getArgument(i)).append(add);
         }
-
         return builder.toString();
     }
 
