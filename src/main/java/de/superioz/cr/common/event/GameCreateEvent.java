@@ -12,7 +12,6 @@ import org.bukkit.event.HandlerList;
  *
  * @author Superioz
  */
-@Getter
 public class GameCreateEvent extends Event {
 
     public static final HandlerList handlers = new HandlerList();
@@ -35,4 +34,15 @@ public class GameCreateEvent extends Event {
         return handlers;
     }
 
+    public Arena getArena(){
+        return arena;
+    }
+
+    public Player getPlayer(){
+        return player;
+    }
+
+    public GameType getType(){
+        return type;
+    }
 }

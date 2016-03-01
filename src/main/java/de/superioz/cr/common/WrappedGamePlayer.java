@@ -7,7 +7,7 @@ import de.superioz.cr.common.game.team.Team;
 import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.cr.common.stats.PlayerStats;
 import de.superioz.cr.common.stats.StatsManager;
-import de.superioz.library.minecraft.server.common.view.SuperScoreboard;
+import de.superioz.library.minecraft.server.common.SuperScoreboard;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

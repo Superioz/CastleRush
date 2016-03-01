@@ -21,8 +21,6 @@ import java.util.List;
  *
  * @author Superioz
  */
-@Getter
-@Setter
 public class PlayableArena {
 
     protected Arena arena;
@@ -134,4 +132,54 @@ public class PlayableArena {
         return GameManager.getGame(getArena());
     }
 
+    // -- Intern methods
+
+
+    public Arena getArena(){
+        return arena;
+    }
+
+    public void setArena(Arena arena){
+        this.arena = arena;
+    }
+
+    public GamePhase getGamePhase(){
+        return gamePhase;
+    }
+
+    public void setGamePhase(GamePhase gamePhase){
+        this.gamePhase = gamePhase;
+    }
+
+    public GameState getGameState(){
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState){
+        this.gameState = gameState;
+    }
+
+    public GameType getType(){
+        return type;
+    }
+
+    public void setType(GameType type){
+        this.type = type;
+    }
+
+    public List<WrappedGamePlayer> getPlayers(){
+        return players;
+    }
+
+    public void setPlayers(List<WrappedGamePlayer> players){
+        this.players = players;
+    }
+
+    public Material getLastWallsMaterial(){
+        return lastWallsMaterial;
+    }
+
+    public void setLastWallsMaterial(Material lastWallsMaterial){
+        this.lastWallsMaterial = lastWallsMaterial;
+    }
 }

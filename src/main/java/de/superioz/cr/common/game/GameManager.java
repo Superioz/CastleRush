@@ -17,7 +17,7 @@ import de.superioz.library.minecraft.server.common.inventory.PageableInventory;
 import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
 import de.superioz.library.minecraft.server.common.item.SimpleItem;
 import de.superioz.library.minecraft.server.event.WrappedInventoryClickEvent;
-import de.superioz.library.minecraft.server.util.BukkitUtil;
+import de.superioz.library.minecraft.server.util.BukkitUtilities;
 import de.superioz.library.minecraft.server.util.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -46,6 +46,7 @@ public class GameManager {
 
     /**
      * Add given game to queue
+     *
      * @param game The game
      */
     public static void addGameInQueue(Game game){
@@ -57,6 +58,7 @@ public class GameManager {
 
     /**
      * Remove given qame from queue
+     *
      * @param game The game
      * @param flag Flag if the backup should be unregistered
      */
@@ -72,6 +74,7 @@ public class GameManager {
 
     /**
      * Check if given location is part of a plot
+     *
      * @param loc The location
      * @return The result
      */
@@ -88,8 +91,9 @@ public class GameManager {
 
     /**
      * Fixes given location
+     *
      * @param fixable The location
-     * @param world The name of the world
+     * @param world   The name of the world
      * @return The location
      */
     public static Location getLocation(Location fixable, String world){
@@ -99,6 +103,7 @@ public class GameManager {
 
     /**
      * Checks if given arena is in queue
+     *
      * @param arena The arena
      * @return The result
      */
@@ -108,6 +113,7 @@ public class GameManager {
 
     /**
      * Get game of arena
+     *
      * @param arena The arena
      * @return The game
      */
@@ -128,6 +134,7 @@ public class GameManager {
 
     /**
      * Get game of given player
+     *
      * @param player The player
      * @return The game
      */
@@ -143,6 +150,7 @@ public class GameManager {
 
     /**
      * Checks if given uuid is ingame
+     *
      * @param uuid The uuid
      * @return The result
      */
@@ -156,6 +164,7 @@ public class GameManager {
 
     /**
      * Checks if given uuid is ingame in given game
+     *
      * @param uuid The uuid
      * @param game The game
      * @return The result
@@ -171,6 +180,7 @@ public class GameManager {
 
     /**
      * Get wrapped game player from player
+     *
      * @param player The player
      * @return The wrapped game player
      */
@@ -193,6 +203,7 @@ public class GameManager {
 
     /**
      * Checks if given block has plot
+     *
      * @param block The block
      * @return The result
      */
@@ -208,8 +219,9 @@ public class GameManager {
 
     /**
      * Checks if given block has plot in given game
+     *
      * @param block The block
-     * @param game The game
+     * @param game  The game
      * @return The result
      */
     public static boolean hasPlot(Block block, Game game){
@@ -222,6 +234,7 @@ public class GameManager {
 
     /**
      * Gets the game of given block
+     *
      * @param block The block
      * @return The game
      */
@@ -237,6 +250,7 @@ public class GameManager {
 
     /**
      * Add given player to left-the-game-players
+     *
      * @param player The player
      */
     public static void addLeft(WrappedGamePlayer player){
@@ -257,6 +271,7 @@ public class GameManager {
 
     /**
      * Remove given player from left-the-game-players
+     *
      * @param player The player
      */
     public static void removeLeft(WrappedGamePlayer player){
@@ -275,6 +290,7 @@ public class GameManager {
 
     /**
      * Gets the left-the-game-players from given player
+     *
      * @param player The player
      * @return The wrapped game player
      */
@@ -287,6 +303,7 @@ public class GameManager {
 
     /**
      * Gets the left-for-sure-the-game-players from given player
+     *
      * @param gamePlayer The player
      * @return The wrapped game player
      */
@@ -300,6 +317,7 @@ public class GameManager {
 
     /**
      * Checks if player is inside left-for-sure list
+     *
      * @param gp The player
      * @return The result
      */
@@ -309,9 +327,10 @@ public class GameManager {
 
     /**
      * Creates a game with given values
+     *
      * @param gameMaster The game master
-     * @param arena The arena
-     * @param type The type
+     * @param arena      The arena
+     * @param type       The type
      * @return The result
      */
     public static boolean createGame(Player gameMaster, Arena arena, GameType type){
@@ -337,11 +356,12 @@ public class GameManager {
 
     /**
      * Check the inventory of given player
+     *
      * @param player The player
      * @return The result
      */
     public static String checkInventory(Player player){
-        if(BukkitUtil.hasContent(player.getInventory())
+        if(BukkitUtilities.hasContent(player.getInventory())
                 && !PluginSettings.CLEAR_INV){
             return "inventory not empty";
         }
@@ -350,7 +370,8 @@ public class GameManager {
 
     /**
      * Gets the game overview
-     * @param title The title
+     *
+     * @param title    The title
      * @param consumer The consumer
      * @return The inventory
      */
@@ -363,7 +384,7 @@ public class GameManager {
             GameState state = game.getArena().getGameState();
 
             SimpleItem item = new SimpleItem(Material.STAINED_CLAY)
-                    .setName(PluginColor.VIOLET + "Game #"+(i+1))
+                    .setName(PluginColor.VIOLET + "Game #" + (i + 1))
                     .setLore(PluginColor.LIGHT + "Name: " + PluginColor.DARK_AQUA + game.getArena().getArena().getName(),
                             PluginColor.LIGHT + "State: " + state.getSpecifier(),
                             PluginColor.LIGHT + "Type: " + SimpleStringUtils.upperFirstLetter(game.getType().getSpecifier()),
@@ -384,7 +405,7 @@ public class GameManager {
 
             // Pattern of overview items
             for(Team team : game.getTeamManager().getTeams()){
-                item.addLore(PluginColor.DARK +"- " + team.getColoredName(game) + "&7: &e" + team.getTeamPlayer().size());
+                item.addLore(PluginColor.DARK + "- " + team.getColoredName(game) + "&7: &e" + team.getTeamPlayer().size());
             }
 
             items.add(item);

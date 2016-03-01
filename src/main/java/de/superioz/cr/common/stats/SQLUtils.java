@@ -1,7 +1,7 @@
 package de.superioz.cr.common.stats;
 
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.java.database.sql.database.Database;
+import de.superioz.library.java.database.sql.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

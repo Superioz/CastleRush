@@ -33,8 +33,6 @@ import java.util.ArrayList;
  *
  * @author Superioz
  */
-@Getter
-@Setter
 public class Game {
 
     protected PlayableArena arena;
@@ -331,7 +329,7 @@ public class Game {
         return GameManager.getRunningGames().contains(this);
     }
 
-    // -- Intern methodsW
+    // -- Intern methods
 
     public GameType getType(){
         return type;
@@ -397,4 +395,27 @@ public class Game {
         this.teamManager = teamManager;
     }
 
+    public void setType(GameType type){
+        this.type = type;
+    }
+
+    public GameSettings getSettings(){
+        return settings;
+    }
+
+    public void setSettings(GameSettings settings){
+        this.settings = settings;
+    }
+
+    public GameScoreboard getScoreboard(){
+        return scoreboard;
+    }
+
+    public void setScoreboard(GameScoreboard scoreboard){
+        this.scoreboard = scoreboard;
+    }
+
+    public void setGameCountdown(GameCountdown gameCountdown){
+        this.gameCountdown = gameCountdown;
+    }
 }

@@ -19,6 +19,11 @@ public class GameWall {
 
     public GameWall(SimplePair<Location, Location> boundaries){
         this.boundaries = boundaries;
+
+        if(boundaries != null && boundaries.getType1() != null
+                && boundaries.getType1().getWorld() != null){
+            world = boundaries.getType1().getWorld().getName();
+        }
     }
 
     /**

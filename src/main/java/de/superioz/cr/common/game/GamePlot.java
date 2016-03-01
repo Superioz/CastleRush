@@ -23,6 +23,10 @@ public class GamePlot {
     public GamePlot(List<Location> locations, Location teleportPoint){
         this.locations = locations;
         this.teleportPoint = teleportPoint;
+
+        if(teleportPoint != null && teleportPoint.getWorld() != null){
+            world = teleportPoint.getWorld().getName();
+        }
     }
 
     /**

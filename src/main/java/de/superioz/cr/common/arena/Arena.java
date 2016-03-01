@@ -19,8 +19,6 @@ import java.util.List;
  *
  * @author Superioz
  */
-@Getter
-@Setter
 public class Arena {
 
     protected String name;
@@ -56,7 +54,6 @@ public class Arena {
      * Checks if given player can join this arena
      *
      * @param player The player
-     *
      * @return The result as string
      */
     public String checkJoinable(Player player){
@@ -78,15 +75,24 @@ public class Arena {
     }
 
     /**
-     * Checks if this world is not given world
+     * Checks if this world is ngiven world
      *
      * @param world The other world
-     *
      * @return The result as boolean
      */
-    public boolean inAnotherWorld(World world){
+    public boolean isWorld(World world){
         return this.getWorld()
-                != world;
+                == world;
+    }
+
+    /**
+     * Checks if given world is world, world_the_nether, world_the_end
+     *
+     * @param world The world
+     * @return The result
+     */
+    public boolean checkWorld(World world){
+        return world != Bukkit.getWorlds().get(0);
     }
 
     /**
@@ -95,33 +101,30 @@ public class Arena {
      * @return Result as boolean
      */
     public boolean checkWorld(){
-        if(!inAnotherWorld(Bukkit.getWorlds().get(0))
-                || !inAnotherWorld(Bukkit.getWorlds().get(1))
-                || !inAnotherWorld(Bukkit.getWorlds().get(2))){
+        if(isWorld(Bukkit.getWorlds().get(0))
+                || isWorld(Bukkit.getWorlds().get(1))
+                || isWorld(Bukkit.getWorlds().get(2))){
             return false;
         }
 
         for(GamePlot plot : getGamePlots()){
-            if(plot.getTeleportPoint().getWorld() == Bukkit.getWorlds().get(0)
-                    || plot.getTeleportPoint().getWorld() == Bukkit.getWorlds().get(1)
-                    || plot.getTeleportPoint().getWorld() == Bukkit.getWorlds().get(2))
+            if(!checkWorld(plot.getTeleportPoint().getWorld())){
                 return false;
+            }
         }
 
         for(GameWall wall : getGameWalls()){
-            if((wall.getBoundaries().getType1().getWorld() == Bukkit.getWorlds().get(0)
-                    || wall.getBoundaries().getType1().getWorld() == Bukkit.getWorlds().get(1)
-                    || wall.getBoundaries().getType1().getWorld() == Bukkit.getWorlds().get(2))
-                    || wall.getBoundaries().getType2().getWorld() == Bukkit.getWorlds().get(0)
-                    || wall.getBoundaries().getType2().getWorld() == Bukkit.getWorlds().get(1)
-                    || wall.getBoundaries().getType2().getWorld() == Bukkit.getWorlds().get(2))
+            if(!checkWorld(wall.getBoundaries().getType1().getWorld())
+                    || !checkWorld(wall.getBoundaries().getType2().getWorld())){
                 return false;
+            }
         }
         return true;
     }
 
     /**
      * Gets the index of given plot
+     *
      * @param plot The plot
      * @return The index
      */
@@ -160,6 +163,7 @@ public class Arena {
 
     /**
      * Gets a plot from given location
+     *
      * @param loc The location
      * @return The plot
      */
@@ -175,7 +179,6 @@ public class Arena {
      * Get an arena from string
      *
      * @param s The string
-     *
      * @return The arena
      */
     public static Arena fromString(String s){
@@ -232,6 +235,61 @@ public class Arena {
                 + "[" + ListUtil.insert(gamePlots, GAME_OBJECT_SPLITERATOR) + "]" + DEFAULT_SPLITERATOR
                 + "[" + ListUtil.insert(gameWalls, GAME_OBJECT_SPLITERATOR) + "]" + DEFAULT_SPLITERATOR
                 + gameKit;
+    }
+
+    // -- Intern methods
+
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getSpawnPointString(){
+        return spawnPointString;
+    }
+
+    public void setSpawnPointString(String spawnPointString){
+        this.spawnPointString = spawnPointString;
+    }
+
+    public Sign getSign(){
+        return sign;
+    }
+
+    public void setSign(Sign sign){
+        this.sign = sign;
+    }
+
+    public ItemKit getItemKit(){
+        return itemKit;
+    }
+
+    public void setItemKit(ItemKit itemKit){
+        this.itemKit = itemKit;
+    }
+
+    public List<GameWall> getGameWalls(){
+        return gameWalls;
+    }
+
+    public void setGameWalls(List<GameWall> gameWalls){
+        this.gameWalls = gameWalls;
+    }
+
+    public List<GamePlot> getGamePlots(){
+        return gamePlots;
+    }
+
+    public void setGamePlots(List<GamePlot> gamePlots){
+        this.gamePlots = gamePlots;
+    }
+
+    public void setSpawnPoint(Location spawnPoint){
+        this.spawnPoint = spawnPoint;
     }
 
 }

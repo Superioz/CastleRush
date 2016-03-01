@@ -5,7 +5,7 @@ import de.superioz.cr.common.event.GamePhaseEvent;
 import de.superioz.cr.common.game.*;
 import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.util.BukkitUtil;
+import de.superioz.library.minecraft.server.util.BukkitUtilities;
 import de.superioz.library.minecraft.server.util.LocationUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -177,8 +177,7 @@ public class GamePlotListener implements Listener {
         if(game.getArena().getGamePhase() == GamePhase.BUILD
                 && !plot.equals(newPlot)
                 && !game.getSettings().canEnterPlotDuringBuild()){
-            System.out.println(player.getDisplayName() + " isnt allowed to enter!");
-            BukkitUtil.pushAwayEntity(player, loc, 1.25);
+            BukkitUtilities.pushAwayEntity(player, loc, 5d);
         }
     }
 

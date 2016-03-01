@@ -56,6 +56,10 @@ public class PluginTools {
         assert arena != null;
 
         event.getEvent().setCancelled(true);
+        if(block == null
+                || !block.getType().isSolid()){
+            return;
+        }
 
         // Check location
         if(!arena.checkLocation(player, block.getLocation())){
@@ -99,9 +103,10 @@ public class PluginTools {
         assert arena != null;
 
         event.getEvent().setCancelled(true);
-
-        if(block == null)
+        if(block == null
+                || !block.getType().isSolid()){
             return;
+        }
 
         // Check location
         if(!arena.checkLocation(player, block.getLocation())){
@@ -177,6 +182,11 @@ public class PluginTools {
         assert arena != null;
 
         event.getEvent().setCancelled(true);
+        if(block == null
+                || !block.getType().isSolid()){
+            return;
+        }
+
         switch(action){
             case RIGHT_CLICK_BLOCK:
                 Location pos = LocationUtil.fix(block.getLocation());

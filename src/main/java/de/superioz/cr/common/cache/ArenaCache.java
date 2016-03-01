@@ -117,6 +117,11 @@ public class ArenaCache extends SimpleCache<String> {
      * @return The arenalist
      */
     public List<Arena> fromStringList(List<String> list){
+        if(list == null
+                || list.isEmpty()){
+            return new ArrayList<>();
+        }
+
         return list.stream().map(Arena::fromString).collect(Collectors.toList());
     }
 

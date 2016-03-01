@@ -11,7 +11,6 @@ import org.bukkit.event.HandlerList;
  *
  * @author Superioz
  */
-@Getter
 public class GameSignInteractEvent extends Event {
 
     public static final HandlerList handlers = new HandlerList();
@@ -32,4 +31,11 @@ public class GameSignInteractEvent extends Event {
         return handlers;
     }
 
+    public Player getPlayer(){
+        return player;
+    }
+
+    public GameSign.Type getType(){
+        return type;
+    }
 }

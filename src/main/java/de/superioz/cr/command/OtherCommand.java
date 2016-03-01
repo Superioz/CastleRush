@@ -34,7 +34,7 @@ public class OtherCommand {
     }
 
     @SubCommand(label = "template", aliases = {"templ"}, desc = "Creates a copy of given world",
-            permission = "castlerush.template", min = 1)
+            permission = "castlerush.template", min = 1, usage = "[worldName]")
     public void template(CommandContext commandContext) throws IOException{
         Player player = (Player) commandContext.getSender();
 

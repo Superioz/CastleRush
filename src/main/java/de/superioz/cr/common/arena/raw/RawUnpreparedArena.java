@@ -17,8 +17,6 @@ import java.util.List;
  *
  * @author Superioz
  */
-@Setter
-@Getter
 public class RawUnpreparedArena {
 
     protected String name;
@@ -89,4 +87,46 @@ public class RawUnpreparedArena {
                 && loc.getWorld().getName().equals(unpreparedArena.getSpawnPoint().getWorld().getName());
     }
 
+    // -- Intern methods
+
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public List<Location> getRawGamePlots(){
+        return rawGamePlots;
+    }
+
+    public void setRawGamePlots(List<Location> rawGamePlots){
+        this.rawGamePlots = rawGamePlots;
+    }
+
+    public SimplePair<Location, Location> getRawGameWalls(){
+        return rawGameWalls;
+    }
+
+    public void setRawGameWalls(SimplePair<Location, Location> rawGameWalls){
+        this.rawGameWalls = rawGameWalls;
+    }
+
+    public Location getRawGamePlotMarker(){
+        return rawGamePlotMarker;
+    }
+
+    public void setRawGamePlotMarker(Location rawGamePlotMarker){
+        this.rawGamePlotMarker = rawGamePlotMarker;
+    }
+
+    public ItemKit getItemKit(){
+        return itemKit;
+    }
+
+    public void setItemKit(ItemKit itemKit){
+        this.itemKit = itemKit;
+    }
 }
