@@ -1,7 +1,7 @@
 package de.superioz.cr.common.game;
 
+import de.superioz.library.bukkit.util.SerializeUtil;
 import de.superioz.library.java.util.classes.SimplePair;
-import de.superioz.library.minecraft.server.util.SerializeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 

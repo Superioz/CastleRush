@@ -14,12 +14,12 @@ import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.cr.common.stats.DatabaseManager;
 import de.superioz.cr.common.stats.SQLUtils;
 import de.superioz.cr.util.PluginColor;
-import de.superioz.library.java.file.type.YamlFile;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.command.CommandHandler;
-import de.superioz.library.minecraft.server.exception.CommandRegisterException;
-import de.superioz.library.minecraft.server.logging.SuperLogger;
-import de.superioz.library.minecraft.server.message.PlayerMessager;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.command.CommandHandler;
+import de.superioz.library.bukkit.exception.CommandRegisterException;
+import de.superioz.library.bukkit.logging.SuperLogger;
+import de.superioz.library.bukkit.message.PlayerMessager;
+import de.superioz.library.bukkit.util.YamlFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -45,7 +45,7 @@ public class CastleRush extends JavaPlugin {
 
     @Override
     public void onEnable(){
-        SuperLibrary.initFor(this);
+        BukkitLibrary.initFor(this);
         instance = this;
         pluginManager = getServer().getPluginManager();
 

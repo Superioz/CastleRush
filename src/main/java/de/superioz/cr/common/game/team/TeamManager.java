@@ -6,11 +6,11 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.event.GameTeamChangeEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.inventory.InventorySize;
-import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
-import de.superioz.library.minecraft.server.common.item.InteractableSimpleItem;
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.inventory.InventorySize;
+import de.superioz.library.bukkit.common.inventory.SuperInventory;
+import de.superioz.library.bukkit.common.item.InteractableSimpleItem;
+import de.superioz.library.bukkit.common.item.SimpleItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -69,7 +69,7 @@ public class TeamManager {
         }
 
         team.getTeamPlayer().add(player);
-        SuperLibrary.callEvent(new GameTeamChangeEvent(player.getGame(), team));
+        BukkitLibrary.callEvent(new GameTeamChangeEvent(player.getGame(), team));
         return true;
     }
 
@@ -83,7 +83,7 @@ public class TeamManager {
         teams.stream().filter(t -> t.getTeamPlayer().contains(player)).forEach(t -> t.getTeamPlayer().remove(player));
 
         if(team != null)
-            SuperLibrary.callEvent(new GameTeamChangeEvent(player.getGame(), team));
+            BukkitLibrary.callEvent(new GameTeamChangeEvent(player.getGame(), team));
     }
 
     /**

@@ -2,3 +2,5 @@ name: ${project.artifactId}
 main: de.superioz.cr.main.CastleRush
 version: ${project.version}
 author: Superioz
+
+loadbefore: [ProtocolLib]

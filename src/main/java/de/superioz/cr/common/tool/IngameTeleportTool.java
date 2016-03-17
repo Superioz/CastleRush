@@ -4,7 +4,7 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.inv.GameTeleportInventory;
 import de.superioz.cr.util.PluginItems;
-import de.superioz.library.minecraft.server.common.item.SimpleItemTool;
+import de.superioz.library.bukkit.common.item.SimpleItemTool;
 import org.bukkit.entity.Player;
 
 /**

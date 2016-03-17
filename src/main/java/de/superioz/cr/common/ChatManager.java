@@ -1,7 +1,7 @@
 package de.superioz.cr.common;
 
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.minecraft.server.message.PlayerMessager;
+import de.superioz.library.bukkit.message.PlayerMessager;
 
 /**
  * This class was created as a part of CastleRush

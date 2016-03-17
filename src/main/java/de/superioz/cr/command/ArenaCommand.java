@@ -6,10 +6,10 @@ import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.cache.EditorCache;
 import de.superioz.cr.util.PluginItems;
+import de.superioz.library.bukkit.common.command.Command;
+import de.superioz.library.bukkit.common.command.CommandWrapper;
+import de.superioz.library.bukkit.common.command.context.CommandContext;
 import de.superioz.library.java.util.list.ListUtil;
-import de.superioz.library.minecraft.server.common.command.CommandWrapper;
-import de.superioz.library.minecraft.server.common.command.SubCommand;
-import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class ArenaCommand {
 
-    @SubCommand(label = "arena", aliases = {"ar", "a"}, permission = "castlerush.arena"
+    @Command(label = "arena", aliases = {"ar", "a"}, permission = "castlerush.arena"
             , usage = "", desc = "Commands for handling arenas")
     public void arenaCommand(CommandContext context){
         List<String> subCommands = context.getCommand().getSubCommands().stream().map(CommandWrapper::getLabel)
@@ -32,8 +32,8 @@ public class ArenaCommand {
                 (Player)context.getSender());
     }
 
-    @SubCommand.Nested(parent = "arena")
-    @SubCommand(label = "create", aliases = {"crea", "c"}, permission = "castlerush.arena.create"
+    @Command.Nested(parent = "arena")
+    @Command(label = "create", aliases = {"crea", "c"}, permission = "castlerush.arena.create"
             , min = 1, usage = "[arenaName]", desc = "Creates an arena. Puts you into editor cache")
     public void create(CommandContext context){
         Player player = (Player) context.getSender();
@@ -61,8 +61,8 @@ public class ArenaCommand {
                 LanguageManager.get("startCreatingArena").replace("%arena", arenaName), player);
     }
 
-    @SubCommand.Nested(parent = "arena")
-    @SubCommand(label = "delete", aliases = {"del", "d"}, permission = "castlerush.arena.delete"
+    @Command.Nested(parent = "arena")
+    @Command(label = "delete", aliases = {"del", "d"}, permission = "castlerush.arena.delete"
             , min = 1, usage = "[arenaName]", desc = "Deletes an arena")
     public void delete(CommandContext context){
         Player player = (Player) context.getSender();
@@ -80,8 +80,8 @@ public class ArenaCommand {
                 LanguageManager.get("arenaRemoved").replace("%arena", arenaName), player);
     }
 
-    @SubCommand.Nested(parent = "arena")
-    @SubCommand(label = "edit", aliases = {"e"}, permission = "castlerush.arena.edit"
+    @Command.Nested(parent = "arena")
+    @Command(label = "edit", aliases = {"e"}, permission = "castlerush.arena.edit"
             , min = 1, usage = "[arenaName]", desc = "Edits an arena. Puts you into editor cache")
     public void edit(CommandContext context){
         Player player = (Player) context.getSender();
@@ -107,8 +107,8 @@ public class ArenaCommand {
                 LanguageManager.get("startEditingArena").replace("%arena", arenaName), player);
     }
 
-    @SubCommand.Nested(parent = "arena")
-    @SubCommand(label = "list", aliases = {"l"}, permission = "castlerush.arena.list"
+    @Command.Nested(parent = "arena")
+    @Command(label = "list", aliases = {"l"}, permission = "castlerush.arena.list"
             , desc = "Lists all arenas")
     public void list(CommandContext context){
         Player player = (Player) context.getSender();
@@ -125,8 +125,8 @@ public class ArenaCommand {
                         .replace("%size", arenas.size() + ""), player);
     }
 
-    @SubCommand.Nested(parent = "arena")
-    @SubCommand(label = "teleport", aliases = {"tp"}, permission = "castlerush.arena.teleport"
+    @Command.Nested(parent = "arena")
+    @Command(label = "teleport", aliases = {"tp"}, permission = "castlerush.arena.teleport"
             , desc = "Teleports you to an arena", min = 1, usage = "[arena]")
     public void teleport(CommandContext context){
         Player player = (Player) context.getSender();

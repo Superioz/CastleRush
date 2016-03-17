@@ -1,8 +1,9 @@
 package de.superioz.cr.common.tool;
 
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
-import de.superioz.library.minecraft.server.common.item.SimpleItemTool;
-import de.superioz.library.minecraft.server.event.WrappedItemInteractEvent;
+
+import de.superioz.library.bukkit.common.item.SimpleItem;
+import de.superioz.library.bukkit.common.item.SimpleItemTool;
+import de.superioz.library.bukkit.event.WrappedItemInteractEvent;
 
 import java.util.function.Consumer;
 
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
  */
 public class ArenaMultiTool extends SimpleItemTool {
 
-    public ArenaMultiTool(SimpleItem item, Consumer<WrappedItemInteractEvent> consumer){
+    public ArenaMultiTool(SimpleItem item, de.superioz.library.java.util.Consumer<WrappedItemInteractEvent> consumer){
         super(item, consumer);
     }
 

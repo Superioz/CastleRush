@@ -5,8 +5,8 @@ import de.superioz.cr.common.lang.LanguageManager;
 import de.superioz.cr.common.arena.Arena;
 import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.cr.util.PluginUtilities;
-import de.superioz.library.minecraft.server.common.command.SubCommand;
-import de.superioz.library.minecraft.server.common.command.context.CommandContext;
+import de.superioz.library.bukkit.common.command.Command;
+import de.superioz.library.bukkit.common.command.context.CommandContext;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class OtherCommand {
 
-    @SubCommand(label = "reload", aliases = "rl", desc = "Reloads the config",
+    @Command(label = "reload", aliases = "rl", desc = "Reloads the config",
             permission = "castlerush.reload")
     public void help(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
@@ -33,7 +33,7 @@ public class OtherCommand {
         ChatManager.info().write("&eReloaded.", player);
     }
 
-    @SubCommand(label = "template", aliases = {"templ"}, desc = "Creates a copy of given world",
+    @Command(label = "template", aliases = {"templ"}, desc = "Creates a copy of given world",
             permission = "castlerush.template", min = 1, usage = "[worldName]")
     public void template(CommandContext commandContext) throws IOException{
         Player player = (Player) commandContext.getSender();

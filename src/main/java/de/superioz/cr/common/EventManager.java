@@ -14,7 +14,7 @@ import de.superioz.cr.common.timer.CaptureTimer;
 import de.superioz.cr.common.tool.GameMasterSettingsTool;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.PluginItems;
-import de.superioz.library.main.SuperLibrary;
+import de.superioz.library.bukkit.BukkitLibrary;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -110,7 +110,7 @@ public class EventManager {
             if(gamePlayer.hasLeft()){
                 GameManager.removeLeft(gamePlayer);
                 GameManager.getLeftForSurePlayer().add(gamePlayer);
-                SuperLibrary.callEvent(new GameLeaveEvent(game, gamePlayer,
+                BukkitLibrary.callEvent(new GameLeaveEvent(game, gamePlayer,
                         GameLeaveEvent.Type.REJOIN_TIME_RUNS_OUT));
                 continue;
             }

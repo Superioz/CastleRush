@@ -10,8 +10,9 @@ import de.superioz.cr.common.game.*;
 import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.PluginItems;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.runnable.SuperDelayer;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.runnable.SuperDelayer;
+import de.superioz.library.java.util.Consumer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -167,16 +168,16 @@ public class CustomGameListener implements Listener {
         // If is ingame then update scoreboard
         if(game.getArena().getGameState() == GameState.INGAME){
             // Set scoreboard
-            SuperLibrary.callEvent(new GameScoreboardUpdateEvent(game, GameScoreboardUpdateEvent.Reason.UPDATE));
+            BukkitLibrary.callEvent(new GameScoreboardUpdateEvent(game, GameScoreboardUpdateEvent.Reason.UPDATE));
         }
 
         if(currentPlayersSize == 0){
-            SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.FINISH));
+            BukkitLibrary.callEvent(new GamePhaseEvent(game, GamePhase.FINISH));
         }
         else if(currentPlayersSize == 1
                 && game.getArena().getGameState() == GameState.INGAME){
             game.setWinner(game.getArena().getPlayers().get(0));
-            SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.END));
+            BukkitLibrary.callEvent(new GamePhaseEvent(game, GamePhase.END));
         }
     }
 
@@ -217,7 +218,7 @@ public class CustomGameListener implements Listener {
 
         if(GameManager.createGame(player, arena, type)){
             // Call event for further things
-            SuperLibrary.callEvent(new GameJoinEvent(arena, player, player.getLocation()));
+            BukkitLibrary.callEvent(new GameJoinEvent(arena, player, player.getLocation()));
         }
     }
 

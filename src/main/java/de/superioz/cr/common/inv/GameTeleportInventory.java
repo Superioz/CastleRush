@@ -9,14 +9,14 @@ import de.superioz.cr.common.game.team.Team;
 import de.superioz.cr.common.lang.LanguageManager;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.PluginItems;
+import de.superioz.library.bukkit.common.inventory.InventorySize;
+import de.superioz.library.bukkit.common.inventory.PageableInventory;
+import de.superioz.library.bukkit.common.inventory.SuperInventory;
+import de.superioz.library.bukkit.common.item.InteractableSimpleItem;
+import de.superioz.library.bukkit.common.item.SimpleItem;
+import de.superioz.library.bukkit.event.WrappedInventoryClickEvent;
+import de.superioz.library.bukkit.util.ItemUtil;
 import de.superioz.library.java.util.SimpleStringUtils;
-import de.superioz.library.minecraft.server.common.inventory.InventorySize;
-import de.superioz.library.minecraft.server.common.inventory.PageableInventory;
-import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
-import de.superioz.library.minecraft.server.common.item.InteractableSimpleItem;
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
-import de.superioz.library.minecraft.server.event.WrappedInventoryClickEvent;
-import de.superioz.library.minecraft.server.util.ItemUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -72,7 +72,7 @@ public class GameTeleportInventory {
         }
 
         // get consumer
-        Consumer<WrappedInventoryClickEvent> eventConsumer = event -> {
+        de.superioz.library.java.util.Consumer<WrappedInventoryClickEvent> eventConsumer = event -> {
             Player player = event.getPlayer();
             ItemStack item = event.getItem();
 
@@ -111,7 +111,7 @@ public class GameTeleportInventory {
         }
         SuperInventory superInventory = new SuperInventory("Choose target", InventorySize.THREE_ROWS);
 
-        Consumer<WrappedInventoryClickEvent> consumer = event -> {
+        de.superioz.library.java.util.Consumer<WrappedInventoryClickEvent> consumer = event -> {
             ItemStack item = event.getItem();
             WrappedGamePlayer wrappedGamePlayer = GameManager.getWrappedGamePlayer(event.getPlayer());
             event.cancelEvent();

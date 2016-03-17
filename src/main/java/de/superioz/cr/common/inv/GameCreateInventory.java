@@ -8,14 +8,14 @@ import de.superioz.cr.common.arena.ArenaManager;
 import de.superioz.cr.common.event.GameCreateEvent;
 import de.superioz.cr.common.game.GameType;
 import de.superioz.cr.util.PluginItems;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.inventory.InventorySize;
-import de.superioz.library.minecraft.server.common.inventory.PageableInventory;
-import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
-import de.superioz.library.minecraft.server.common.item.InteractableSimpleItem;
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
-import de.superioz.library.minecraft.server.event.WrappedInventoryClickEvent;
-import de.superioz.library.minecraft.server.util.LocationUtil;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.inventory.InventorySize;
+import de.superioz.library.bukkit.common.inventory.PageableInventory;
+import de.superioz.library.bukkit.common.inventory.SuperInventory;
+import de.superioz.library.bukkit.common.item.InteractableSimpleItem;
+import de.superioz.library.bukkit.common.item.SimpleItem;
+import de.superioz.library.bukkit.event.WrappedInventoryClickEvent;
+import de.superioz.library.bukkit.util.LocationUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -56,7 +56,7 @@ public class GameCreateInventory {
             return;
         SuperInventory superInventory = new SuperInventory("Choose type", InventorySize.THREE_ROWS);
 
-        Consumer<WrappedInventoryClickEvent> consumer = event -> {
+        de.superioz.library.java.util.Consumer<WrappedInventoryClickEvent> consumer = event -> {
             ItemStack item = event.getItem();
 
             if(!item.hasItemMeta())
@@ -131,7 +131,7 @@ public class GameCreateInventory {
                 typeHashMap.remove(event.getPlayer());
 
                 // CREATE GAME for ARENA
-                SuperLibrary.callEvent(new GameCreateEvent(arena, type, event.getPlayer()));
+                BukkitLibrary.callEvent(new GameCreateEvent(arena, type, event.getPlayer()));
             }
         });
         gameArenaChoose = inventory.getPage(1);

@@ -6,7 +6,7 @@ import de.superioz.cr.common.game.team.Team;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.cr.util.TimeType;
-import de.superioz.library.minecraft.server.common.SuperScoreboard;
+import de.superioz.library.bukkit.common.SuperScoreboard;
 
 import java.util.List;
 

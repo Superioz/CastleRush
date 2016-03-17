@@ -5,8 +5,8 @@ import de.superioz.cr.common.event.GameScoreboardUpdateEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GamePhase;
 import de.superioz.cr.common.lang.LanguageManager;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.runnable.SuperRepeater;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.runnable.SuperRepeater;
 
 /**
  * This class was created as a part of CastleRush
@@ -46,7 +46,7 @@ public class BuildCountdown {
 
             // Set scoreboard
             if(game.getArena().getGamePhase() == GamePhase.BUILD)
-                SuperLibrary.callEvent(new GameScoreboardUpdateEvent(game, GameScoreboardUpdateEvent.Reason.UPDATE));
+                BukkitLibrary.callEvent(new GameScoreboardUpdateEvent(game, GameScoreboardUpdateEvent.Reason.UPDATE));
         }, endRunnable -> {
             // What happens at the end
             // Timer runs out - gamestate dont change
@@ -57,15 +57,15 @@ public class BuildCountdown {
 
             if(game.getArena().getPlayers().size() < 2){
                 game.setWinner(game.getArena().getPlayers().get(0));
-                SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.END));
+                BukkitLibrary.callEvent(new GamePhaseEvent(game, GamePhase.END));
                 return;
             }
 
-            SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.CAPTURE));
+            BukkitLibrary.callEvent(new GamePhaseEvent(game, GamePhase.CAPTURE));
             game.broadcast(LanguageManager.get("startCaptureCastle"));
 
             // Set scoreboard
-            SuperLibrary.callEvent(new GameScoreboardUpdateEvent(game, GameScoreboardUpdateEvent.Reason.UPDATE));
+            BukkitLibrary.callEvent(new GameScoreboardUpdateEvent(game, GameScoreboardUpdateEvent.Reason.UPDATE));
         }, 20);
     }
 

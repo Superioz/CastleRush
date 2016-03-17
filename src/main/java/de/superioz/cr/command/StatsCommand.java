@@ -7,9 +7,9 @@ import de.superioz.cr.common.stats.PlayerStats;
 import de.superioz.cr.common.stats.StatsManager;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.common.settings.PluginSettings;
+import de.superioz.library.bukkit.common.command.Command;
+import de.superioz.library.bukkit.common.command.context.CommandContext;
 import de.superioz.library.java.util.SimpleStringUtils;
-import de.superioz.library.minecraft.server.common.command.SubCommand;
-import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import org.bukkit.entity.Player;
 
 /**
@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
  */
 public class StatsCommand {
 
-    @SubCommand(label = "stats", aliases = {"statistics", "showstats"}, desc = "Shows the stats of yourself or a friend",
+    @Command(label = "stats", aliases = {"statistics", "showstats"}, desc = "Shows the stats of yourself or a friend",
             permission = "castlerush.showstats", usage = "[player]")
     public void stats(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
@@ -54,7 +54,7 @@ public class StatsCommand {
                 .replace("%stats", stats.toColoredString()), player);
     }
 
-    @SubCommand(label = "setstats", aliases = "setstatistics", desc = "Sets the stats of given player",
+    @Command(label = "setstats", aliases = "setstatistics", desc = "Sets the stats of given player",
             permission = "castlerush.setstats", min = 1, usage = "[player] <elo> <wins> <loses>")
     public void setstats(CommandContext context){
         Player player = (Player) context.getSender();
@@ -116,7 +116,7 @@ public class StatsCommand {
                 .replace("%arrow", "➜"), player);
     }
 
-    @SubCommand(label = "ranklist", aliases = {"rank", "top"}, desc = "Shows the top players",
+    @Command(label = "ranklist", aliases = {"rank", "top"}, desc = "Shows the top players",
             permission = "castlerush.showstats", usage = "<numberOfPlayers>")
     public void ranklist(CommandContext context){
         Player player = (Player) context.getSender();

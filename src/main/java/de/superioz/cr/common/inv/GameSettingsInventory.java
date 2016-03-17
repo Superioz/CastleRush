@@ -3,9 +3,9 @@ package de.superioz.cr.common.inv;
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.settings.GameSettings;
-import de.superioz.library.minecraft.server.common.inventory.InventorySize;
-import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
+import de.superioz.library.bukkit.common.inventory.InventorySize;
+import de.superioz.library.bukkit.common.inventory.SuperInventory;
+import de.superioz.library.bukkit.common.item.SimpleItem;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 

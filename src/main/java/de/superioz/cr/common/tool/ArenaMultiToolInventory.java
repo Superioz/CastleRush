@@ -1,8 +1,8 @@
 package de.superioz.cr.common.tool;
 
 import de.superioz.cr.util.PluginItems;
-import de.superioz.library.minecraft.server.common.inventory.InventoryContent;
-import de.superioz.library.minecraft.server.common.item.InteractableSimpleItem;
+import de.superioz.library.bukkit.common.inventory.InventoryContent;
+import de.superioz.library.bukkit.common.item.InteractableSimpleItem;
 import org.bukkit.entity.Player;
 
 /**

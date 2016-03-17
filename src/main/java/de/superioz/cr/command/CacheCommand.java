@@ -15,13 +15,13 @@ import de.superioz.cr.common.tool.IngameTeleportTool;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.PluginColor;
 import de.superioz.cr.util.PluginItems;
+import de.superioz.library.bukkit.common.command.Command;
+import de.superioz.library.bukkit.common.command.CommandWrapper;
+import de.superioz.library.bukkit.common.command.context.CommandContext;
+import de.superioz.library.bukkit.util.LocationUtil;
+import de.superioz.library.bukkit.util.SerializeUtil;
 import de.superioz.library.java.util.classes.SimplePair;
 import de.superioz.library.java.util.list.ListUtil;
-import de.superioz.library.minecraft.server.common.command.CommandWrapper;
-import de.superioz.library.minecraft.server.common.command.SubCommand;
-import de.superioz.library.minecraft.server.common.command.context.CommandContext;
-import de.superioz.library.minecraft.server.util.LocationUtil;
-import de.superioz.library.minecraft.server.util.SerializeUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  */
 public class CacheCommand {
 
-    @SubCommand(label = "cache", aliases = {"c"}, permission = "castlerush.cache"
+    @Command(label = "cache", aliases = {"c"}, permission = "castlerush.cache"
             , desc = "Commands for handling editor's cache")
     public void cache(CommandContext context){
         List<String> subCommands = context.getCommand().getSubCommands().stream().map(CommandWrapper::getLabel)
@@ -49,8 +49,8 @@ public class CacheCommand {
                 (Player)context.getSender());
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "info", aliases = {"i"}, permission = "castlerush.cache.info"
+    @Command.Nested(parent = "cache")
+    @Command(label = "info", aliases = {"i"}, permission = "castlerush.cache.info"
             , desc = "Adds selected wall to editor cache")
     public void info(CommandContext context){
         Player player = (Player) context.getSender();
@@ -79,8 +79,8 @@ public class CacheCommand {
                 name + spacer + walls + spacer + plots + spacer + spacer + spacer + kit, player);
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "addplot", aliases = {"addp", "ap"}, permission = "castlerush.cache.addplot"
+    @Command.Nested(parent = "cache")
+    @Command(label = "addplot", aliases = {"addp", "ap"}, permission = "castlerush.cache.addplot"
             , desc = "Adds selected plot to editor cache")
     public void addplot(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
@@ -115,8 +115,8 @@ public class CacheCommand {
         rawUnpreparedArena.setRawGamePlots(new ArrayList<>());
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "setkit", aliases = {"setk", "sk"}, permission = "castlerush.cache.setkit"
+    @Command.Nested(parent = "cache")
+    @Command(label = "setkit", aliases = {"setk", "sk"}, permission = "castlerush.cache.setkit"
             , desc = "Sets the kit for unprepared arena")
     public void setkit(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
@@ -143,8 +143,8 @@ public class CacheCommand {
         ChatManager.info().write(LanguageManager.get("setGamekitForCache"), player);
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "addwall", aliases = {"addw", "aw"}, permission = "castlerush.cache.addwall"
+    @Command.Nested(parent = "cache")
+    @Command(label = "addwall", aliases = {"addw", "aw"}, permission = "castlerush.cache.addwall"
             , desc = "Adds selected wall to editor cache")
     public void addwall(CommandContext commandContext){
         Player player = (Player) commandContext.getSender();
@@ -182,8 +182,8 @@ public class CacheCommand {
         rawUnpreparedArena.setRawGameWalls(new SimplePair<>(null, null));
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "finish", aliases = {"fin", "f"}, permission = "castlerush.cache.finish"
+    @Command.Nested(parent = "cache")
+    @Command(label = "finish", aliases = {"fin", "f"}, permission = "castlerush.cache.finish"
             , desc = "Finished the editor cache and saves it")
     public void finish(CommandContext context){
         Player player = (Player) context.getSender();
@@ -227,8 +227,8 @@ public class CacheCommand {
         }.runTaskLater(CastleRush.getInstance(), 1L);
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "tool", aliases = {"t"}, permission = "castlerush.cache.tool"
+    @Command.Nested(parent = "cache")
+    @Command(label = "tool", aliases = {"t"}, permission = "castlerush.cache.tool"
             , desc = "Gives you the editor cache multi-tool")
     public void tool(CommandContext context){
         Player player = (Player) context.getSender();
@@ -244,8 +244,8 @@ public class CacheCommand {
 
     // ========================================================================================================
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "delplots", permission = "castlerush.cache.edit.delplots"
+    @Command.Nested(parent = "cache")
+    @Command(label = "delplots", permission = "castlerush.cache.edit.delplots"
             , desc = "Edits the cache")
     public void delplots(CommandContext context){
         Player player = (Player) context.getSender();
@@ -264,8 +264,8 @@ public class CacheCommand {
         ChatManager.info().write(LanguageManager.get("clearedPlotsInCache"), player);
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "delwalls", permission = "castlerush.cache.edit.delwalls"
+    @Command.Nested(parent = "cache")
+    @Command(label = "delwalls", permission = "castlerush.cache.edit.delwalls"
             , desc = "Edits the cache")
     public void delwalls(CommandContext context){
         Player player = (Player) context.getSender();
@@ -284,8 +284,8 @@ public class CacheCommand {
         ChatManager.info().write(LanguageManager.get("clearedWallsInCache"), player);
     }
 
-    @SubCommand.Nested(parent = "cache")
-    @SubCommand(label = "leave", permission = "castlerush.cache.leave"
+    @Command.Nested(parent = "cache")
+    @Command(label = "leave", permission = "castlerush.cache.leave"
             , desc = "Leaves the cache")
     public void leave(CommandContext context){
         Player player = (Player) context.getSender();

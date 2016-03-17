@@ -16,15 +16,15 @@
     <repositories>
         <repository>
             <id>superiozde-repo</id>
-            <url>http://www.superioz.de/private/repository/private/</url>
+            <url>http://www.superioz.de/private/repository/public/</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>de.superioz</groupId>
-            <artifactId>SuperLibrary</artifactId>
-            <version>2.0.0</version>
+            <groupId>de.superioz.library</groupId>
+            <artifactId>SBukkitLibrary</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>

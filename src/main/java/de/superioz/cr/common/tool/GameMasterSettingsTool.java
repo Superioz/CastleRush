@@ -2,7 +2,7 @@ package de.superioz.cr.common.tool;
 
 import de.superioz.cr.common.ChatManager;
 import de.superioz.cr.util.PluginItems;
-import de.superioz.library.minecraft.server.common.item.SimpleItemTool;
+import de.superioz.library.bukkit.common.item.SimpleItemTool;
 
 /**
  * This class was created as a part of CastleRush

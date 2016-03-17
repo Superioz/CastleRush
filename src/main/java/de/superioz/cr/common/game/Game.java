@@ -18,9 +18,7 @@ import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.PluginItems;
 import de.superioz.cr.util.TimeType;
 import de.superioz.cr.util.WorldBackup;
-import de.superioz.library.main.SuperLibrary;
-import lombok.Getter;
-import lombok.Setter;
+import de.superioz.library.bukkit.BukkitLibrary;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -89,14 +87,14 @@ public class Game {
      * Start the game
      */
     public void start(){
-        SuperLibrary.callEvent(new GamePhaseEvent(this, GamePhase.LOBBY));
+        BukkitLibrary.callEvent(new GamePhaseEvent(this, GamePhase.LOBBY));
     }
 
     /**
      * Stop the game
      */
     public void stop(){
-        SuperLibrary.callEvent(new GamePhaseEvent(this, GamePhase.FINISH));
+        BukkitLibrary.callEvent(new GamePhaseEvent(this, GamePhase.FINISH));
     }
 
     /**
@@ -318,7 +316,7 @@ public class Game {
      * @param phase The phase
      */
     public void setPhase(GamePhase phase){
-        SuperLibrary.callEvent(new GamePhaseEvent(this, phase));
+        BukkitLibrary.callEvent(new GamePhaseEvent(this, phase));
     }
 
     /**

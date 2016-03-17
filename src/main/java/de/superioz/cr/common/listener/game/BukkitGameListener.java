@@ -12,7 +12,7 @@ import de.superioz.cr.common.game.GameState;
 import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.InventoryBackup;
-import de.superioz.library.main.SuperLibrary;
+import de.superioz.library.bukkit.BukkitLibrary;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -139,7 +139,7 @@ public class BukkitGameListener implements Listener {
         WrappedGamePlayer gp = GameManager.getWrappedGamePlayer(player);
         Game game = gp.getGame();
 
-        SuperLibrary.callEvent(new GameLeaveEvent(game, gp, GameLeaveEvent.Type.SERVER_LEAVE));
+        BukkitLibrary.callEvent(new GameLeaveEvent(game, gp, GameLeaveEvent.Type.SERVER_LEAVE));
     }
 
     @EventHandler
@@ -175,14 +175,14 @@ public class BukkitGameListener implements Listener {
                 }
 
                 // Set scoreboard
-                SuperLibrary.callEvent(new GameScoreboardUpdateEvent(gamePlayer.getGame(), GameScoreboardUpdateEvent.Reason.UPDATE));
+                BukkitLibrary.callEvent(new GameScoreboardUpdateEvent(gamePlayer.getGame(), GameScoreboardUpdateEvent.Reason.UPDATE));
             }
             else{
                 if(gamePlayer.getGame() != null
                         && gamePlayer.getGame().getArena().getGameState() == GameState.INGAME){
                     gamePlayer.getGame().broadcast(LanguageManager.get("doesntRejoinedInTime")
                             .replace("%player", player.getDisplayName()));
-                    SuperLibrary.callEvent(new GameLeaveEvent(gamePlayer.getGame(), gamePlayer, GameLeaveEvent.Type.COMMAND_LEAVE));
+                    BukkitLibrary.callEvent(new GameLeaveEvent(gamePlayer.getGame(), gamePlayer, GameLeaveEvent.Type.COMMAND_LEAVE));
                 }
                 else{
                     // Reset

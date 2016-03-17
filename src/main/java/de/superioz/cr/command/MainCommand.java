@@ -4,12 +4,14 @@ import de.superioz.cr.common.ChatManager;
 import de.superioz.cr.common.lang.LanguageManager;
 import de.superioz.cr.util.PluginHelp;
 import de.superioz.cr.util.PluginUtilities;
+import de.superioz.library.bukkit.common.command.*;
+import de.superioz.library.bukkit.common.command.context.CommandContext;
 import de.superioz.library.java.util.SimpleStringUtils;
-import de.superioz.library.minecraft.server.common.command.*;
-import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -30,7 +32,7 @@ public class MainCommand implements CommandCase {
         PluginUtilities.getPluginInformationPage((Player) commandContext.getSender());
     }
 
-    @SubCommand(label = "help", aliases = "?", desc = "Shows the help page",
+    @Command(label = "help", aliases = "?", desc = "Shows the help page",
             permission = "castlerush.help", usage = "<page>")
     public void help(CommandContext commandContext){
         int page = 1;
@@ -43,7 +45,9 @@ public class MainCommand implements CommandCase {
                 page = Integer.parseInt(arg);
         }
 
-        PluginHelp commandHelpPage = new PluginHelp(12, CommandHandler.getAllCommands());
+	    // Get commands and plugin help
+        List<CommandWrapper> commands = CommandHandler.getAllCommands();
+        PluginHelp commandHelpPage = new PluginHelp(12, commands);
 
         List<TextComponent> textComponents = commandHelpPage.getPage(page);
         if(textComponents == null){

@@ -8,10 +8,10 @@ import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.common.game.GameSign;
 import de.superioz.cr.common.inv.GameCreateInventory;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.inventory.SuperInventory;
+import de.superioz.library.bukkit.util.ChatUtil;
 import de.superioz.library.java.util.SimpleStringUtils;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
-import de.superioz.library.minecraft.server.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -101,7 +101,7 @@ public class SignListener implements Listener {
                     ChatManager.info().write("&cThere's no free world left!", player);
                     return;
                 }
-                SuperLibrary.callEvent(new GameSignInteractEvent(player, GameSign.Type.CREATE_GAME));
+                BukkitLibrary.callEvent(new GameSignInteractEvent(player, GameSign.Type.CREATE_GAME));
             }
             else if(type.equals(SIGN_JOIN)){
                 // JOIN A LOBBY
@@ -110,7 +110,7 @@ public class SignListener implements Listener {
                     return;
                 }
 
-                SuperLibrary.callEvent(new GameSignInteractEvent(player, GameSign.Type.JOIN_GAME));
+                BukkitLibrary.callEvent(new GameSignInteractEvent(player, GameSign.Type.JOIN_GAME));
             }
         }
     }
@@ -140,7 +140,7 @@ public class SignListener implements Listener {
                 Game game = GameManager.getRunningGames().get(idInteger-1);
 
                 // Call event for further things
-                SuperLibrary.callEvent(new GameJoinEvent(game.getArena().getArena(),
+                BukkitLibrary.callEvent(new GameJoinEvent(game.getArena().getArena(),
                         clickEvent.getPlayer(), clickEvent.getPlayer().getLocation()));
                 clickEvent.closeInventory();
             });

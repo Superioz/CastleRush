@@ -5,8 +5,8 @@ import de.superioz.cr.common.event.GamePhaseEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.game.GamePhase;
 import de.superioz.cr.common.settings.PluginSettings;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.runnable.SuperRepeater;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.runnable.SuperRepeater;
 
 /**
  * This class was created as a part of CastleRush
@@ -50,7 +50,7 @@ public class GameCountdown {
                 return;
             }
 
-            SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.BUILD));
+            BukkitLibrary.callEvent(new GamePhaseEvent(game, GamePhase.BUILD));
         }, 20);
     }
 
@@ -65,7 +65,7 @@ public class GameCountdown {
             if(counter == PluginSettings.END_TIMER || counter <= LAST_COUNTDOWN){
                 getGame().broadcast(LanguageManager.get("endCountdownItem").replace("%counter", counter+""));
             }
-        }, onFinish -> SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.FINISH)), 20);
+        }, onFinish -> BukkitLibrary.callEvent(new GamePhaseEvent(game, GamePhase.FINISH)), 20);
     }
 
     /**

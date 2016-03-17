@@ -28,11 +28,10 @@ public class DatabaseManager {
         if(type == DatabaseType.SQLITE){
             File folder = new File(CastleRush.getInstance().getDataFolder() + "/data");
             folder.mkdirs();
-            this.database = new SQLite(CastleRush.getInstance(), "data/" + DATABASE_NAME);
+            this.database = new SQLite(CastleRush.getInstance().getDataFolder(), "data/" + DATABASE_NAME);
         }
         else if(type == DatabaseType.MYSQL){
-            this.database = new MySQL(CastleRush.getInstance(),
-                    PluginSettings.DATABASE_HOSTNAME,
+            this.database = new MySQL(PluginSettings.DATABASE_HOSTNAME,
                     PluginSettings.DATABASE_PORT,
                     PluginSettings.DATABASE_DATABASE,
                     PluginSettings.DATABASE_USER,

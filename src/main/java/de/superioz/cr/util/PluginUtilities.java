@@ -1,9 +1,9 @@
 package de.superioz.cr.util;
 
 import de.superioz.cr.main.CastleRush;
-import de.superioz.library.minecraft.server.common.command.CommandHandler;
-import de.superioz.library.minecraft.server.message.BukkitChat;
-import de.superioz.library.minecraft.server.util.ChatUtil;
+import de.superioz.library.bukkit.common.command.CommandHandler;
+import de.superioz.library.bukkit.message.BukkitChat;
+import de.superioz.library.bukkit.util.ChatUtil;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

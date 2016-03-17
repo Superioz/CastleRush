@@ -10,15 +10,15 @@ import de.superioz.cr.common.settings.PluginSettings;
 import de.superioz.cr.common.timer.PlayerLeftTimer;
 import de.superioz.cr.util.PluginColor;
 import de.superioz.cr.util.PluginItems;
+import de.superioz.library.bukkit.common.inventory.InventorySize;
+import de.superioz.library.bukkit.common.inventory.PageableInventory;
+import de.superioz.library.bukkit.common.inventory.SuperInventory;
+import de.superioz.library.bukkit.common.item.SimpleItem;
+import de.superioz.library.bukkit.event.WrappedInventoryClickEvent;
+import de.superioz.library.bukkit.util.BukkitUtilities;
+import de.superioz.library.bukkit.util.LocationUtil;
 import de.superioz.library.java.util.SimpleStringUtils;
 import de.superioz.library.java.util.classes.SimpleGroup;
-import de.superioz.library.minecraft.server.common.inventory.InventorySize;
-import de.superioz.library.minecraft.server.common.inventory.PageableInventory;
-import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
-import de.superioz.library.minecraft.server.event.WrappedInventoryClickEvent;
-import de.superioz.library.minecraft.server.util.BukkitUtilities;
-import de.superioz.library.minecraft.server.util.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -375,7 +375,7 @@ public class GameManager {
      * @param consumer The consumer
      * @return The inventory
      */
-    public static SuperInventory getGameOverview(String title, Consumer<WrappedInventoryClickEvent> consumer){
+    public static SuperInventory getGameOverview(String title, de.superioz.library.java.util.Consumer<WrappedInventoryClickEvent> consumer){
         List<Game> games = GameManager.getRunningGames();
         List<SimpleItem> items = new ArrayList<>();
 

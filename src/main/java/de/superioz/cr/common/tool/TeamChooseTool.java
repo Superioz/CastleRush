@@ -3,8 +3,8 @@ package de.superioz.cr.common.tool;
 import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.game.GameManager;
 import de.superioz.cr.util.PluginItems;
-import de.superioz.library.minecraft.server.common.inventory.SuperInventory;
-import de.superioz.library.minecraft.server.common.item.SimpleItemTool;
+import de.superioz.library.bukkit.common.inventory.SuperInventory;
+import de.superioz.library.bukkit.common.item.SimpleItemTool;
 import org.bukkit.entity.Player;
 
 /**

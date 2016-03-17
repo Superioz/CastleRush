@@ -4,9 +4,9 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.event.GamePhaseEvent;
 import de.superioz.cr.common.game.*;
 import de.superioz.cr.common.settings.PluginSettings;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.util.BukkitUtilities;
-import de.superioz.library.minecraft.server.util.LocationUtil;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.util.BukkitUtilities;
+import de.superioz.library.bukkit.util.LocationUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -87,7 +87,7 @@ public class GamePlotListener implements Listener {
                 && block.getType() == Material.WOOL){
             // Player wons the game
             game.setWinner(gamePlayer);
-            SuperLibrary.callEvent(new GamePhaseEvent(game, GamePhase.END));
+            BukkitLibrary.callEvent(new GamePhaseEvent(game, GamePhase.END));
 
             event.setCancelled(true);
             block.setType(Material.AIR);

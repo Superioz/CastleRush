@@ -4,8 +4,8 @@ import de.superioz.cr.common.WrappedGamePlayer;
 import de.superioz.cr.common.event.GameLeaveEvent;
 import de.superioz.cr.common.game.Game;
 import de.superioz.cr.common.settings.PluginSettings;
-import de.superioz.library.main.SuperLibrary;
-import de.superioz.library.minecraft.server.common.runnable.SuperDelayer;
+import de.superioz.library.bukkit.BukkitLibrary;
+import de.superioz.library.bukkit.common.runnable.SuperDelayer;
 
 /**
  * This class was created as a part of CastleRush
@@ -30,7 +30,7 @@ public class PlayerLeftTimer {
                     Game game = player.getGame();
                     if(game != null
                             && game.isRunning()){
-                        SuperLibrary.callEvent(new GameLeaveEvent(game, player,
+	                    BukkitLibrary.callEvent(new GameLeaveEvent(game, player,
                                 GameLeaveEvent.Type.REJOIN_TIME_RUNS_OUT));
                     }
                 }

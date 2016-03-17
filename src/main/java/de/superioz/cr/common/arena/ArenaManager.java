@@ -8,8 +8,8 @@ import de.superioz.cr.common.tool.IngameTeleportTool;
 import de.superioz.cr.common.tool.TeamChooseTool;
 import de.superioz.cr.main.CastleRush;
 import de.superioz.cr.util.PluginTools;
+import de.superioz.library.bukkit.common.command.context.CommandContext;
 import de.superioz.library.java.file.type.JsonFile;
-import de.superioz.library.minecraft.server.common.command.context.CommandContext;
 import org.bukkit.World;
 
 /**

@@ -2,10 +2,8 @@ package de.superioz.cr.common.arena;
 
 import de.superioz.cr.common.game.GamePlot;
 import de.superioz.cr.common.game.GameWall;
+import de.superioz.library.bukkit.util.SerializeUtil;
 import de.superioz.library.java.util.list.ListUtil;
-import de.superioz.library.minecraft.server.util.SerializeUtil;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;

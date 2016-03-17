@@ -1,6 +1,6 @@
 package de.superioz.cr.common.inv;
 
-import de.superioz.library.minecraft.server.common.inventory.PageableInventory;
+import de.superioz.library.bukkit.common.inventory.PageableInventory;
 
 /**
  * This class was created as a part of CastleRush

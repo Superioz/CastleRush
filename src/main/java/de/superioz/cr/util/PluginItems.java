@@ -2,9 +2,9 @@ package de.superioz.cr.util;
 
 import de.superioz.cr.common.lang.LanguageManager;
 import de.superioz.cr.common.game.GameType;
+import de.superioz.library.bukkit.common.item.SimpleItem;
+import de.superioz.library.bukkit.common.item.SimpleItemSpell;
 import de.superioz.library.java.util.SimpleStringUtils;
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
-import de.superioz.library.minecraft.server.common.item.SimpleItemSpell;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;

@@ -1,9 +1,8 @@
 package de.superioz.cr.common.arena;
 
-
 import de.superioz.cr.common.lang.LanguageManager;
-import de.superioz.library.minecraft.server.common.item.SimpleItem;
-import de.superioz.library.minecraft.server.util.SerializeUtil;
+import de.superioz.library.bukkit.common.item.SimpleItem;
+import de.superioz.library.bukkit.util.SerializeUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
