@@ -9,14 +9,14 @@
     <version>2.1.0</version>
 
     <properties>
-        <finalName>${artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <repositories>
         <repository>
             <id>superiozde-repo</id>
-            <url>http://www.superioz.de/private/repository/public/</url>
+            <url>http://www.superioz.de/repository/public/</url>
         </repository>
     </repositories>
 
