@@ -28,6 +28,12 @@
         </dependency>
 
         <dependency>
+            <groupId>de.superioz.library</groupId>
+            <artifactId>SJavaLibrary</artifactId>
+            <version>1.0.19</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.6</version>
